@@ -13,10 +13,10 @@ public class PurchaseSkinDialog : MonoBehaviour
     [SerializeField] private GameObject buyButton;
 
     private SkinInfo skinInfo;
-    private PurchasableSkinItem purchasableSkinItem;
+    private BlockSkinShopItem purchasableSkinItem;
 
     public void SetSkinDetails(SkinInfo skinInfo) => this.skinInfo = skinInfo;
-    public void SetEventSender(PurchasableSkinItem sender) => purchasableSkinItem = sender;
+    public void SetEventSender(BlockSkinShopItem sender) => purchasableSkinItem = sender;
 
     private void InitializeComponent()
     {

@@ -196,7 +196,7 @@ public class CustomizationsHelper : MonoBehaviour
         var skinToUse = GraphicSkins[skinId].Skin;
 
         blockMaterial.color = Color.white;
-        //blockMaterial.SetTexture(Constants.SHADER_BASE_MAP, skinToUse); // URP
+        
         blockMaterial.SetTexture(Constants.SHADER_MAIN_TEX, skinToUse);
         return true;
     }

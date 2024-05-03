@@ -25,7 +25,7 @@ public class SkinsMenuController : MonoBehaviour
     private CustomizationsHelper themeHelper;
 
     private List<Toggle> skinColorFilters;
-    private List<PurchasableSkinItem> purchasableSkinItems;
+    private List<BlockSkinShopItem> purchasableSkinItems;
 
     // Start is called before the first frame update
     void Start()
@@ -119,7 +119,7 @@ public class SkinsMenuController : MonoBehaviour
     /// <returns></returns>
     private IEnumerator BuildPurchasableSkinItemsSelectionMenu(GameObject scrollContainer)
     {
-        purchasableSkinItems = new List<PurchasableSkinItem>();
+        purchasableSkinItems = new List<BlockSkinShopItem>();
 
         var defaultSkins     = themeHelper.GetDefaultSkinIds();
         var ownedSkinIds     = themeHelper.GetOwnedSkinIds();
@@ -129,7 +129,7 @@ public class SkinsMenuController : MonoBehaviour
             var blockSkin = skins.Value;
             var itemObj   = Instantiate(skinItemPrefab);
 
-            itemObj.TryGetComponent(out PurchasableSkinItem skinItem);
+            itemObj.TryGetComponent(out BlockSkinShopItem skinItem);
             
             var isOwned = (
                 ownedSkinIds.Contains(blockSkin.Id) ||

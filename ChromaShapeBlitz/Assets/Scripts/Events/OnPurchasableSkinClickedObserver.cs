@@ -22,7 +22,7 @@ public class OnPurchasableSkinClickedObserver : MonoBehaviour
 
     private void OnDisable() => OnPurchasableSkinClickedNotifier.Event.RemoveListener(Subscribe);
 
-    public void Subscribe(PurchasableSkinItem sender)
+    public void Subscribe(BlockSkinShopItem sender)
     {
         // If the selected skin item was already purchased,
         // or is a default skin, equip it.
@@ -39,7 +39,7 @@ public class OnPurchasableSkinClickedObserver : MonoBehaviour
         }
     }
 
-    private IEnumerator EquipSkin(PurchasableSkinItem sender)
+    private IEnumerator EquipSkin(BlockSkinShopItem sender)
     {
         if (themeHelper == null)
             yield break;
@@ -54,7 +54,7 @@ public class OnPurchasableSkinClickedObserver : MonoBehaviour
         yield return null;
     }
     
-    private void PromptPurchase(PurchasableSkinItem sender)
+    private void PromptPurchase(BlockSkinShopItem sender)
     {
         var progressData = PlayerProgressHelper.Instance.GetProgressData();
         var skinInfo     = sender.GetSkinInfo();
