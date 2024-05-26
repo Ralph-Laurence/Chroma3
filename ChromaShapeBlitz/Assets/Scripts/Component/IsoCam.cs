@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
-
 
 public class IsoCam : MonoBehaviour
 {
@@ -31,7 +31,8 @@ public class IsoCam : MonoBehaviour
     private Vector2 fingerDownPosition;
     private Vector2 fingerUpPosition;
 
-    private bool isRotating;
+    public bool IsRotating { private set; get; }
+    public IsoCamViewingAngles CurrentViewAngle { private set; get; }
 
     private void Start()
     {
@@ -106,7 +107,7 @@ public class IsoCam : MonoBehaviour
         // Get the swipe direction
 
         // Swiped LEFT
-        if (fingerUpPosition.x < fingerDownPosition.x && !isRotating)
+        if (fingerUpPosition.x < fingerDownPosition.x && !IsRotating)
         {
             // To identify our current viewing rotation, we subtract
             // our current Y rotation from the last rotated direction
@@ -128,7 +129,7 @@ public class IsoCam : MonoBehaviour
         }
 
         // Swiped RIGHT
-        if (fingerUpPosition.x > fingerDownPosition.x && !isRotating)
+        if (fingerUpPosition.x > fingerDownPosition.x && !IsRotating)
         {
             if (Mathf.Abs(rotationY - initial) < 0.01f)
 
@@ -157,7 +158,7 @@ public class IsoCam : MonoBehaviour
 
     private IEnumerator RotateToTarget(float target)
     {
-        isRotating = true;
+        IsRotating = true;
         var startRotation = transform.rotation;
 
         var endRotation   = Quaternion.Euler(
@@ -176,6 +177,19 @@ public class IsoCam : MonoBehaviour
             yield return null;
         }
 
-        isRotating = false;
+        // Determine the viewing angle after rotation
+        var targetRot = Convert.ToInt32(target);
+
+        if (targetRot == Convert.ToInt32(targetLeft))
+            CurrentViewAngle = IsoCamViewingAngles.Left;
+
+        else if (targetRot == Convert.ToInt32(targetRight))
+            CurrentViewAngle = IsoCamViewingAngles.Right;
+
+        else if (targetRot == initial)
+            CurrentViewAngle = IsoCamViewingAngles.Middle;
+
+        Debug.LogWarning($"Viewangle => {CurrentViewAngle}");
+        IsRotating = false;
     }
 }

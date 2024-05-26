@@ -152,7 +152,7 @@ Transform:
   m_Children:
   - {fileID: 1852613982}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &190049908
 MonoBehaviour:
@@ -235,7 +235,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &308307878
 GameObject:
@@ -1036,7 +1036,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &706736638
 MonoBehaviour:
@@ -1050,17 +1050,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
 --- !u!1 &772479892
 GameObject:
   m_ObjectHideFlags: 0
@@ -2145,7 +2134,7 @@ Transform:
   - {fileID: 1067311393}
   - {fileID: 1457582494}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!1 &1457582493
 GameObject:
@@ -2851,6 +2840,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stage UI Controller
       objectReference: {fileID: 0}
+    - target: {fileID: 3397370606853247833, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5345803058578461575, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5345803058578461575, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3127,6 +3126,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2412519369105595064, guid: 55cd3ef43a28eb745a504a0e071d000a,
+        type: 3}
+      propertyPath: targetLeft
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 2412519369105595064, guid: 55cd3ef43a28eb745a504a0e071d000a,
+        type: 3}
+      propertyPath: targetRight
+      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 2412519369105595064, guid: 55cd3ef43a28eb745a504a0e071d000a,
         type: 3}

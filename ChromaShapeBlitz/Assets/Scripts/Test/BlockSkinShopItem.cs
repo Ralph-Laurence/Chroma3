@@ -1,37 +1,44 @@
 using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class BlockSkinShopItem : ShopItem
+public class BlockSkinShopItem : ShopItemBase
 {
-    private SkinInfo skinInfo;
-    public override void HandleItemClicked() => OnPurchasableSkinClickedNotifier.Publish(this);
+    private BlockSkinShopItemInfo skinInfo;
+    private Image bgImage;
+
+    protected override void OnAwake()
+    {
+        base.OnAwake();
+
+        TryGetComponent(out bgImage);
+    }
+
+    public override void HandleItemClicked()
+    {
+        base.HandleItemClicked();
+
+        OnBlockSkinShopItemClickedNotifier.Publish(this);
+    }
     public override void HandlePurchase() => StartCoroutine(PurchaseSkin());
 
-    public override void InitializeComponent()
-    {
-        ItemPreviewImage.sprite = skinInfo.PreviewImage;
-        ItemNameLabel.text      = skinInfo.Name;
-        ItemPriceLabel.text     = skinInfo.Cost.PrefixWithCurrencyIcon(skinInfo.Price);
-    }
-
-    public void SetSkinInfo(SkinInfo skinInfo)
-    {
-        this.skinInfo = skinInfo;
-        InitializeComponent();
-    }
-    
-    public SkinInfo GetSkinInfo() => skinInfo;
+    public void SetItemInfo(BlockSkinShopItemInfo skinInfo) => this.skinInfo = skinInfo;
+    public BlockSkinShopItemInfo GetSkinInfo() => skinInfo;
 
     private IEnumerator PurchaseSkin()
     {
         var playerProgress = PlayerProgressHelper.Instance;
 
-        // Save the changes into disk
+        // Decrease the player's current balance, then save them to disk
         yield return StartCoroutine
         (
             playerProgress.DecreasePlayerBank(skinInfo.Cost, skinInfo.Price, true)
         );
 
-        yield return StartCoroutine(themeHelper.TakeSkinOwnership(skinInfo.Id, skinInfo.ColorCategory));
+        yield return StartCoroutine
+        (
+            CustomBlockSkinsHelper.Instance.UseSkin( skinInfo.ColorCategory, skinInfo.Id )
+        );
         
         skinInfo.IsOwned = true;
         
@@ -39,16 +46,19 @@ public class BlockSkinShopItem : ShopItem
         HidePriceLabel();
 
         // Notify the purchase confirmation dialog to close
-        OnSkinPurchasedNotifier.Publish();
+        OnSkinPurchasedNotifier.Publish(skinInfo);
         
         // Get the updated player balance, then show it onto the UI
         var progressData = playerProgress.GetProgressData();
 
-        OnUpdatePlayerBalanceUINotifier.Publish(new PlayerBalance{
+        OnUpdatePlayerBalanceUINotifier.Publish(new PlayerBalance
+        {
             TotalCoins = progressData.CurrentCoins,
             TotalGems  = progressData.CurrentGems
         });
 
         yield return null;
     }
+
+    public void SetFrameBackground(Sprite sprite) => bgImage.sprite = sprite;
 }

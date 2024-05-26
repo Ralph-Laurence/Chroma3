@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public static class Extensions
@@ -42,6 +43,20 @@ public static class Extensions
         }
     }
 
+    public static string ToColorName(this ColorSwatches blockColors)
+    {
+        switch (blockColors)
+        {
+            case ColorSwatches.Blue:      return "Blue";
+            case ColorSwatches.Green:     return "Green";
+            case ColorSwatches.Magenta:   return "Magenta";
+            case ColorSwatches.Yellow:    return "Yellow";
+            case ColorSwatches.Orange:    return "Orange";
+            case ColorSwatches.Purple:    return "Purple";
+            default: return string.Empty;
+        }
+    }
+
     /// <summary>
     /// Convert the BlockColor enumeration into visual colors
     /// </summary>
@@ -56,6 +71,20 @@ public static class Extensions
             case BlockColors.Yellow:    return Constants.ColorSwatches.YELLOW;
             case BlockColors.Orange:    return Constants.ColorSwatches.ORANGE;
             case BlockColors.Purple:    return Constants.ColorSwatches.PURPLE;
+            default: return Color.white;
+        }
+    }
+
+    public static Color ToUnityColor(this ColorSwatches blockColors)
+    {
+        switch(blockColors)
+        {
+            case ColorSwatches.Blue:      return Constants.ColorSwatches.BLUE;
+            case ColorSwatches.Green:     return Constants.ColorSwatches.GREEN;
+            case ColorSwatches.Magenta:   return Constants.ColorSwatches.MAGENTA;
+            case ColorSwatches.Yellow:    return Constants.ColorSwatches.YELLOW;
+            case ColorSwatches.Orange:    return Constants.ColorSwatches.ORANGE;
+            case ColorSwatches.Purple:    return Constants.ColorSwatches.PURPLE;
             default: return Color.white;
         }
     }
@@ -75,6 +104,21 @@ public static class Extensions
             case CurrencyType.Coin: return $"<sprite=5> {amount}";
             case CurrencyType.Gem : return $"<sprite=1> {amount}";
             default: return string.Empty;
+        }
+    }
+
+    public static string ToCurrencyName(this CurrencyType currencyType, bool plural = true)
+    {
+        switch (currencyType)
+        {
+            case CurrencyType.Coin:
+                return plural ? "Coins" : "Coin";
+
+            case CurrencyType.Gem:
+                return plural ? "Gems" : "Gem";
+
+            default:
+                return string.Empty;
         }
     }
 }

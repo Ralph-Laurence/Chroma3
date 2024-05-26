@@ -58,8 +58,8 @@ public class PlayerProgressHelper : MonoBehaviour
         HighestStageEasy    = 1,
         HighestStageNormal  = 1,
         HighestStageHard    = 1,
-        CurrentCoins        = 320,
-        CurrentGems         = 280
+        CurrentCoins        = 200,
+        CurrentGems         = 600
     };
 
     // public void SetProgressData(PlayerProgress progressData) => deserializedData = progressData;

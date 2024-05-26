@@ -13,7 +13,8 @@ public class EntryPoint : MonoBehaviour
     private IEnumerator Begin()
     {
         yield return StartCoroutine(LevelStructuresHelper.Instance.LoadLevelStructures());
-        yield return StartCoroutine(CustomizationsHelper.Instance.LoadCustomizations());
+        //yield return StartCoroutine(CustomizationsHelper.Instance.LoadCustomizations());
+        yield return StartCoroutine(CustomBlockSkinsHelper.Instance.LoadCustomSkins());
         yield return StartCoroutine(PlayerProgressHelper.Instance.LoadPlayerData());
 
         yield return StartCoroutine(LoadMainMenuAsync());
@@ -23,7 +24,7 @@ public class EntryPoint : MonoBehaviour
 
     private IEnumerator LoadMainMenuAsync()
     {
-        var load = SceneManager.LoadSceneAsync(Constants.Scenes.MainMenu);
+        var load = SceneManager.LoadSceneAsync(Constants.Scenes.MainMenu); //("rv_cust"); 
         load.allowSceneActivation = false;
 
         // Wait until the scene is fully loaded

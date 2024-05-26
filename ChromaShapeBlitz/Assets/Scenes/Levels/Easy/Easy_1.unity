@@ -268,6 +268,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1630781193846213239, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_fontColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1630781193846213239, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294924394
+      objectReference: {fileID: 0}
     - target: {fileID: 3397370606853247833, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
         type: 3}
       propertyPath: m_Name
@@ -337,6 +347,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 352.7423
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439127184829096655, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439127184829096655, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439127184829096655, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.34509805
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439127184829096655, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.41568628
+      objectReference: {fileID: 0}
+    - target: {fileID: 6439127184829096655, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6627543704211967198, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 219.08899
+      objectReference: {fileID: 0}
+    - target: {fileID: 8709038494577431740, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 71.36304
       objectReference: {fileID: 0}
     - target: {fileID: 8751997404135132840, guid: 71f6d0c2210acdb4c9cd3408a14c1cb8,
         type: 3}
@@ -515,7 +560,7 @@ GameObject:
   - component: {fileID: 634818816}
   - component: {fileID: 634818815}
   m_Layer: 6
-  m_Name: Color
+  m_Name: Back Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -549,26 +594,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 634818813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 69342db7c22739b4eb827226282ab91c, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_Texture: {fileID: 2800000, guid: bdc64002688a5584291887cdf6db3042, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!222 &634818816
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -682,12 +724,12 @@ GameObject:
   - component: {fileID: 753003884}
   - component: {fileID: 753003886}
   m_Layer: 6
-  m_Name: Back Layer
+  m_Name: Fore Layer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &753003883
 RectTransform:
   m_ObjectHideFlags: 0
@@ -700,7 +742,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 862981490}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -726,13 +768,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 9f9b5551393f75b4b920833c657400f6, type: 3}
+  m_Texture: {fileID: 2800000, guid: b9a0c065ab38a4242a6628c4d3484216, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
     y: 0
     width: 1
-    height: 1.85
+    height: 2.85
 --- !u!222 &753003885
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -754,9 +796,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxOverlay: {fileID: 753003884}
-  uvPoint: {x: 0, y: 0}
-  uvScale: {x: 1, y: 1.85}
-  uvSpeed: {x: 0.04, y: 0.04}
+  uvScale: {x: 1, y: 2.85}
+  uvSpeed: {x: 0.05, y: 0.025}
   reverse: 1
 --- !u!1 &862981486
 GameObject:
@@ -769,13 +810,35 @@ GameObject:
   - component: {fileID: 862981490}
   - component: {fileID: 862981489}
   - component: {fileID: 862981488}
+  - component: {fileID: 862981487}
   m_Layer: 6
-  m_Name: Background Canvas
+  m_Name: Background Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &862981487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862981486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a158d4e8ebe15488d3d5dfcd4c5d6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultBackground: {fileID: 21300000, guid: bdc64002688a5584291887cdf6db3042, type: 3}
+  blueBackground: {fileID: 21300000, guid: aeaecfbdee2fdfa44af4f76c92414b5a, type: 3}
+  greenBackground: {fileID: 21300000, guid: d4980eab554243f43ba06ca45c956e4f, type: 3}
+  magentaBackground: {fileID: 21300000, guid: 5e3e6ae2fe552864d89494643fdc383f, type: 3}
+  orangeBackground: {fileID: 21300000, guid: 69342db7c22739b4eb827226282ab91c, type: 3}
+  purpleBackground: {fileID: 21300000, guid: 9f805aa9f58c6dc4a9fbd8876a764512, type: 3}
+  yellowBackground: {fileID: 21300000, guid: be3b60825fc9ebb4a956b73f7fa095b5, type: 3}
+  backgroundColor: {fileID: 634818815}
+  autoAssignCamera: 1
 --- !u!114 &862981488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -808,7 +871,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 1252971867}
+  m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -831,8 +894,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 634818814}
-  - {fileID: 753003883}
   - {fileID: 1278168694}
+  - {fileID: 753003883}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -981,12 +1044,6 @@ PrefabInstance:
       objectReference: {fileID: 58835346}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55cd3ef43a28eb745a504a0e071d000a, type: 3}
---- !u!20 &1252971867 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 261362180805897808, guid: 55cd3ef43a28eb745a504a0e071d000a,
-    type: 3}
-  m_PrefabInstance: {fileID: 1252971866}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1278168693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1000,12 +1057,12 @@ GameObject:
   - component: {fileID: 1278168695}
   - component: {fileID: 1278168697}
   m_Layer: 6
-  m_Name: Fore Layer
+  m_Name: Back Layer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1278168694
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1018,7 +1075,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 862981490}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1038,19 +1095,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.1254902}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.03137255}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 9f9b5551393f75b4b920833c657400f6, type: 3}
+  m_Texture: {fileID: 2800000, guid: b9a0c065ab38a4242a6628c4d3484216, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1
-    height: 1.85
+    width: 1.25
+    height: 2.1
 --- !u!222 &1278168696
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1072,8 +1129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parallaxOverlay: {fileID: 1278168695}
-  uvPoint: {x: 0, y: 0}
-  uvScale: {x: 1, y: 1.85}
+  uvScale: {x: 1.25, y: 2.1}
   uvSpeed: {x: 0.04, y: 0.04}
   reverse: 0
 --- !u!1 &1724045043

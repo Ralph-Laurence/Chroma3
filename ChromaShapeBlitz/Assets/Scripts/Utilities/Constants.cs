@@ -23,9 +23,12 @@ public class Constants
         public static string LevelStructure     => Path.Combine(Application.persistentDataPath, "level.io");
         public static string ThemeSkinsData     => Path.Combine(Application.persistentDataPath, "theme.io");
         public static string CustomizationsData => Path.Combine(Application.persistentDataPath, "appearance.io");
+        public static string CustomSkinsData    => Path.Combine(Application.persistentDataPath, "skins.thm");
+
+        public static string BuiltinResources   => "Resources/unity_builtin_extra";
     }
 
-    public struct GameOverAnimationStates
+    public readonly struct GameOverAnimationStates
     {
         public static readonly string SuccessOneStar    = "Animate One Star";
         public static readonly string SuccessTwoStar    = "Animate Two Stars";
@@ -33,19 +36,19 @@ public class Constants
         public static readonly string Failure           = "Animate Failure";
     }
 
-    public struct PrefKeys
+    public readonly struct PrefKeys
     {
         public static readonly string UnlockedStageEasy      = "Unlocked_Stage_Easy";
         public static readonly string UnlockedStageNormal    = "Unlocked_Stage_Normal";
         public static readonly string UnlockedStageHard      = "Unlocked_Stage_Hard";
     }
 
-    public struct Scenes
+    public readonly struct Scenes
     {
         public static readonly string MainMenu = "Main Menu";
     }
 
-    public struct Tags
+    public readonly struct Tags
     {
         public static readonly string GameManager = "Game Manager";
         public static readonly string MainCamera  = "MainCamera";
@@ -66,6 +69,15 @@ public class Constants
         public static readonly Color WHITE          = new Color(r: 1, g: 1, b: 1, a: 1);
     }
 
+    public readonly struct CustomizationTabTMPStyles
+    {
+        public static readonly string ActiveTabSkins   = "Skins Tab Active";
+        public static readonly string DefaultTabSkins  = "Skins Tab Default";
+        public static readonly string ActiveTabThemes  = "Themes Tab Active";
+        public static readonly string DefaultTabThemes = "Themes Tab Default";
+    }
+
+    public static readonly Color DefaultAmbientColor = new Color(0.212F, 0.227F, 0.259F, 1.0F);
     // public readonly struct RewardTypes
     // {
     //     public static readonly int Gem = 1;

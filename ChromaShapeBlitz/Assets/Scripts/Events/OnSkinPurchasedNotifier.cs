@@ -5,11 +5,11 @@ using UnityEngine.Events;
 /// This event happens when a skin is about to be purchased,
 /// such as before showing the purchase dialog.
 /// </summary>
-public class SkinPurchasedEvent : UnityEvent { }
+public class SkinPurchasedEvent : UnityEvent<BlockSkinShopItemInfo> { }
 
 public class OnSkinPurchasedNotifier : MonoBehaviour
 {
     public static SkinPurchasedEvent Event = new SkinPurchasedEvent();
 
-    public static void Publish() => Event.Invoke();
+    public static void Publish(BlockSkinShopItemInfo info) => Event.Invoke(info);
 }

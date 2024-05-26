@@ -4,6 +4,16 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class TimerTheme
+{
+    public Color BlueTint       = new Color(0.0F    ,0.18F  ,1.0F   ,0.502F);
+    public Color GreenTint      = new Color(0.0F    ,0.61F  ,0.42F  ,0.509F);
+    public Color OrangeTint     = new Color(0.89F   ,0.41F  ,0.0F   ,0.502F);
+    public Color PurpleTint     = new Color(0.45F   ,0.16F  ,0.88F  ,0.502F);
+    public Color MagentaTint    = new Color(0.83F   ,0.16F  ,0.27F  ,0.502F);
+    public Color YellowTint     = new Color(0.62F   ,0.50F  ,0.09F  ,0.502F);
+}
+
 public class SliderTimer : MonoBehaviour
 {
     [Space(5)]
@@ -26,6 +36,9 @@ public class SliderTimer : MonoBehaviour
     [SerializeField] private int criticalSeconds = 5;
     [SerializeField] private int lowSeconds = 3;
     [SerializeField] private int duration = 10; // The countdown time in seconds
+
+    // [Space(5)]
+    // public TimerTheme 
 
     [Space(5)]
     [Header("Behaviours")]
