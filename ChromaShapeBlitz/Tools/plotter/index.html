@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage Plotter</title>
+
+    <link rel="stylesheet" href="utils.css" />
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="form-controls.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/fontawesome.css" />
+    <link rel="stylesheet" href="assets/fontawesome/css/solid.min.css" />
+    <link rel="stylesheet" href="assets/jquery-ui/jquery-ui.min.css" />
+    <link rel="stylesheet" href="assets/jquery-ui/jquery-ui.structure.min.css" />
+    <link rel="stylesheet" href="assets/jquery-ui/jquery-ui.theme.min.css" />
+</head>
+
+<body>
+    <div class="workspace">
+
+        <div class="titlebar">
+            <div class="title-text flex-center">Stage Plotter</div>
+        </div>
+
+        <div class="project-view">
+
+            <!-- BEGIN INSPECTOR -->
+            <div class="inspector editor-pane">
+                <h4 class="editor-pane-title">
+                    <i class="fas fa-wrench me-2"></i>Inspector
+                </h4>
+                <div class="editor-pane-content">
+                    <div class="inspector-header">
+                        <i class="fas fa-palette me-2"></i>
+                        Level Design
+                    </div>
+                    <div class="form-control">
+                        <label for="input-stage-dimen">Stage Dimensions</label>
+                        <select class="jq-select" id="input-stage-dimen">
+                            <option value="dimen_3x3">3 x 3</option>
+                            <option value="dimen_4x4">4 x 4</option>
+                            <option value="dimen_5x5">5 x 5</option>
+                            <option value="dimen_6x6">6 x 6</option>
+                            <option value="dimen_8x8">8 x 8</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label for="input-stage-name">Stage Name</label>
+                        <input id="input-stage-name" type="text" autocomplete="none"/>
+                    </div>
+                    
+                    <!-- emmet: select.jq-select#upbeat>option[value="upbeat_$"]*17 -->
+                    <div class="form-control mb-2">
+                        <label for="input-stage-bgm">Stage BGM</label>
+                        <select  id="input-stage-bgm" class="jq-select">
+                            <option value="upbeat_1">Upbeat #1</option>
+                            <option value="upbeat_2">Upbeat #2</option>
+                            <option value="upbeat_3">Upbeat #3</option>
+                            <option value="upbeat_4">Upbeat #4</option>
+                            <option value="upbeat_5">Upbeat #5</option>
+                            <option value="upbeat_6">Upbeat #6</option>
+                            <option value="upbeat_7">Upbeat #7</option>
+                            <option value="upbeat_8">Upbeat #8</option>
+                            <option value="upbeat_9">Upbeat #9</option>
+                            <option value="upbeat_10">Upbeat #10</option>
+                            <option value="upbeat_11">Upbeat #11</option>
+                            <option value="upbeat_12">Upbeat #12</option>
+                            <option value="upbeat_13">Upbeat #13</option>
+                            <option value="upbeat_14">Upbeat #14</option>
+                            <option value="upbeat_15">Upbeat #15</option>
+                            <option value="upbeat_16">Upbeat #16</option>
+                            <option value="upbeat_17">Upbeat #17</option>
+                        </select>
+                    </div>
+
+                    <div class="inspector-header">
+                        <i class="fas fa-video me-2"></i>
+                        Viewing Offsets
+                    </div>
+
+                    <div class="form-control-slider">
+                        <div class="slider-info mb-3">
+                            <div class="slider-label">Stage Y Rotation:</div>
+                            <div class="slider-value">0</div>
+                        </div>
+                        <input type="range" min="-90" max="90" value="0" class="slider" id="myRange">
+                      </div>
+                </div>
+            </div>
+            <!-- END INSPECTOR -->
+
+            <!-- BEGIN SCENE -->
+            <div class="scene editor-pane no-vscroll">
+                <h4 class="editor-pane-title">
+                    <i class="fas fa-cubes-stacked me-2"></i>Scene
+                </h4>
+                <div class="stage-editor-scene-renderer">
+                    <div class="stage-viewport">
+                        <div class="stage-wrapper">
+                            <table id="stage"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END SCENE -->
+
+            <!-- BEGIN JSON -->
+            <div class="output-pane editor-pane">
+                <h4 class="editor-pane-title">
+                    <i class="fas fa-code me-2"></i>JSON Out
+                </h4>
+            </div>
+            <!-- END JSON -->
+
+        </div>
+
+    </div>
+
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="assets/jquery-ui/jquery-ui.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
