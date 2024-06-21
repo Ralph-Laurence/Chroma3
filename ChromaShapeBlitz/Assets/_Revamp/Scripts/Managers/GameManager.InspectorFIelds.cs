@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Revamp
 {
@@ -13,14 +14,23 @@ namespace Revamp
         public StageCamera MainCamera;
         [SerializeField] private PatternTimer stageTimer;
 
-        [SerializeField] private AudioClip incorrectBlocksSfx;
         [SerializeField] private StageFactory stageFactory;
+        [SerializeField] private TextMeshProUGUI[] stageTitleTexts;
         
         [Space(10)] [Header("Pause Menu")]
         [SerializeField] private GameObject pauseMenu;
-        [SerializeField] private TextMeshProUGUI pauseMenuStageTitle;
         [SerializeField] private AudioClip pauseSound;
         [SerializeField] private AudioClip resumeSound;
         [SerializeField] GameObject mainMenuSceneLoader;
+                
+        [Space(10)] [Header("Objectives Menu")]
+        [SerializeField] private TextMeshProUGUI[] objectiveTextsMinTime;
+        [SerializeField] private TextMeshProUGUI[] objectiveTextsMaxTime;
+        [SerializeField] private TextMeshProUGUI[] rewardsText;
+
+        [Space(10)] [Header("Game Over Screen")]
+        [SerializeField] private GameObject gameOverScreenOverlay;
+        [SerializeField] private GameOverScreen gameOverScreenSuccess;
+        [SerializeField] private GameOverScreen gameOverScreenFail;
     }
 }

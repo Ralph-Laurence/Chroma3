@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class BaseAudioManager : MonoBehaviour
 {
     private AudioSource audioSource;
+    private float originalVolume;
 
     public void Pause()
     {
@@ -27,6 +28,9 @@ public abstract class BaseAudioManager : MonoBehaviour
 
     public AudioSource Audio => audioSource;
 
+    public float OriginalVolume => originalVolume;
+    public float GetVolume() => audioSource.volume;
+    public void SetVolume(float volume) => audioSource.volume = volume;
     public void Mute()   => audioSource.mute = true;
     public void UnMute() => audioSource.mute = false;
     public void SetMute(bool mute) => audioSource.mute = mute;
@@ -36,6 +40,7 @@ public abstract class BaseAudioManager : MonoBehaviour
     public virtual void Initialize()
     {
         TryGetComponent(out audioSource);
+        originalVolume = audioSource.volume;
     }
 
     void Awake() => Initialize();

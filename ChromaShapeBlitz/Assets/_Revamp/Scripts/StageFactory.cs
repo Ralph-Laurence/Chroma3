@@ -76,7 +76,9 @@ public class StageFactory : MonoBehaviour
             StageBgm        = stageVariant.BgmClip,
             MinStageTime    = stageVariant.MinStageTime,
             MaxStageTime    = stageVariant.MaxStageTime,
-            TotalStageTime  = stageVariant.TotalStageTime
+            TotalStageTime  = stageVariant.TotalStageTime,
+            RewardType      = stageVariant.RewardType,
+            TotalReward     = stageVariant.TotalReward
         });
     }
 }

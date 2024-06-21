@@ -18,6 +18,8 @@ public class Bootstrapper : MonoBehaviour
     [SerializeField] private Text progressText;
     [SerializeField] private Text progressCaption;
 
+    private GameSessionManager gsm;
+
     private int totalTasks;
     private int tasksDone;
 
@@ -116,11 +118,15 @@ public class Bootstrapper : MonoBehaviour
 
     private IEnumerator Initialize()
     {
+        //Application.runInBackground = true;
+        // Disable screen dimming
+        //Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        
         loaderView.SetActive(true);
 
         initializationTasks = new List<Func<IEnumerator>>
         {
-            UserDataHelper.Instance.LoadUserData,
+            LoadUserData,
             LevelMenuController.Instance.Initialize,
             ApplyAudioUserSettings
         };
@@ -169,4 +175,28 @@ public class Bootstrapper : MonoBehaviour
         yield return null;
     }
 
+    private IEnumerator LoadUserData()
+    {
+        yield return StartCoroutine(UserDataHelper.Instance.LoadUserData( (userData) => {
+
+            // gsm = GameSessionManager.Instance;
+            // gsm.PlayerData = userData;
+            
+            // new GsmPlayerData
+            // {
+            //     CurrentCoins = userData.TotalCoins,
+            //     CurrentGems  = userData.TotalGems,
+
+            //     HighestEasyStage    = userData.HighestEasyStage,
+            //     HighestNormalStage  = userData.HighestNormalStage,
+            //     HighestHardStage    = userData.HighestHardStage,
+
+            //     EasyStageUnlocked   = userData.EasyStageUnlocked,
+            //     NormalStageUnlocked = userData.NormalStageUnlocked,
+            //     HardStageUnlocked   = userData.HardStageUnlocked,
+
+            //     OwnedBlockSkinIds   = userData.OwnedBlockSkinIds,
+            // };
+        }));
+    }
 }

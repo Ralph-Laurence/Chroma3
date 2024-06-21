@@ -2,14 +2,9 @@ using UnityEngine;
 
 namespace Revamp
 {
-    public enum StageCompletionType
-    {
-        Success,
-        Failed
-    }
-
     public partial class GameManager : MonoBehaviour
     {
+        private GameManagerStates currentState;
         private GameSessionManager gsm;
         private BackgroundMusic bgm;
         private SoundEffects sfx;
@@ -22,15 +17,21 @@ namespace Revamp
         #region MONOBEHAVIOUR
 
         void OnEnable() => AttachEventObservers();
+        
         void OnDisable() => DetachEventObservers();
         
         void Awake()
         {
+            currentState = GameManagerStates.Active;
+
             gsm = GameSessionManager.Instance;
             bgm = BackgroundMusic.Instance;
             sfx = SoundEffects.Instance;
 
-            Debug.Log(gsm.SelectedStageNumber);
+            stageTimer.OnTimesUp = () => {
+                BreakExecution();
+                OnGameFailed();
+            };
         }
 
         void Start()
@@ -49,7 +50,8 @@ namespace Revamp
         //================================================
         //
         #region GAME_MECHANICS
-
+    
+        public GameManagerStates GetState() => currentState;
         public static int TotalEasyStages   => 50;
         public static int TotalNormalStages => 30;
         public static int TotalHardStages   => 25;
@@ -75,16 +77,50 @@ namespace Revamp
         private void PauseTimeScale() => Time.timeScale = 0.0F;
         private void ResumeTimeScale() => Time.timeScale = 1.0F;
 
+        #endregion GAME_MECHANICS
+
+        #region GAME_OVER
         private void OnGameSuccess()
         {
-            Debug.LogWarning("Success!");
+            int stars;
+            var playTime = stageTimer.ElapsedSeconds;
+
+            // To get a full-three star, finish the game in the given minimum time
+            if (playTime <= gsm.SelectedStageMinTime)
+                stars = 3;
+
+            // To get 2 - stars, finish within the given minimum time
+            else if (playTime > gsm.SelectedStageMinTime && playTime <= gsm.SelectedStageMaxTime)
+                stars = 2;
+
+            else
+                stars = 1;
+
+            gameOverScreenOverlay.SetActive(true);
+            GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs
+            {
+                GameOverType  = GameOverTypes.Success,
+                TotalStars    = stars,
+                TotalPlayTime = stageTimer.ElapsedSeconds
+            });
         }
 
         private void OnGameFailed()
         {
-            Debug.LogWarning("Failed!");
+            gameOverScreenOverlay.SetActive(true);
+            GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs { 
+                GameOverType  = GameOverTypes.Fail,
+                TotalPlayTime = stageTimer.ElapsedSeconds
+            });
         }
-        
-        #endregion GAME_MECHANICS
+
+        private void BreakExecution()
+        {
+            currentState = GameManagerStates.Stopped;
+            stageTimer.Stop();
+            bgm.Stop();
+        }
+
+        #endregion GAME_OVER
     }
 }

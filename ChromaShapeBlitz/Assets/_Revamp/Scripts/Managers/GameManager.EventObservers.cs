@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace Revamp
 {
+    /// <summary>
+    /// The <b>GameManager.EventObservers</b> tied to the GameManager object
+    /// will always belong to the GameManager; No other objects can have these.
+    /// </summary>
     public partial class GameManager : MonoBehaviour
     {
         //--------------------------------------
@@ -11,6 +15,8 @@ namespace Revamp
         {
             OnStageCreated.BindEvent(ObserveStageCreated);
             OnStageCompleted.BindEvent(ObserveStageComplete);
+            GameManagerEventNotifier.BindEvent(ObserveGameManagerActionEvents);
+            GameManagerStateNotifier.BindEvent(ObserveGameManagerState);
         }
         //--------------------------------------
         // Unregister event observer / listeners
@@ -19,12 +25,15 @@ namespace Revamp
         {
             OnStageCreated.UnbindEvent(ObserveStageCreated);
             OnStageCompleted.UnbindEvent(ObserveStageComplete);
+            GameManagerEventNotifier.UnbindEvent(ObserveGameManagerActionEvents);
+            GameManagerStateNotifier.UnbindEvent(ObserveGameManagerState);
         }
         //--------------------------------------
         // Subscribe to events 
         //--------------------------------------
 
-        // After a stage has been created
+        private void ObserveGameManagerState(GameManagerStates state) => currentState = state;
+
         private void ObserveStageCreated(StageCreatedEventArgs e)
         {
             bgm.Stop();
@@ -34,13 +43,25 @@ namespace Revamp
 
             stageTimer.Prepare(e.TotalStageTime, e.StagePattern);
             stageTimer.Begin();
+
+            gsm.SelectedStageMinTime = e.MinStageTime;
+            gsm.SelectedStageMaxTime = e.MaxStageTime;
+
+            var stageTitle  = $"{e.StageLevel} - {e.StageNumber:D2}";
+            var rewardStyle = e.RewardType.Equals(RewardTypes.Gems) ? "Gem" : "Coin";
+            var rewardText  = $"<style=\"{rewardStyle}\">\u00d7{e.TotalReward}";
+            var minTimeText = $"Finish under <color=#81FF21>{e.MinStageTime} secs";
+            var maxTimeText = $"Finish under <color=#FF9533>{e.MaxStageTime} secs";
+
+            stageTitleTexts.SetTextMultiple(stageTitle);
+            rewardsText.SetTextMultiple(rewardText);
+            objectiveTextsMinTime.SetTextMultiple(minTimeText);
+            objectiveTextsMaxTime.SetTextMultiple(maxTimeText);
         }
 
-        // When a stage has been completed
         private void ObserveStageComplete(StageCompletionType stageCompletionType)
         {
-            stageTimer.Stop();
-            bgm.Stop();
+            BreakExecution();
 
             switch (stageCompletionType)
             {
@@ -49,9 +70,21 @@ namespace Revamp
                     break;
 
                 case StageCompletionType.Failed:
-                    sfx.PlayOnce(incorrectBlocksSfx);
                     OnGameFailed();
                     break;
+            }
+        }
+
+        private void ObserveGameManagerActionEvents(GameManagerActionEvents eventType)
+        {
+            switch (eventType)
+            {
+                case GameManagerActionEvents.Pause:   GMAEV_Pause();   break;
+                case GameManagerActionEvents.Resume:  GMAEV_Resume();  break;
+                case GameManagerActionEvents.Retry:   GMAEV_Retry();   break;
+                
+                case GameManagerActionEvents.NextStage: break;
+                case GameManagerActionEvents.ExitToMenu: GMAEV_ExitToMainMenu(); break;
             }
         }
     }

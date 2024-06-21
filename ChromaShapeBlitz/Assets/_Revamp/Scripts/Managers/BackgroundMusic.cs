@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class BackgroundMusic : BaseAudioManager
@@ -26,6 +27,8 @@ public class BackgroundMusic : BaseAudioManager
 
     [SerializeField] private AudioClip themeBgm;
 
+
+    #region AUDIO_BACKEND
     public void Play() => Audio.Play();
     
     public void SetClip(AudioClip audioClip)
@@ -37,7 +40,46 @@ public class BackgroundMusic : BaseAudioManager
             Audio.clip = audioClip;
         }
     }
+    #endregion AUDIO_BACKEND
 
+    private bool toneDownBegan;
+    private float toneDownDuration = 1.5F;
+    private float toneDownTarget = 0.125F;
+
+    public void ToneDown()
+    {
+        if (toneDownBegan)
+            return;
+
+        StartCoroutine(FadeOutVolume());
+    }
+
+    public void ResetVolume()
+    {
+        toneDownBegan = false;
+        SetVolume(OriginalVolume);
+    }
+
+    private IEnumerator FadeOutVolume()
+    {
+        toneDownBegan = true;
+
+        var currentVolume = GetVolume();
+        var startTime = Time.time;
+
+        while (Time.time < startTime + toneDownDuration)
+        {
+            float elapsedTime = Time.time - startTime;
+            float t = Mathf.Clamp01(elapsedTime / toneDownDuration);
+            var volume = Mathf.Lerp(currentVolume, toneDownTarget, t);
+            SetVolume(volume);
+
+            yield return null;
+        }
+
+        // Ensure final volume is set correctly
+        SetVolume(toneDownTarget);
+    }
     /// <summary>
     /// The game's main background theme
     /// </summary>

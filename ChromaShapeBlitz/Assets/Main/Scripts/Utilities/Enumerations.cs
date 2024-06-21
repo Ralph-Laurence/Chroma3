@@ -117,3 +117,64 @@ public enum UXButtonClickTypes
     Positive,
     Negative
 }
+
+public enum GameOverTypes
+{
+    Success,
+    Fail
+}
+
+/// <summary>
+/// Used to identify common GameManager actions
+/// </summary>
+public enum GameManagerActionEvents
+{
+    None,
+    Pause,
+    Resume,
+    Retry,
+    ExitToMenu,
+    NextStage
+}
+
+/// <summary>
+/// Used when a stage variant was done validating its sequence.
+/// 
+/// <list type="bullet">
+///     <item>
+///         <term>Success</term>
+///         <description>Block sequences are all correct</description>
+///     </item>
+///     <item>
+///         <term>Failed</term>
+///         <description>There are incorrect sequences</description>
+///     </item>
+/// </list>
+/// </summary>
+public enum StageCompletionType
+{
+    Success,
+    Failed
+}
+
+/// <summary>
+/// <para><b>These are mainly used by Event Notifier</b></para>
+/// 
+/// Game Manager states may only have two values:
+/// 
+/// <list type="bullet">
+///     <item>
+///         <term>Active</term>
+///         <description>The game manager is not stopped</description>
+///     </item>
+///     <item>
+///         <term>Stopped</term>
+///         <description>The game manager is terminated</description>
+///     </item>
+/// </list>
+/// </summary>
+public enum GameManagerStates
+{
+    Active,
+    Stopped
+}

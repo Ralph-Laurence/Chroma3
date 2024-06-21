@@ -4,6 +4,24 @@ namespace Revamp
 {
     public class StageCompletedEvent : UnityEvent<StageCompletionType> {}
     public class StageCreatedEvent : UnityEvent<StageCreatedEventArgs> {}
+    public class GameOverScreenEvent : UnityEvent<GameOverEventArgs> {}
+    public class GameManagerStateEvent : UnityEvent<GameManagerStates> {}
+    public class GameManagerActionEvent : UnityEvent<GameManagerActionEvents> {}
+
+    public class GameManagerStateNotifier
+    {
+        private static readonly GameManagerStateEvent _event = new GameManagerStateEvent();
+        public static void NotifyObserver(GameManagerStates state) => _event.Invoke(state);
+        public static void BindEvent(UnityAction<GameManagerStates> eventAction)
+        {
+            _event.AddListener(eventAction);
+        }
+        public static void UnbindEvent(UnityAction<GameManagerStates> eventAction)
+        {
+            _event.RemoveListener(eventAction);
+        }
+    }
+
     public class OnStageCompleted
     {
         public static StageCompletedEvent Event = new StageCompletedEvent();
@@ -31,6 +49,34 @@ namespace Revamp
             _event.AddListener(eventAction);
         }
         public static void UnbindEvent(UnityAction<StageCreatedEventArgs> eventAction)
+        {
+            _event.RemoveListener(eventAction);
+        }
+    }
+
+    public class GameOverScreenNotifier
+    {
+        private static readonly GameOverScreenEvent _event = new GameOverScreenEvent();
+        public static void NotifyObserver(GameOverEventArgs e) => _event.Invoke(e);
+        public static void BindEvent(UnityAction<GameOverEventArgs> eventAction)
+        {
+            _event.AddListener(eventAction);
+        }
+        public static void UnbindEvent(UnityAction<GameOverEventArgs> eventAction)
+        {
+            _event.RemoveListener(eventAction);
+        }
+    }
+
+    public class GameManagerEventNotifier
+    {
+        public static GameManagerActionEvent _event = new GameManagerActionEvent();
+        public static void Notify(GameManagerActionEvents e) => _event.Invoke(e);
+        public static void BindEvent(UnityAction<GameManagerActionEvents> eventAction)
+        {
+            _event.AddListener(eventAction);
+        }
+        public static void UnbindEvent(UnityAction<GameManagerActionEvents> eventAction)
         {
             _event.RemoveListener(eventAction);
         }

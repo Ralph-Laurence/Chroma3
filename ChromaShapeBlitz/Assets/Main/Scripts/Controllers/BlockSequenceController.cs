@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.EventSystems;
+using Revamp;
 
 public class BlockSequenceController : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class BlockSequenceController : MonoBehaviour
     private SoundEffects sfx;
     private WaitForSeconds waitFillRate;
     private EventTrigger eventTrigger;
-    private GameManager gameManager;
+    // private Revamp.GameManager gameManager;
 
     private bool isActivatorFading;
     private bool isFillingColor;
@@ -32,6 +33,11 @@ public class BlockSequenceController : MonoBehaviour
     [Header("Filler Object")]
     public GameObject PadVisuals;
     [SerializeField] private float fadeOutRate = 10.0F;
+
+    private bool isGameOver;
+
+    void OnEnable() => GameManagerStateNotifier.BindEvent(ObserveGameManagerState);
+    void OnDisable() => GameManagerStateNotifier.UnbindEvent(ObserveGameManagerState);
 
     void Awake()
     {
@@ -52,16 +58,18 @@ public class BlockSequenceController : MonoBehaviour
         HandleTriggerPadFadeout();
     }
 
+    private void ObserveGameManagerState(GameManagerStates state) => isGameOver = true;
+
     private void InitializeComponent()
     {
         waitFillRate = new WaitForSeconds(fillRate);
 
         sfx = SoundEffects.Instance;
 
-        var gm = GameObject.FindWithTag(Constants.Tags.GameManager);
+        // var gm = GameObject.FindWithTag(Constants.Tags.GameManager);
         
-        if (gm != null)
-            gm.TryGetComponent(out gameManager);
+        // if (gm != null)
+        //     gm.TryGetComponent(out gameManager);
 
         PadVisuals.TryGetComponent(out activatorRenderer);
 
@@ -118,7 +126,8 @@ public class BlockSequenceController : MonoBehaviour
         foreach (var block in BlockSequence)
         {
             // Do not colorize (fill) the blocks when the game is over
-            if (gameManager != null && gameManager.IsGameOver())
+           //  if (gameManager != null && gameManager.GetState() == GameManagerStates.Stopped)
+           if (isGameOver)
                 yield break;
 
             // Colorize the blocks then set its value
@@ -144,7 +153,7 @@ public class BlockSequenceController : MonoBehaviour
     /// </summary>
     public void FillSequence()
     {
-        if (isFillingColor || (gameManager != null && gameManager.IsGameOver()))
+        if (isFillingColor || isGameOver)//(gameManager != null && gameManager.GetState() == GameManagerStates.Stopped))
             return;
 
         StartCoroutine(ColorizeSequence());

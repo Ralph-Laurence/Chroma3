@@ -26,7 +26,7 @@ public partial class StageVariant : MonoBehaviour
     public int MinStageTime;
     public int MaxStageTime;
     public RewardTypes RewardType;
-    public float TotalReward;
+    public int TotalReward;
 
     [Space(10)] 
     public List<BlockSequenceController> SequenceSet = new List<BlockSequenceController>();

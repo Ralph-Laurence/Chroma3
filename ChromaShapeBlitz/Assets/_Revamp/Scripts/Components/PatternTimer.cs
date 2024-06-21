@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,148 +6,139 @@ using UnityEngine.UI;
 public class PatternTimer : MonoBehaviour
 {
     [SerializeField] private Image patternPreviewer;
+    [SerializeField] private GameObject timesUpOverlay;
+    [SerializeField] private RectTransform timesUpCaption;
+    [SerializeField] private AudioClip countdownSfx;
+    [SerializeField] private AudioClip timesUpSfx;
 
     [Space(5)] 
     [Header("Timer Logic")]
     [SerializeField] private Image timerFill;
     [SerializeField] private TextMeshProUGUI timerText;
 
+    private SoundEffects sfx;
+    private BackgroundMusic bgm;
+    
+    public Action OnTimesUp;
     private int duration;
+    private float remainingTime;
+    private float elapsedTime;
     private bool isStopped;
-    private bool isPaused;
+    //private bool isPaused;
 
-    // Start is called before the first frame update
-    public void Begin() => StartCoroutine(StartCountdown());
-    public void Stop() => isStopped = true;
-    public void Pause() => isPaused = true;
-    public void Resume() => isPaused = false;
+    private float lastTickPlayedSecond;
 
-    public void Prepare(int duration, Sprite patternObjective)
+    void Awake()
     {
-        this.duration = duration;
-        patternPreviewer.sprite = patternObjective;
+        sfx = SoundEffects.Instance;
+        bgm = BackgroundMusic.Instance;
     }
 
-    public void SetPattern(Sprite pattern) => patternPreviewer.sprite = pattern;
+    void Update()
+    {
+        if (isStopped)
+            return;
 
+        remainingTime -= Time.deltaTime;
+
+        // Clamp the remaining time to be between 0 and duration
+        remainingTime = Mathf.Clamp(remainingTime, 0, duration);
+
+        // Update the fill amount of the image smoothly
+        timerFill.fillAmount = remainingTime / duration;
+
+        elapsedTime += Time.deltaTime;
+
+         // Check if a full second has passed
+        if (elapsedTime >= 1f)
+        {
+            // Decrease the whole seconds remaining time by 1
+            elapsedTime -= 1f; // Subtract one second from elapsed time
+            
+            // Update timer label
+            var remainingSecs = Mathf.CeilToInt(remainingTime);
+            timerText.text = remainingSecs.ToString();
+
+            // Tone the bgm down to hear the countdown
+            if (remainingSecs == 6)
+                bgm.ToneDown();
+
+            // Play the critical tick sound
+            if (remainingTime <= 5.0F && remainingTime > 0 && lastTickPlayedSecond != remainingTime)
+            {
+                PlayClip(countdownSfx);
+                lastTickPlayedSecond = remainingTime;
+            }
+
+            // Check if the timer has reached zero
+            if (remainingTime <= 0.0F)
+            {
+                Stop();
+                InvokeTimesUp();
+            }
+        }
+    }
     /// <summary>
     /// Elapsed seconds refer to the amount of time that passes from the start of an activity to its end. 
     /// The formula to find the elapsed time is as follows: Elapsed time = End time – Start time.
     /// </summary>
-    public int ElapsedSeconds { get; private set; }
+    public int ElapsedSeconds => Mathf.FloorToInt(duration - remainingTime);
 
-    private IEnumerator StartCountdown()
+    // Start is called before the first frame update
+    public void Begin()
     {
-        float remainingTime = duration;
-        float lastUpdateTime = Time.realtimeSinceStartup; // Use unscaled time for accuracy
-
-        while (remainingTime > 0 && !isStopped)
-        {
-            // Handle paused state
-            if (isPaused)
-            {
-                lastUpdateTime = Time.realtimeSinceStartup; // Reset the update time to prevent jumps
-                yield return null;
-                continue;
-            }
-
-            // Update the slider's value
-            timerFill.fillAmount = remainingTime / duration;
-
-            // Upon reaching less than 0.5, immediately stop
-            if (remainingTime < 0.01F)
-            {
-                remainingTime = 0;
-                timerText.text = "0";
-                break;
-            }
-
-            // Update the display
-            int remainingSecs = Mathf.CeilToInt(remainingTime);
-            timerText.text = remainingSecs.ToString();
-
-            ElapsedSeconds = duration - remainingSecs;
-
-            // Wait for the next frame
-            yield return null;
-
-            // Calculate the time since the last update
-            float currentTime = Time.realtimeSinceStartup;
-            float deltaTime = currentTime - lastUpdateTime;
-            lastUpdateTime = currentTime;
-
-            // Decrease the remaining time
-            remainingTime -= deltaTime;
-        }
-
-        // Ensure final update to zero state
-        timerFill.fillAmount = 0;
-        timerText.text = "0";
+        isStopped = false;
+        ResetBgmVolume();
     }
 
-    /*
-    private IEnumerator StartCountdown()
+    public void Stop() 
     {
-        float remainingTime = duration;     // This is for computation
+        isStopped = true;
+        ResetBgmVolume();
+    }
 
-        while (remainingTime > 0 && !isStopped)
-        {
-            if (isPaused)
-                continue;
+    public void Prepare(int duration, Sprite patternObjective)
+    {
+        this.duration           = duration;
+        remainingTime           = duration;
+        timerFill.fillAmount    = 1.0F;
+        elapsedTime             = 0.0F;
 
-            // Update the slider's value
-            timerFill.fillAmount = remainingTime / duration;
+        lastTickPlayedSecond    = Mathf.CeilToInt(remainingTime);
 
-            // Upon reaching less than 1, immediately stop
-            if (remainingTime < 0.5F)
+        patternPreviewer.sprite = patternObjective;
+        var remainingSecs       = Mathf.CeilToInt(remainingTime);
+        timerText.text          = remainingSecs.ToString();
+    }
+
+    public void SetPattern(Sprite pattern) => patternPreviewer.sprite = pattern;
+
+    private void InvokeTimesUp()
+    {
+        isStopped = true;
+        PlayClip(timesUpSfx);
+
+        timesUpOverlay.SetActive(true);
+        LeanTween.scale(timesUpCaption, Vector3.one * 1.35F, 0.25F)
+            .setEaseInBounce()
+            .setDelay(0.5F)
+            .setOnComplete(() =>
             {
-                remainingTime    = 0;
-                timerText.text = "0";
-                break;
-            }
+                ResetBgmVolume();
+                timesUpOverlay.SetActive(false);
+                OnTimesUp?.Invoke();
+            });
+    }
 
-            // Update the display
-            var remainingSecs = Mathf.RoundToInt(remainingTime);
-            timerText.text = remainingSecs.ToString();
+    private void PlayClip(AudioClip clip)
+    {
+        if (sfx != null)
+            sfx.PlayOnce(clip);
+    }
 
-            ElapsedSeconds = duration - remainingSecs;
-
-            // if (sfx != null)
-            // {
-            //     if (remainingSecs == criticalSeconds && !isCriticalSoundPlayed)
-            //     {
-            //         isCriticalSoundPlayed = true;
-            //         sfx.PlayOneShot(criticalTick);
-            //     }
-
-            //     if ((remainingSecs <= lowSeconds && remainingSecs > 0) && lastBeepSecs != remainingSecs)
-            //     {
-            //         sfx.PlayOneShot(lowSecondsBeep);
-            //         lastBeepSecs = remainingSecs;
-            //     }
-            // }
-
-            // Wait for the next frame
-            yield return null;
-
-            // Decrease the remaining time
-            remainingTime -= Time.deltaTime;
-        }
-
-        if (isStopped)
-        {
-            // OnTimerStopped?.Invoke();
-        }
-        else
-        {
-            OnTimerEndedNotifier.Publish();
-            
-            // Ensure the slider is empty at the end of the countdown,
-            timerFill.fillAmount = 0;
-
-            // OnTimerBeforeFlash?.Invoke();
-
-            // animator.Play("Times Up Flash");
-        }
-    }*/
+    private void ResetBgmVolume()
+    {
+        if (bgm != null)
+            bgm.ResetVolume();
+    }
 }

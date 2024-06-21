@@ -26,7 +26,7 @@ public class UserDataHelper : MonoBehaviour
 
     public UserData GetLoadedData() => deserializedUserData;
 
-    public IEnumerator LoadUserData()
+    public IEnumerator LoadUserData(Action<UserData> callback = null)
     {
         userDataIO = UserDataIO.Instance;
 
@@ -51,6 +51,8 @@ public class UserDataHelper : MonoBehaviour
             ));
         }
 
+        callback?.Invoke(deserializedUserData);
+
         yield return null;
     }
 
@@ -69,6 +71,9 @@ public class UserDataHelper : MonoBehaviour
             EasyStageUnlocked   = true,
             NormalStageUnlocked = true,
             HardStageUnlocked   = true,
+
+            TotalCoins          = 512,
+            TotalGems           = 256
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

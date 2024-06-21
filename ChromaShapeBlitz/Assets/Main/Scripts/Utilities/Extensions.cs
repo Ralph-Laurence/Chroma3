@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,23 +28,15 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Convert the enum color to its string equivalent
+    /// Apply the same text on multiple text meshes
     /// </summary>
-    /// <param name="blockColors">The source color</param>
-    /// <returns>Descriptive name</returns>
-    // public static string ToColorName(this ColorSwatches blockColors)
-    // {
-    //     switch (blockColors)
-    //     {
-    //         case ColorSwatches.Blue:      return "Blue";
-    //         case ColorSwatches.Green:     return "Green";
-    //         case ColorSwatches.Magenta:   return "Magenta";
-    //         case ColorSwatches.Yellow:    return "Yellow";
-    //         case ColorSwatches.Orange:    return "Orange";
-    //         case ColorSwatches.Purple:    return "Purple";
-    //         default: return string.Empty;
-    //     }
-    // }
+    public static TextMeshProUGUI[] SetTextMultiple(this TextMeshProUGUI[] textMeshes, string text)
+    {
+        foreach (var tmp in textMeshes)
+            tmp.text = text;
+
+        return textMeshes;
+    }
 
     public static string ToColorName(this ColorSwatches blockColors)
     {

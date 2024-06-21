@@ -1,4 +1,3 @@
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 
@@ -41,5 +40,5 @@ public class UserData
     //===========================
     // OTHER DATA
     //===========================
-    // public SettingsData UserSettings;
+    public List<int> OwnedBlockSkinIds;
 }
