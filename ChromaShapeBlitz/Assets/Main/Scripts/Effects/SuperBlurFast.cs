@@ -42,7 +42,8 @@ namespace SuperBlur
 			{
 				Blur(rt, rt);
 				UIMaterial.SetTexture(Uniforms._BackgroundTexture, rt);
-				Graphics.Blit(rt, null, blurMaterial, 0);
+				//Graphics.Blit(rt, null, blurMaterial, 0); // original
+				Graphics.Blit(rt, blurMaterial, 0);
 			}
 			else if (renderMode == RenderMode.OnlyUI)
 			{

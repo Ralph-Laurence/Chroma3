@@ -43,8 +43,8 @@ public class BackgroundMusic : BaseAudioManager
     #endregion AUDIO_BACKEND
 
     private bool toneDownBegan;
-    private float toneDownDuration = 1.5F;
-    private float toneDownTarget = 0.125F;
+    private readonly float toneDownDuration = 1.5F;
+    private readonly float toneDownTarget = 0.125F;
 
     public void ToneDown()
     {
@@ -88,4 +88,9 @@ public class BackgroundMusic : BaseAudioManager
         SetClip(themeBgm);
         Play();
     }
+    
+    /// <summary>
+    /// Tell if the BGM is playing
+    /// </summary>
+    public bool IsPlaying => Audio.isPlaying;
 }

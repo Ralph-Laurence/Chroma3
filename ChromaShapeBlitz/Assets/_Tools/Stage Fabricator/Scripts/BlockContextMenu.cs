@@ -80,12 +80,12 @@ public class BlockContextMenu : MonoBehaviour
         blockColors = new Dictionary<string, ColorSwatches>
             {
                 { "None",                               ColorSwatches.None      },
-                { ColorSwatches.Blue.ToColorName(),     ColorSwatches.Blue      },
-                { ColorSwatches.Green.ToColorName(),    ColorSwatches.Green     },
-                { ColorSwatches.Magenta.ToColorName(),  ColorSwatches.Magenta   },
-                { ColorSwatches.Yellow.ToColorName(),   ColorSwatches.Yellow    },
-                { ColorSwatches.Orange.ToColorName(),   ColorSwatches.Orange    },
-                { ColorSwatches.Purple.ToColorName(),   ColorSwatches.Purple    },
+                { ColorSwatches.Blue.ToString(),     ColorSwatches.Blue      },
+                { ColorSwatches.Green.ToString(),    ColorSwatches.Green     },
+                { ColorSwatches.Magenta.ToString(),  ColorSwatches.Magenta   },
+                { ColorSwatches.Yellow.ToString(),   ColorSwatches.Yellow    },
+                { ColorSwatches.Orange.ToString(),   ColorSwatches.Orange    },
+                { ColorSwatches.Purple.ToString(),   ColorSwatches.Purple    },
             };
 
         materialColorMap = new Dictionary<ColorSwatches, Material>
@@ -126,7 +126,7 @@ public class BlockContextMenu : MonoBehaviour
     {
         blockNameText.text = ContextMenuData.BlockName;
         
-        var colorName  = ContextMenuData.BlockComponent.RequiredColor.ToColorName();
+        var colorName  = ContextMenuData.BlockComponent.RequiredColor.ToString();
         var colorIndex = blockColors.Keys.ToList().IndexOf(colorName);
 
         blockColorSelect.value = colorIndex;

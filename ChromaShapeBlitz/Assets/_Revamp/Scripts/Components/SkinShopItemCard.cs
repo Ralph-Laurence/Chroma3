@@ -1,27 +1,25 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class SkinShopItemCard : MonoBehaviour
+[RequireComponent(typeof(Toggle))]
+public class SkinShopItemCard : MonoBehaviour, IPointerClickHandler
 {
+    [HideInInspector]
+    public void OnPointerClick(PointerEventData eventData) => HandleClicked();
+    
     [SerializeField] private TextMeshProUGUI itemNameLabel;
     [SerializeField] private TextMeshProUGUI priceLabel;
+    [SerializeField] private Image cardBackground;
     [SerializeField] private Image previewImage;
     [SerializeField] private GameObject activeIndicator;
     private SkinItemData _itemData;
 
-    /// <summary>
-    /// The root button must be disabled first before showing the
-    /// deactivate button to prevent conflicting events.
-    /// The deactivate button should only appear when a block skin item
-    /// is currently active.
-    /// </summary>
-    [SerializeField] private Button deactivateButton;
-
-    private Button rootButton;
+    private Toggle toggle;
 
     private bool isInitialized;
+    public bool IsOwned;
 
     void OnEnable() => Initialize();
 
@@ -32,17 +30,14 @@ public class SkinShopItemCard : MonoBehaviour
         if (isInitialized)
             return;
 
-        TryGetComponent(out rootButton);
-
-        rootButton.onClick.AddListener(HandleRootButtonClicked);
-        deactivateButton.onClick.AddListener(UnequipSkin);
-
+        TryGetComponent(out toggle);
         ApplyVisualData(_itemData);
-        ToggleActive(false);
         
         isInitialized = true;
     }
 
+    public void SetToggleGroup(ToggleGroup toggleGroup) => toggle.group = toggleGroup;
+    public void Toggle(bool toggled) => toggle.isOn = toggled;
     public void SetItemData(SkinItemData data)
     {
         _itemData = data;
@@ -70,19 +65,20 @@ public class SkinShopItemCard : MonoBehaviour
         priceLabel.text = cost;
     }
 
-    public void ToggleActive(bool active)
+    public void SetBackground(Sprite background) => cardBackground.sprite = background;
+    public void SetOwned(bool toggleActive = false)
     {
-        activeIndicator.SetActive(active);
-        rootButton.enabled = !active;
+        IsOwned = true;
+        toggle.isOn = toggleActive;
+        priceLabel.text = "Owned";
     }
 
-    private void HandleRootButtonClicked()
+    private void HandleClicked()
     {
-        Debug.Log("Item was clicked");
-    }
+        // If this item is currently active, ignore clicks
+        if (toggle.isOn)
+            return;
 
-    private void UnequipSkin()
-    {
-        Debug.Log("Unequip item");
+        BlockSkinShopItemClickNotifier.NotifyObserver(sender: this);
     }
 }

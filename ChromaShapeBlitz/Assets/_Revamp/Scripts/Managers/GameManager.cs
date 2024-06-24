@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Revamp
@@ -95,6 +96,8 @@ namespace Revamp
 
             else
                 stars = 1;
+                
+            StartCoroutine(SaveProgress(stars));
 
             gameOverScreenOverlay.SetActive(true);
             GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs
@@ -119,6 +122,50 @@ namespace Revamp
             currentState = GameManagerStates.Stopped;
             stageTimer.Stop();
             bgm.Stop();
+        }
+
+        private IEnumerator SaveProgress(int stars)
+        {
+            var userData = gsm.UserSessionData;
+            StageProgress stageProgress = default;
+            var stageIndex = gsm.SelectedStageNumber-1;
+
+            switch (gsm.SelectedDifficulty)
+            {
+                case LevelDifficulties.Easy:
+                    stageProgress = userData.StageProgressEasy[stageIndex];
+
+                    if (gsm.SelectedStageNumber >= userData.HighestEasyStage 
+                       && userData.HighestEasyStage < TotalEasyStages)
+                        userData.HighestEasyStage++;
+                    break;
+
+                case LevelDifficulties.Normal:
+                    stageProgress = userData.StageProgressNormal[stageIndex];
+
+                    if (gsm.SelectedStageNumber >= userData.HighestNormalStage 
+                       && userData.HighestNormalStage < TotalNormalStages)
+                        userData.HighestNormalStage++;
+                    break;
+
+                case LevelDifficulties.Hard:
+                    stageProgress = userData.StageProgressHard[stageIndex];
+                    
+                    if (gsm.SelectedStageNumber >= userData.HighestHardStage
+                       && userData.HighestHardStage < TotalHardStages)
+                        userData.HighestHardStage++;
+                    break;
+            }
+
+            if (stars > stageProgress.StarsAttained)
+            {
+                stageProgress.StarsAttained = stars;
+                userData.StageProgressEasy[stageIndex] = stageProgress;
+            }
+
+            gsm.UserSessionData = userData;
+
+            yield return UserDataHelper.Instance.SaveUserData(userData);
         }
 
         #endregion GAME_OVER

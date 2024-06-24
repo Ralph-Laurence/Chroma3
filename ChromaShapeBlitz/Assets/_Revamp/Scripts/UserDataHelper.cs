@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class UserDataHelper : MonoBehaviour
@@ -56,8 +57,22 @@ public class UserDataHelper : MonoBehaviour
         yield return null;
     }
 
+    public IEnumerator SaveUserData(UserData input, Action<UserData> callback = null)
+    {
+        userDataIO = UserDataIO.Instance;
+
+        yield return StartCoroutine(userDataIO.Write(input));
+
+        deserializedUserData = input;
+        callback?.Invoke(deserializedUserData);
+        //File.WriteAllText(Application.persistentDataPath + "/test.json", JsonUtility.ToJson(input));
+        yield return null;
+    }
+
     private UserData SeedDefault()
     {
+        int[] defaultBlockSkinIds = { 1,2,3,4,5,6 };
+
         var userData = new UserData
         {
             HighestEasyStage    = 1,
@@ -73,7 +88,18 @@ public class UserDataHelper : MonoBehaviour
             HardStageUnlocked   = true,
 
             TotalCoins          = 512,
-            TotalGems           = 256
+            TotalGems           = 256,
+
+            OwnedBlockSkinIDs   = new List<int>(defaultBlockSkinIds),
+            ActiveBlockSkins    = new() 
+            {
+                Blue    = 1,
+                Green   = 2,
+                Magenta = 3,
+                Orange  = 4,
+                Purple  = 5,
+                Yellow  = 6
+            },
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

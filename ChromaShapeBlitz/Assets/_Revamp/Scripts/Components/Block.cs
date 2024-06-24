@@ -8,18 +8,10 @@ public class Block : MonoBehaviour
     [SerializeField] private float darkenAmount = 0.1F;
 
     private ColorSwatches currentColor = ColorSwatches.None;
-    private CustomizationsHelper themer;
     
     [Space(5)]
     [Header("Behaviour")]
     public bool IsDestinationBlock;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        // The theme manager is responsible for setting the block skins
-        themer = CustomizationsHelper.Instance;
-    }
 
     /// <summary>
     /// Set the current color from enumeration constant;
@@ -38,22 +30,12 @@ public class Block : MonoBehaviour
     /// <param name="material">The visual color to apply</param>
     public void ApplyMaterial(Material material, ColorSwatches colorGroup)
     {
-        // Create a new material to prevent affecting the original,
-        // then we pass the assigned material as a constructor parameter
-        // because we want to copy existing properties of that material.
+        // Create a new material to prevent affecting the original. Passing the "material" 
+        // as a parameter copies its existing properties.
         var newMat  = new Material(material);
-        var useSkin = false;
 
-        // Should the material use a texture (skin)?
-        // Setting a texture will force the material color to white.
-        //if (themer != null || colorGroup == ColorSwatches.None)
-        if (themer != null && colorGroup != ColorSwatches.None)
-            useSkin = themer.FillBlockWithSkin(newMat, colorGroup);
-
-        // useSkin = false means we wont use skins.
-        // If this block was set to use dark color,
-        // subtract the material's color by amount.
-        if (!useSkin && DarkerFill)
+        // If this block was set to use dark color, darken the material's color.
+        if (DarkerFill)
         {
             var originalColor = material.color;
 

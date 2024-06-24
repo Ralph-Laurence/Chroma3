@@ -13,6 +13,7 @@ public class Bootstrapper : MonoBehaviour
         public int StatusCode;
     }
 
+    [SerializeField] private List<BlockSkinsAssetGroup> blockSkinGroups;
     [SerializeField] private GameObject loaderView;
     [SerializeField] private Slider progressBar;
     [SerializeField] private Text progressText;
@@ -26,7 +27,7 @@ public class Bootstrapper : MonoBehaviour
     private List<Func<IEnumerator>> initializationTasks;
 
     public void Ev_AnimationEnded() => StartCoroutine( Initialize() );
-    private readonly Dictionary<int, string> actionReportMessages = new Dictionary<int, string>
+    private readonly Dictionary<int, string> actionReportMessages = new()
     {
         { 200,  "Starting..."},
         { StatusCodes.BEGIN_WRITE_USER_DATA,  "Creating user data..." },
@@ -37,9 +38,11 @@ public class Bootstrapper : MonoBehaviour
         { StatusCodes.DONE_BUILD_LEVEL_MENU,  "Almost there"},
     };
 
+    private Dictionary<ColorSwatches, int> skinsInUse = new();
+
     // Queue to hold the event status data
     // private Queue<ActionStatusEventData> eventQueue;
-    private readonly Queue<int> actionStatusEventQueue = new Queue<int>();
+    private readonly Queue<int> actionStatusEventQueue = new();
     private bool isProcessingEventQueue;
 
     void OnEnable()
@@ -50,6 +53,11 @@ public class Bootstrapper : MonoBehaviour
     void OnDisable()
     {
         ActionStatusNotifier.UnbindEvent(ObserveActionStatus);
+    }
+
+    void Awake()
+    {
+        gsm = GameSessionManager.Instance;
     }
 
     void Update()
@@ -127,7 +135,7 @@ public class Bootstrapper : MonoBehaviour
         initializationTasks = new List<Func<IEnumerator>>
         {
             LoadUserData,
-            LevelMenuController.Instance.Initialize,
+            //LevelMenuController.Instance.Initialize,
             ApplyAudioUserSettings
         };
 
@@ -177,26 +185,28 @@ public class Bootstrapper : MonoBehaviour
 
     private IEnumerator LoadUserData()
     {
-        yield return StartCoroutine(UserDataHelper.Instance.LoadUserData( (userData) => {
-
-            // gsm = GameSessionManager.Instance;
-            // gsm.PlayerData = userData;
-            
-            // new GsmPlayerData
-            // {
-            //     CurrentCoins = userData.TotalCoins,
-            //     CurrentGems  = userData.TotalGems,
-
-            //     HighestEasyStage    = userData.HighestEasyStage,
-            //     HighestNormalStage  = userData.HighestNormalStage,
-            //     HighestHardStage    = userData.HighestHardStage,
-
-            //     EasyStageUnlocked   = userData.EasyStageUnlocked,
-            //     NormalStageUnlocked = userData.NormalStageUnlocked,
-            //     HardStageUnlocked   = userData.HardStageUnlocked,
-
-            //     OwnedBlockSkinIds   = userData.OwnedBlockSkinIds,
-            // };
+        yield return StartCoroutine(UserDataHelper.Instance.LoadUserData( (userData) => 
+        {
+            gsm.UserSessionData = userData;
+            StartCoroutine(CacheAppliedSkins(userData));
         }));
+    }
+
+    private IEnumerator CacheAppliedSkins(UserData userData)
+    {
+        var activeSkins = userData.ActiveBlockSkins.ToList();
+
+        foreach (var groups in blockSkinGroups)
+        {
+            foreach (var skin in groups.SkinGroup)
+            {
+                if (!activeSkins.Contains(skin.Id))
+                    continue;
+
+                gsm.SetActiveBlockSkinMaterial(skin.ColorCategory, skin.Material);
+            }
+
+            yield return null;
+        }
     }
 }

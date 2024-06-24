@@ -1,31 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct CustomizationsSession
+public struct BlockSkinsSession
 {
-    public Material BlueBlockSkinMat;
-    public Material GreenBlockSkinMat;
-    public Material MagentaBlockSkinMat;
-    public Material OrangeBlockSkinMat;
-    public Material PurpleBlockSkinMat;
-    public Material YellowBlockSkinMat;
+    public Material BlueSkinMat;
+    public Material GreenSkinMat;
+    public Material MagentaSkinMat;
+    public Material OrangeSkinMat;
+    public Material PurpleSkinMat;
+    public Material YellowSkinMat;
 }
-
-// public struct GsmPlayerData
-// {
-//     public List<int> OwnedBlockSkinIds;
-
-//     public int HighestEasyStage;
-//     public int HighestNormalStage;
-//     public int HighestHardStage;
-
-//     public bool EasyStageUnlocked;
-//     public bool NormalStageUnlocked;
-//     public bool HardStageUnlocked;
-
-//     public int CurrentCoins;
-//     public int CurrentGems;
-// }
 
 public class GameSessionManager
 {
@@ -37,23 +21,22 @@ public class GameSessionManager
     {
         get
         {
-            if (instance == null)
-                instance = new GameSessionManager();
-
+            instance ??= new GameSessionManager();
             return instance;
         }
     }
     #endregion SINGLETON
 
     #region GAME_LOGIC
-    public CustomizationsSession Customizations = new CustomizationsSession();
+    public BlockSkinsSession BlockSkinMaterialsInUse;
+
     public LevelDifficulties SelectedDifficulty;
     public int SelectedStageNumber;
     public int LastRandomSpawnIndex;
     public int SelectedStageMaxTime;
     public int SelectedStageMinTime;
-    
-    //public UserData PlayerData;
+
+    public UserData UserSessionData;
 
     public void ClearSession()
     {
@@ -62,7 +45,23 @@ public class GameSessionManager
         LastRandomSpawnIndex = default;
         SelectedStageMaxTime = default;
         SelectedStageMinTime = default;
-        //PlayerData           = default;
     }
+
+    /// <summary>
+    /// Updates the in-session materials. Any changes aren't saved to disk.
+    /// </summary>
+    public void SetActiveBlockSkinMaterial(ColorSwatches color, Material material)
+    {
+        switch (color)
+        {
+            case ColorSwatches.Blue: BlockSkinMaterialsInUse.BlueSkinMat = material; break;
+            case ColorSwatches.Green: BlockSkinMaterialsInUse.GreenSkinMat = material; break;
+            case ColorSwatches.Magenta: BlockSkinMaterialsInUse.MagentaSkinMat = material; break;
+            case ColorSwatches.Orange: BlockSkinMaterialsInUse.OrangeSkinMat = material; break;
+            case ColorSwatches.Purple: BlockSkinMaterialsInUse.PurpleSkinMat = material; break;
+            case ColorSwatches.Yellow: BlockSkinMaterialsInUse.YellowSkinMat = material; break;
+        }
+    }
+
     #endregion GAME_LOGIC
 }

@@ -7,7 +7,17 @@ public struct StageProgress
     public int StageNumber;
     public int StarsAttained;
     public bool FullRewardEarned;
-    public bool PartialRewardEarned;
+}
+
+[Serializable]
+public struct ActiveBlockSkinIDs
+{
+    public int Blue;
+    public int Green;
+    public int Magenta;
+    public int Orange;
+    public int Purple;
+    public int Yellow;
 }
 
 [Serializable]
@@ -40,5 +50,6 @@ public class UserData
     //===========================
     // OTHER DATA
     //===========================
-    public List<int> OwnedBlockSkinIds;
+    public List<int> OwnedBlockSkinIDs;
+    public ActiveBlockSkinIDs ActiveBlockSkins;
 }

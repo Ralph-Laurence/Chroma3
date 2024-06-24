@@ -13,36 +13,36 @@ public class BlockSkinGenItem
     public string Preview;
     public CurrencyType Cost;
     public int Price;
-    public string Texture;
+    public string Material;
 }
 
 [Serializable]
 public class BlockSkinGenItemsArray
 {
-    public List<BlockSkinGenItem> SOItems;
+    public List<BlockSkinGenItem> BlockSkinsObjectDataSource;
 }
 #if UNITY_EDITOR
 public class BlockSkinSOGen : MonoBehaviour
 {
-    [SerializeField] private string BlockSkinsSO_OutPath = "Assets/Scriptable Objects/Block Skins/Templates";
-    [SerializeField] private string BlockSkinsSOGroup_OutPath = "Assets/Scriptable Objects/Block Skins/Groups";
-    [SerializeField] private TextAsset SkinsDatasource;
+    [SerializeField] private string OutputPath = "Assets/_Revamp/Data/ScriptableObjects/BlockSkins/SkinAssets";
+    [SerializeField] private string GroupsOutputPath = "Assets/_Revamp/Data/ScriptableObjects/BlockSkins/SkinGroups";
+    [SerializeField] private TextAsset SkinsJSON;
 
     private BlockSkinGenItemsArray genItems;
     private Dictionary<string, string> outFolders;
     private Dictionary<string, ColorSwatches> colorCategories;
-    private Dictionary<ColorSwatches, List<Rv_BlockSkinSO>> soGroups;
+    private Dictionary<ColorSwatches, List<BlockSkinsAsset>> soGroups;
 
     void Awake()
     {
         outFolders = new Dictionary<string, string>()
         {
-            {"Blue",    $"{BlockSkinsSO_OutPath}/Blue"},
-            {"Green",   $"{BlockSkinsSO_OutPath}/Green"},
-            {"Magenta", $"{BlockSkinsSO_OutPath}/Magenta"},
-            {"Orange",  $"{BlockSkinsSO_OutPath}/Orange"},
-            {"Purple",  $"{BlockSkinsSO_OutPath}/Purple"},
-            {"Yellow",  $"{BlockSkinsSO_OutPath}/Yellow"},
+            {"Blue",    $"{OutputPath}/Blue"},
+            {"Green",   $"{OutputPath}/Green"},
+            {"Magenta", $"{OutputPath}/Magenta"},
+            {"Orange",  $"{OutputPath}/Orange"},
+            {"Purple",  $"{OutputPath}/Purple"},
+            {"Yellow",  $"{OutputPath}/Yellow"},
         };
 
         colorCategories = new Dictionary<string, ColorSwatches>()
@@ -55,14 +55,14 @@ public class BlockSkinSOGen : MonoBehaviour
             {"Yellow",  ColorSwatches.Yellow},
         };
 
-        soGroups = new Dictionary<ColorSwatches, List<Rv_BlockSkinSO>>()
+        soGroups = new Dictionary<ColorSwatches, List<BlockSkinsAsset>>()
         {
-            { ColorSwatches.Blue    , new List<Rv_BlockSkinSO>()},
-            { ColorSwatches.Green   , new List<Rv_BlockSkinSO>()},
-            { ColorSwatches.Magenta , new List<Rv_BlockSkinSO>()},
-            { ColorSwatches.Orange  , new List<Rv_BlockSkinSO>()},
-            { ColorSwatches.Purple  , new List<Rv_BlockSkinSO>()},
-            { ColorSwatches.Yellow  , new List<Rv_BlockSkinSO>()},
+            { ColorSwatches.Blue    , new List<BlockSkinsAsset>()},
+            { ColorSwatches.Green   , new List<BlockSkinsAsset>()},
+            { ColorSwatches.Magenta , new List<BlockSkinsAsset>()},
+            { ColorSwatches.Orange  , new List<BlockSkinsAsset>()},
+            { ColorSwatches.Purple  , new List<BlockSkinsAsset>()},
+            { ColorSwatches.Yellow  , new List<BlockSkinsAsset>()},
         };
     }
 
@@ -76,7 +76,7 @@ public class BlockSkinSOGen : MonoBehaviour
         foreach (var folder in outFolders)
         {
             if (!AssetDatabase.IsValidFolder(folder.Value))
-                AssetDatabase.CreateFolder(BlockSkinsSO_OutPath, folder.Key);
+                AssetDatabase.CreateFolder(OutputPath, folder.Key);
 
             yield return null;
         }
@@ -101,7 +101,7 @@ public class BlockSkinSOGen : MonoBehaviour
 
     private IEnumerator Deserialize(Action<BlockSkinGenItemsArray> callback)
     {
-        var data = JsonUtility.FromJson<BlockSkinGenItemsArray>(SkinsDatasource.text);
+        var data = JsonUtility.FromJson<BlockSkinGenItemsArray>(SkinsJSON.text);
 
         if (data == null)
             Debug.Log("data is null");
@@ -113,41 +113,40 @@ public class BlockSkinSOGen : MonoBehaviour
 
     private IEnumerator CreateTemplates()
     {
-        foreach (var item in genItems.SOItems){
+        foreach (var item in genItems.BlockSkinsObjectDataSource){
             // Construct the file name
-            var filename      = $"{item.Id} - {item.Name}.asset";
+            var filename      = $"{item.Id}_{item.Name}.asset";
             var outpath       = outFolders[item.Category];
             var assetFile     = $"{outpath}/{filename}";
-            var skinSOAsset   = ScriptableObject.CreateInstance<Rv_BlockSkinSO>();
+            var skinSOAsset   = ScriptableObject.CreateInstance<BlockSkinsAsset>();
 
-            // Construct the preview paths and texture paths
-            var texturePath   = $"Textures/Blocks/{item.Category}/{item.Texture}";
+            // Construct the preview paths and material paths
+            var materialsPath = $"Materials/BlockSkins/{item.Category}/{item.Material}";
             var previewPath   = $"Sprites/ShopIcons/{item.Category}/{item.Preview}";
-            var textureAsset  = Resources.Load<Texture2D>(texturePath);
+            var materialAsset = Resources.Load<Material>(materialsPath);
             var previewAsset  = Resources.Load<Sprite>(previewPath);
 
             var colorCategory = colorCategories[item.Category];
 
-            if (textureAsset == null)
-                Debug.LogWarning($"{texturePath} cant be found");
+            if (materialAsset == null)
+                Debug.LogWarning($"{materialsPath} cant be found");
 
             if (previewAsset == null)
                 Debug.Log($"{previewPath} not found");
 
-            skinSOAsset.SkinInfo = new BaseItemInfo
-            {
-                Id            = item.Id,
-                Name          = item.Name,
-                Price         = item.Price,
-                Cost          = item.Cost,
-                ColorCategory = colorCategory
-            };
+            skinSOAsset.Id            = item.Id;
+            skinSOAsset.Name          = item.Name;
+            skinSOAsset.Price         = item.Price;
+            skinSOAsset.Cost          = item.Cost;
 
-            if (textureAsset != null)
-                skinSOAsset.SkinTexture = textureAsset;
+            skinSOAsset.ColorCategory    = colorCategory;
+            skinSOAsset.MaterialFilename = item.Material;
+            
+            if (materialAsset != null)
+                skinSOAsset.Material = materialAsset;
 
             if (previewAsset != null)
-                skinSOAsset.SkinInfo.PreviewImage = previewAsset;
+                skinSOAsset.PreviewImage = previewAsset;
             
             soGroups[colorCategory].Add(skinSOAsset);
 
@@ -160,11 +159,11 @@ public class BlockSkinSOGen : MonoBehaviour
     {
         foreach (var group in soGroups)
         {
-            var file  = $"{BlockSkinsSOGroup_OutPath}/Skin-Group-{group.Key.ToColorName()}.asset";
-            var asset = ScriptableObject.CreateInstance<Rv_BlockSkinGroupSO>();
+            var file  = $"{GroupsOutputPath}/Skin-Group-{group.Key}.asset";
+            var asset = ScriptableObject.CreateInstance<BlockSkinsAssetGroup>();
             
             asset.SkinGroup = group.Value;
-            asset.GroupName = $"{group.Key.ToColorName()} Skins Group";
+            asset.GroupName = $"{group.Key} Skins Group";
 
             AssetDatabase.CreateAsset(asset, file);
 

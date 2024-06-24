@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -38,83 +39,32 @@ public static class Extensions
         return textMeshes;
     }
 
-    public static string ToColorName(this ColorSwatches blockColors)
-    {
-        switch (blockColors)
-        {
-            case ColorSwatches.Blue:      return "Blue";
-            case ColorSwatches.Green:     return "Green";
-            case ColorSwatches.Magenta:   return "Magenta";
-            case ColorSwatches.Yellow:    return "Yellow";
-            case ColorSwatches.Orange:    return "Orange";
-            case ColorSwatches.Purple:    return "Purple";
-            default: return string.Empty;
-        }
-    }
-
-    /// <summary>
-    /// Convert the BlockColor enumeration into visual colors
-    /// </summary>
-    /// <returns>Unity Color</returns>
-    // public static Color ToUnityColor(this ColorSwatches blockColors)
+    // public static string ToColorName(this ColorSwatches blockColors)
     // {
-    //     switch(blockColors)
+    //     return blockColors switch
     //     {
-    //         case ColorSwatches.Blue:      return Constants.ColorSwatches.BLUE;
-    //         case ColorSwatches.Green:     return Constants.ColorSwatches.GREEN;
-    //         case ColorSwatches.Magenta:   return Constants.ColorSwatches.MAGENTA;
-    //         case ColorSwatches.Yellow:    return Constants.ColorSwatches.YELLOW;
-    //         case ColorSwatches.Orange:    return Constants.ColorSwatches.ORANGE;
-    //         case ColorSwatches.Purple:    return Constants.ColorSwatches.PURPLE;
-    //         default: return Color.white;
-    //     }
+    //         ColorSwatches.Blue      => "Blue",
+    //         ColorSwatches.Green     => "Green",
+    //         ColorSwatches.Magenta   => "Magenta",
+    //         ColorSwatches.Yellow    => "Yellow",
+    //         ColorSwatches.Orange    => "Orange",
+    //         ColorSwatches.Purple    => "Purple",
+    //         _ => string.Empty,
+    //     };
     // }
 
     public static Color ToUnityColor(this ColorSwatches blockColors)
     {
-        switch(blockColors)
+        return blockColors switch
         {
-            case ColorSwatches.Blue:      return Constants.ColorSwatches.BLUE;
-            case ColorSwatches.Green:     return Constants.ColorSwatches.GREEN;
-            case ColorSwatches.Magenta:   return Constants.ColorSwatches.MAGENTA;
-            case ColorSwatches.Yellow:    return Constants.ColorSwatches.YELLOW;
-            case ColorSwatches.Orange:    return Constants.ColorSwatches.ORANGE;
-            case ColorSwatches.Purple:    return Constants.ColorSwatches.PURPLE;
-            default: return Color.white;
-        }
-    }
-
-    /// <summary>
-    /// Add a coin or gem icon to a price text.
-    /// This requires that the TextMesh component has an attached
-    /// sprite glyps and styles.
-    /// </summary>
-    /// <param name="currencyType"></param>
-    /// <param name="amount"></param>
-    /// <returns></returns>
-    public static string PrefixWithCurrencyIcon(this CurrencyType currencyType, int amount)
-    {
-        switch  (currencyType)
-        {
-            case CurrencyType.Coin: return $"<sprite=5> {amount}";
-            case CurrencyType.Gem : return $"<sprite=1> {amount}";
-            default: return string.Empty;
-        }
-    }
-
-    public static string ToCurrencyName(this CurrencyType currencyType, bool plural = true)
-    {
-        switch (currencyType)
-        {
-            case CurrencyType.Coin:
-                return plural ? "Coins" : "Coin";
-
-            case CurrencyType.Gem:
-                return plural ? "Gems" : "Gem";
-
-            default:
-                return string.Empty;
-        }
+            ColorSwatches.Blue      => Constants.ColorSwatches.BLUE,
+            ColorSwatches.Green     => Constants.ColorSwatches.GREEN,
+            ColorSwatches.Magenta   => Constants.ColorSwatches.MAGENTA,
+            ColorSwatches.Yellow    => Constants.ColorSwatches.YELLOW,
+            ColorSwatches.Orange    => Constants.ColorSwatches.ORANGE,
+            ColorSwatches.Purple    => Constants.ColorSwatches.PURPLE,
+            _ => Color.white,
+        };
     }
 
     public static float ReadFloat(this InputField input) 
@@ -131,5 +81,18 @@ public static class Extensions
             return 0;
 
         return Convert.ToInt32(input.text);
+    }
+
+    public static List<int> ToList(this ActiveBlockSkinIDs activeBlockSkinIDs)
+    {
+        return new List<int>
+        {
+            activeBlockSkinIDs.Blue,
+            activeBlockSkinIDs.Green,
+            activeBlockSkinIDs.Magenta,
+            activeBlockSkinIDs.Orange,
+            activeBlockSkinIDs.Purple,
+            activeBlockSkinIDs.Yellow
+        };
     }
 }

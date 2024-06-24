@@ -1,28 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Revamp;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public partial class LevelMenuController : MonoBehaviour
 {
-    #region SINGLETON
-    public static LevelMenuController Instance {get; private set;}
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(this);
-        }
-
-        else if (Instance != this)
-            Destroy(gameObject);
-    }
-    #endregion SINGLETON
 
     [Space(10)]
-    [SerializeField] private GameObject mainCanvas;
     [SerializeField] private GameObject mainCanvasContent;
     [SerializeField] private GameObject topRibbon;
 
@@ -40,6 +26,16 @@ public partial class LevelMenuController : MonoBehaviour
     [SerializeField] private Sprite buttonAppearanceEasy;
     [SerializeField] private Sprite buttonAppearanceNormal;
     [SerializeField] private Sprite buttonAppearanceHard;
+    [SerializeField] private Sprite starFilled;
+    [SerializeField] private Sprite starUnfilled;
+
+    [SerializeField] private Slider levelProgressEasy;
+    [SerializeField] private Slider levelProgressNormal;
+    [SerializeField] private Slider levelProgressHard;
+
+    [SerializeField] private Text levelProgressTextEasy;
+    [SerializeField] private Text levelProgressTextNormal;
+    [SerializeField] private Text levelProgressTextHard;
 
     [SerializeField] GameObject stageSelectionMenu;
     [SerializeField] private ScrollRect scrollView;
@@ -61,12 +57,12 @@ public partial class LevelMenuController : MonoBehaviour
     private bool isScrollViewParentTweening;
     private bool isInitialized;
 
-    public IEnumerator Initialize()
+    void Awake() => Initialize();
+
+    public void Initialize()
     {
         if (isInitialized)
-            yield break;
-
-        ActionStatusNotifier.NotifyObserver(StatusCodes.BEGIN_BUILD_LEVEL_MENU);
+            return;
 
         uiSound           = UISound.Instance;
         userDataHelper    = UserDataHelper.Instance;
@@ -95,14 +91,25 @@ public partial class LevelMenuController : MonoBehaviour
             stageButtons.Add(button);
         }
 
-        isInitialized = true;
+        levelProgressEasy.maxValue   = GameManager.TotalEasyStages;
+        levelProgressNormal.maxValue = GameManager.TotalNormalStages;
+        levelProgressHard.maxValue   = GameManager.TotalHardStages;
 
-        ActionStatusNotifier.NotifyObserver(StatusCodes.DONE_BUILD_LEVEL_MENU);
-        yield return null;
+        levelProgressEasy.value     = userData.HighestEasyStage-1;
+        levelProgressNormal.value   = userData.HighestNormalStage-1;
+        levelProgressHard.value     = userData.HighestHardStage-1;
+
+        levelProgressTextEasy.text   = $"{levelProgressEasy.value}/{levelProgressEasy.maxValue}";
+        levelProgressTextNormal.text = $"{levelProgressNormal.value}/{levelProgressNormal.maxValue}";
+        levelProgressTextHard.text   = $"{levelProgressNormal.value}/{levelProgressHard.maxValue}";
+
+        isInitialized = true;
     }
 
     public void SetDifficulty(LevelDifficulties difficulty, int visibleButtons)
     {
+        var targetHighestUnlocked = 0;
+
         for (int i = 0; i < stageButtons.Count; i++)
         {
             var button = stageButtons[i];
@@ -113,7 +120,26 @@ public partial class LevelMenuController : MonoBehaviour
                 
                 button.SetTargetLevel(difficulty, stageNumber);
 
-                if (stageNumber <= userData.HighestEasyStage)
+                // Set stars
+                switch(difficulty)
+                {
+                    case LevelDifficulties.Easy:
+                        button.SetStars(userData.StageProgressEasy[i].StarsAttained, starFilled, starUnfilled);
+                        targetHighestUnlocked = userData.HighestEasyStage;
+                        break;
+
+                    case LevelDifficulties.Normal:
+                        button.SetStars(userData.StageProgressNormal[i].StarsAttained, starFilled, starUnfilled);
+                        targetHighestUnlocked = userData.HighestNormalStage;
+                        break;
+
+                    case LevelDifficulties.Hard:
+                        button.SetStars(userData.StageProgressHard[i].StarsAttained, starFilled, starUnfilled);
+                        targetHighestUnlocked = userData.HighestHardStage;
+                        break;
+                }
+
+                if (stageNumber <= targetHighestUnlocked)
                 {
                     button.SetAppearance(buttonAppearances[difficulty]);
                     button.SetUnlocked();
@@ -166,10 +192,27 @@ public partial class LevelMenuController : MonoBehaviour
         }
     }
 
-    public void Show()
+    public void Hide()
     {
-        mainCanvas.SetActive(true);
-        
+        CloseStageSelectMenu(eventSender);
+
+        tween = LeanTween.scale(mainCanvasContentRect, Vector3.zero, 0.25F).setOnComplete(() => {
+            levelSelectScrollView.ResetScrollPosition();
+            tween?.reset();
+            gameObject.SetActive(false);
+        });
+    }
+
+    #region EVENT_OBSERVERS
+
+    void OnEnable()
+    {
+        Initialize();
+
+        LevelMenuNotifier.BindLevelPageClickEvent(ObserveLevelMenuPageClicked);
+        StageSelectedNotifier.BindEvent(ObserveStageSelected);
+
+        // Animate show
         isLevelSelectScrollViewTweening = true;
         StartCoroutine(MaintainLevelSelectScrollPositionDuringTween());
 
@@ -178,25 +221,6 @@ public partial class LevelMenuController : MonoBehaviour
             StopCoroutine(MaintainLevelSelectScrollPositionDuringTween());
             isLevelSelectScrollViewTweening = false;
         });
-    }
-
-    public void Hide()
-    {
-        CloseStageSelectMenu(eventSender);
-
-        tween = LeanTween.scale(mainCanvasContentRect, Vector3.zero, 0.25F).setOnComplete(() => {
-            mainCanvas.SetActive(false);
-            levelSelectScrollView.ResetScrollPosition();
-            tween?.reset();
-        });
-    }
-
-    #region EVENT_OBSERVERS
-
-    void OnEnable()
-    {
-        LevelMenuNotifier.BindLevelPageClickEvent(ObserveLevelMenuPageClicked);
-        StageSelectedNotifier.BindEvent(ObserveStageSelected);
     }
 
     void OnDisable()
