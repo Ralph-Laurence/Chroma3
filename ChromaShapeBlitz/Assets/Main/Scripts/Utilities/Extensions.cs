@@ -95,4 +95,10 @@ public static class Extensions
             activeBlockSkinIDs.Yellow
         };
     }
+
+    public static string ToRewardText(this int amount, RewardTypes currencyType)
+    {
+        var rewardStyle = currencyType.Equals(RewardTypes.Gems) ? "Gem" : "Coin";
+        return $"<style=\"{rewardStyle}\">\u00d7{amount}";
+    }
 }

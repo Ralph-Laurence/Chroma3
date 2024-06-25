@@ -42,11 +42,26 @@ namespace Revamp
         private void GMAEV_ExitToMainMenu()
         {
             gsm.ClearSession();
-            
+            stageTimer.Stop();
+
             ResumeTimeScale();
             Instantiate(mainMenuSceneLoader).TryGetComponent(out FancySceneLoader loader);
 
             loader.LoadScene(Constants.Scenes.MainMenu);
+        }
+
+        private void GMAEV_NextStage()
+        {
+            var stageNumber = gsm.SelectedStageNumber + 1;
+            var difficulty = gsm.SelectedDifficulty;
+
+            gsm.ClearSession();
+            
+            stageFactory.Clear();
+            stageFactory.Create(difficulty, stageNumber);
+
+            gsm.SelectedDifficulty = difficulty;
+            gsm.SelectedStageNumber = stageNumber;
         }
     }
 }

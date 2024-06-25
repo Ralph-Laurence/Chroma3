@@ -12,6 +12,8 @@ public class StageFactory : MonoBehaviour
     private Dictionary<string, Stage> normalStagesMap;
     private Dictionary<string, Stage> hardStagesMap;
 
+    private StageVariant _createdStage;
+
     void Awake()
     {
         if (easyStagesMap != null || normalStagesMap != null || hardStagesMap != null)
@@ -44,28 +46,14 @@ public class StageFactory : MonoBehaviour
 
     public void Create(LevelDifficulties difficulty, int stageNumber)
     {
-        Stage selected;
         var str_stageNumber = stageNumber.ToString();
-
-        switch (difficulty)
+        Stage selected = difficulty switch
         {
-            case LevelDifficulties.Easy:
-                selected = easyStagesMap[str_stageNumber];
-                break;
-
-            case LevelDifficulties.Normal:
-                selected = normalStagesMap[str_stageNumber];
-                break;
-
-            case LevelDifficulties.Hard:
-                selected = hardStagesMap[str_stageNumber];
-                break;
-
-            default:
-                selected = default;
-                break;
-        }
-
+            LevelDifficulties.Easy      => easyStagesMap[str_stageNumber],
+            LevelDifficulties.Normal    => normalStagesMap[str_stageNumber],
+            LevelDifficulties.Hard      => hardStagesMap[str_stageNumber],
+            _ => default,
+        };
         var stageVariant = selected.PickRandom();
 
         OnStageCreated.NotifyObserver(new StageCreatedEventArgs
@@ -80,5 +68,15 @@ public class StageFactory : MonoBehaviour
             RewardType      = stageVariant.RewardType,
             TotalReward     = stageVariant.TotalReward
         });
+
+        _createdStage = stageVariant;
     }
+
+    public void Clear()
+    {
+        Destroy(_createdStage.gameObject);
+        _createdStage = null;
+    }
+
+    public StageVariant CreatedStage => _createdStage;
 }

@@ -10,7 +10,9 @@ public class GameOverScreen : MonoBehaviour
     [Header("Main Behaviour")]
     [SerializeField] private RectTransform targetDialog;
     [SerializeField] private GameOverTypes gameOverType;
+    [SerializeField] private TextMeshProUGUI totalRewardLabel;
     [SerializeField] private TextMeshProUGUI totalPlayTimeLabel;
+    [SerializeField] private TextMeshProUGUI totalPlayerBalanceLabel;
     [SerializeField] private AudioClip gameOverSfx;
     [SerializeField] private AudioClip dialogSlideInSfx;
     [SerializeField] private AudioClip dialogSlideOutSfx;
@@ -62,13 +64,29 @@ public class GameOverScreen : MonoBehaviour
 
         ResetTweens();
 
-        var textColor = eventArgs.GameOverType == GameOverTypes.Fail 
-                      ? "<color=#FF9533>"
-                      : "<color=#81FF21>";
+        var textColor = "<color=#FF9533>"; // ORANGE
+        
+        if (eventArgs.GameOverType == GameOverTypes.Success)
+        {
+            textColor = "<color=#81FF21>"; // GREEN 
+            totalRewardLabel.text = eventArgs.TotalReward.ToRewardText(eventArgs.RewardType);
+        }
 
         starAmount = eventArgs.TotalStars;
         totalPlayTimeLabel.text = $"{textColor}{eventArgs.TotalPlayTime} secs";
 
+
+        var currencyStyle = "Coin";
+        var totalBalance  = eventArgs.TotalPlayerCoinBalance;
+        
+        if (eventArgs.RewardType.Equals(RewardTypes.Gems))
+        {
+            currencyStyle = "Gem";
+            totalBalance = eventArgs.TotalPlayerGemBalance;
+        }
+
+        totalPlayerBalanceLabel.text = $"<style=\"{currencyStyle}\">\u00d7{totalBalance}";
+        
         BeginAnimation();
     }
 
@@ -232,6 +250,10 @@ public class GameOverScreen : MonoBehaviour
                  .setEase(LeanTweenType.easeInOutQuad)
                  .setOnComplete(() => {
                     ResetTweens();
+
+                    // Hide the main overlay
+                    transform.parent.gameObject.SetActive(false);
+
                     onSlid?.Invoke();
                  });
     }

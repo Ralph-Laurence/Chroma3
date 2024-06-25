@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -96,16 +97,22 @@ namespace Revamp
 
             else
                 stars = 1;
-                
-            StartCoroutine(SaveProgress(stars));
 
-            gameOverScreenOverlay.SetActive(true);
-            GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs
-            {
-                GameOverType  = GameOverTypes.Success,
-                TotalStars    = stars,
-                TotalPlayTime = stageTimer.ElapsedSeconds
-            });
+            StartCoroutine(SaveProgress(stars, stageFactory.CreatedStage, (userData) => {
+
+                gameOverScreenOverlay.SetActive(true);
+                GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs
+                {
+                    GameOverType    = GameOverTypes.Success,
+                    TotalStars      = stars,
+                    TotalPlayTime   = stageTimer.ElapsedSeconds,
+                    TotalReward     = stageFactory.CreatedStage.TotalReward,
+                    RewardType      = stageFactory.CreatedStage.RewardType,
+
+                    TotalPlayerCoinBalance = userData.TotalCoins,
+                    TotalPlayerGemBalance  = userData.TotalGems
+                });
+            }));
         }
 
         private void OnGameFailed()
@@ -113,7 +120,10 @@ namespace Revamp
             gameOverScreenOverlay.SetActive(true);
             GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs { 
                 GameOverType  = GameOverTypes.Fail,
-                TotalPlayTime = stageTimer.ElapsedSeconds
+                TotalPlayTime = stageTimer.ElapsedSeconds,
+
+                TotalPlayerCoinBalance = gsm.UserSessionData.TotalCoins,
+                TotalPlayerGemBalance  = gsm.UserSessionData.TotalGems
             });
         }
 
@@ -124,7 +134,7 @@ namespace Revamp
             bgm.Stop();
         }
 
-        private IEnumerator SaveProgress(int stars)
+        private IEnumerator SaveProgress(int stars, StageVariant currentStage, Action<UserData> callback)
         {
             var userData = gsm.UserSessionData;
             StageProgress stageProgress = default;
@@ -163,9 +173,27 @@ namespace Revamp
                 userData.StageProgressEasy[stageIndex] = stageProgress;
             }
 
+            var totalReward = stageFactory.CreatedStage.TotalReward;
+            var rewardType  = stageFactory.CreatedStage.RewardType;
+            var args = new PlayerCurrencyEventArgs { Amount = totalReward };
+            
+            switch (rewardType)
+            {
+                case RewardTypes.Coins: 
+                    userData.TotalCoins += totalReward;
+                    args.Currency = CurrencyType.Coin;
+                    break;
+
+                case RewardTypes.Gems:
+                    userData.TotalGems  += totalReward;
+                    args.Currency = CurrencyType.Gem;
+                    break;
+            }
+            
+            PlayerCurrencyNotifier.NotifyObserver(args);
             gsm.UserSessionData = userData;
 
-            yield return UserDataHelper.Instance.SaveUserData(userData);
+            yield return UserDataHelper.Instance.SaveUserData(userData, (u) => callback?.Invoke(u));
         }
 
         #endregion GAME_OVER

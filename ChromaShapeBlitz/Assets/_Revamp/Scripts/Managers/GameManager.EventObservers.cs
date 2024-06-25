@@ -46,10 +46,10 @@ namespace Revamp
 
             gsm.SelectedStageMinTime = e.MinStageTime;
             gsm.SelectedStageMaxTime = e.MaxStageTime;
-
+            
             var stageTitle  = $"{e.StageLevel} - {e.StageNumber:D2}";
-            var rewardStyle = e.RewardType.Equals(RewardTypes.Gems) ? "Gem" : "Coin";
-            var rewardText  = $"<style=\"{rewardStyle}\">\u00d7{e.TotalReward}";
+            //var rewardStyle = e.RewardType.Equals(RewardTypes.Gems) ? "Gem" : "Coin";
+            var rewardText  = e.TotalReward.ToRewardText(e.RewardType); //$"<style=\"{rewardStyle}\">\u00d7{e.TotalReward}";
             var minTimeText = $"Finish under <color=#81FF21>{e.MinStageTime} secs";
             var maxTimeText = $"Finish under <color=#FF9533>{e.MaxStageTime} secs";
 
@@ -83,7 +83,7 @@ namespace Revamp
                 case GameManagerActionEvents.Resume:  GMAEV_Resume();  break;
                 case GameManagerActionEvents.Retry:   GMAEV_Retry();   break;
                 
-                case GameManagerActionEvents.NextStage: break;
+                case GameManagerActionEvents.NextStage:  GMAEV_NextStage(); break;
                 case GameManagerActionEvents.ExitToMenu: GMAEV_ExitToMainMenu(); break;
             }
         }

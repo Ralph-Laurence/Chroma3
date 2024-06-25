@@ -11,7 +11,7 @@ public class Stage : ScriptableObject
     public StageVariant PickRandom()
     {
         // Spawn a random variant
-        var variantIndex    = ShuffleUniqueIndex(); //Random.Range(0, Variants.Length);
+        var variantIndex    = Random.Range(0, Variants.Length); //ShuffleUniqueIndex(); //
         var variantObject   = Instantiate(Variants[variantIndex]);
 
         variantObject.TryGetComponent(out StageVariant variantData);
