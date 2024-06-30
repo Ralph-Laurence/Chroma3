@@ -7,8 +7,7 @@ using UnityEngine.UI;
 
 public partial class StageFabricator : MonoBehaviour
 {
-    private readonly string SaveRootFolder = "_Revamp";
-    private string SaveFolderBase => $"Assets/{SaveRootFolder}/Level/Prefabs/Stages";
+    private string SaveFolderBase => $"Assets/Resources/Stages";
 
     [Space(10)] [Header("Filler Pad Visuals")]
     [SerializeField] private GameObject sequenceTriggerPadTemplate;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +14,63 @@ public static class Extensions
         return gameObject;
     }
 
+    /// <summary>
+    /// Change the renderer mode into transparent
+    /// </summary>
+    /// <returns>Transparent material</returns>
+    public static Material RenderToTransparent(this Material material)
+    {
+        material.SetFloat("_Mode", 3); // Set to Transparent
+        material.SetOverrideTag("RenderType", "Transparent");
+        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        material.SetInt("_ZWrite", 0);
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.EnableKeyword("_ALPHABLEND_ON");
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+        return material;
+    }
+
+    /// <summary>
+    /// Change the renderer mode into opaque
+    /// </summary>
+    /// <returns>Opaque material</returns>
+    public static Material RenderToOpaque(this Material material)
+    {
+        material.SetFloat("_Mode", 0); // Set to Opaque
+        material.SetOverrideTag("RenderType", "Opaque");
+        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+        material.SetInt("_ZWrite", 1);
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.DisableKeyword("_ALPHABLEND_ON");
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+
+        return material;
+    }
+
+    /// <summary>
+    /// Change the renderer mode into transparent cutout
+    /// </summary>
+    /// <returns>Transparent cutout material</returns>
+    public static Material RenderToCutout(this Material material)
+    {
+        material.SetFloat("_Mode", 1); // Set to Cutout
+        material.SetOverrideTag("RenderType", "TransparentCutout");
+        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+        material.SetInt("_ZWrite", 1);
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.EnableKeyword("_ALPHATEST_ON");
+        material.DisableKeyword("_ALPHABLEND_ON");
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+
+        return material;
+    }
     /// <summary>
     /// Converts the angle into Inspector angles
     /// </summary>
@@ -38,20 +94,6 @@ public static class Extensions
 
         return textMeshes;
     }
-
-    // public static string ToColorName(this ColorSwatches blockColors)
-    // {
-    //     return blockColors switch
-    //     {
-    //         ColorSwatches.Blue      => "Blue",
-    //         ColorSwatches.Green     => "Green",
-    //         ColorSwatches.Magenta   => "Magenta",
-    //         ColorSwatches.Yellow    => "Yellow",
-    //         ColorSwatches.Orange    => "Orange",
-    //         ColorSwatches.Purple    => "Purple",
-    //         _ => string.Empty,
-    //     };
-    // }
 
     public static Color ToUnityColor(this ColorSwatches blockColors)
     {

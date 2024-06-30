@@ -171,19 +171,27 @@ public partial class  StageFabricator : MonoBehaviour
                 // This is a reference to the single row
                 row = blockGridsParent.transform.GetChild(sender.RowIndex);
                 cols = GetColsInRow(row);
-	
-	            for (int i = sender.ColumnIndex; i <= cols.Count; i++)
-	            {
-	                var block = cols.FirstOrDefault(b => b.ColumnIndex == i);
 
-	                if (block == null)
+                for (int i = sender.ColumnIndex; i <= cols.Count; i++)
+                {
+                    var block = cols.FirstOrDefault(b => b.ColumnIndex == i);
+
+                    if (block == null)
                         break;
-                        
-	                sequenceController.BlockSequence.Add(block);
+
+                    sequenceController.BlockSequence.Add(block);
                     sequenceController.Destination = block;
                     destBlock = block;
                     ColorizeBlock(block, sequenceController.FillColorValue);
-	            }
+                }
+
+                if (destBlock == null)
+                {
+                    sequenceController.BlockSequence.Add(sender);
+                    sequenceController.Destination = sender;
+                    destBlock = sender;
+                    ColorizeBlock(sender, sequenceController.FillColorValue);
+                }
                 
                 SetAsDestinationBlock(destBlock, sequenceController);
                 break;

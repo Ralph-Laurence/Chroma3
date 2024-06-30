@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -27,9 +28,9 @@ public partial class StageFabricator : MonoBehaviour
     private Dictionary<string, DimenGrid> gridDimensions;
     private Dictionary<string, RewardTypes> rewardTypes;
 
-    private readonly string PatternsResPathEasy = "UI/Patterns/Easy";
-    private readonly string PatternsResPathNormal = "UI/Patterns/Normal";
-    private readonly string PatternsResPathHard = "UI/Patterns/Hard";
+    private readonly string PatternsResPathEasy     = "Assets/_Revamp/Art/UI/Patterns/Easy"; //"UI/Patterns/Easy";
+    private readonly string PatternsResPathNormal   = "Assets/_Revamp/Art/UI/Patterns/Normal";
+    private readonly string PatternsResPathHard     = "Assets/_Revamp/Art/UI/Patterns/Hard";
     //
     //==============================================
     // Inspector Fields
@@ -148,7 +149,7 @@ public partial class StageFabricator : MonoBehaviour
     {
         bgmMap       = new Dictionary<string, AudioClip>();
         var bgmNames = new List<string>();
-        var bgms     = Resources.LoadAll<AudioClip>("Sounds/Bgm");
+        var bgms     = ReadAllBgmAssets();
         var textInfo = new CultureInfo("en-US",false).TextInfo;
 
         bgmSelect.options.Clear();
@@ -172,6 +173,92 @@ public partial class StageFabricator : MonoBehaviour
 
         bgmSelect.value = 0;
         bgmSelect.RefreshShownValue();
+    }
+
+    private AudioClip[] ReadAllBgmAssets()
+    {
+        var output = new List<AudioClip>();
+
+        #if UNITY_EDITOR
+        // Specify the path to the folder containing the audio clips
+        string folderPath = "Assets/_Revamp/Art/Sounds/Bgm";
+
+        // Find all assets in the specified folder
+        string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { folderPath });
+
+        // Loop through each asset and load it
+        foreach (var guid in guids)
+        {
+            // Get the path of the asset
+            var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+            // Load the audio clip
+            var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
+
+            if (audioClip != null)
+                output.Add(audioClip);
+
+            // if (audioClip != null)
+            // {
+            //     // Output the name of the audio clip to the console
+            //     Debug.Log("Loaded Audio Clip: " + audioClip.name);
+            // }
+            // else
+            // {
+            //     Debug.LogError("Failed to load audio clip at path: " + assetPath);
+            // }
+        }
+        #endif
+
+        return output.ToArray();
+    }
+
+    private Sprite GetPattern(LevelDifficulties levelDifficulty, string levelNumber, string variant)
+    {
+        var patternsFolder = levelDifficulty switch
+        {
+            LevelDifficulties.Easy   => PatternsResPathEasy,
+            LevelDifficulties.Normal => PatternsResPathNormal,
+            LevelDifficulties.Hard   => PatternsResPathHard,
+            _ => string.Empty,
+        };
+
+        Sprite pattern = default;
+
+        #if UNITY_EDITOR
+        var patternPath = $"{patternsFolder}/{levelDifficulty}_{levelNumber}/{variant}.png";
+        pattern = AssetDatabase.LoadAssetAtPath<Sprite>(patternPath); // Resources.Load<Sprite>(patternPath);
+        
+        if (pattern == null)
+        {
+            Debug.LogWarning($"Unable to get pattern at: {patternPath}");
+        }
+        #endif
+        
+        return pattern;
+
+
+
+        // var output = new List<Sprite>();
+
+        // // Specify the path to the folder containing the audio clips
+        // string folderPath = "Assets/_Revamp/Art/Sounds/Bgm";
+
+        // // Find all assets in the specified folder
+        // string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { folderPath });
+
+        // // Loop through each asset and load it
+        // foreach (var guid in guids)
+        // {
+        //     // Get the path of the asset
+        //     var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+        //     // Load the audio clip
+        //     var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
+
+        //     if (audioClip != null)
+        //         output.Add(audioClip);
+        // }
     }
 
     private void BuildDifficultySelectMenu()
@@ -308,31 +395,6 @@ public partial class StageFabricator : MonoBehaviour
         // Update previewer
         patternPreviewer.sprite = stageVariant.PatternObjective;
         patternNameText.text = stageVariantName;
-    }
-
-    private Sprite GetPattern(LevelDifficulties levelDifficulty, string levelNumber, string variant)
-    {
-        var path = string.Empty;
-
-        switch (levelDifficulty)
-        {
-            case LevelDifficulties.Easy:
-                path = PatternsResPathEasy;
-                break;
-
-            case LevelDifficulties.Normal:
-                path = PatternsResPathNormal;
-                break;
-
-            case LevelDifficulties.Hard:
-                path = PatternsResPathHard;
-                break;
-        }
-
-        var patternPath = $"{path}/{levelDifficulty}_{levelNumber}/{variant}";
-        var pattern = Resources.Load<Sprite>(patternPath);
-
-        return pattern;
     }
 
     private void BindBlockEventTrigger(GameObject blockObj)
