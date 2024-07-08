@@ -4,36 +4,27 @@ using UnityEngine;
 
 public class StageCamera : MonoBehaviour
 {
-    [Space(5)] [Header("Responsive View Scaling")]
+    [Header("Responsive View Scaling")]
     public float MinOrthoSize = 5.60F;
     public float MaxOrthoSize = 7.55F;
-
-    [Space(5)] 
-    [Header("View Swiping")]
-    [SerializeField]
-    [Range(0f, 300.0F)]
-    private float swipeThreshold = 120.0F;
-
-    [SerializeField]
-    [Range(1.0F, 10.0F)]
-    private float rotationSpeed = 5.0f;
-    // Initial view is the default Y rotation of camera,
-    // which must always start at center (0)
-    private readonly float _initialView = 0.0F;
-    public float ViewTargetLeft  = 60F;
-    public float ViewTargetRight = -60F;
     private float originalOrthographicSize;
     private float originalAspectRatio;
 
-    private Vector2 fingerDownPosition;
-    private Vector2 fingerUpPosition;
 
+    [Header("Camera Dragging")]
+    [SerializeField] [Range(0f, 30.0F)] private float minDragDistance = 20.0F;
+    [SerializeField] [Range(1.0F, 10.0F)] private float rotationSpeed = 2.5f;
+    [SerializeField] private float smoothTime = 0.05f; // Time it takes to reach the target rotation
+
+    private Vector2 touchStart;
+    private bool isDragging;
+    private float targetRotationY;
+    private float currentVelocity;
+    
     [SerializeField] private bool freeze;
 
     public void Freeze() => freeze = true;
     public void UnFreeze() => freeze = false;
-
-    public bool IsRotating { private set; get; }
 
     public Camera AttachedCamera {get; private set; }
     //
@@ -41,7 +32,12 @@ public class StageCamera : MonoBehaviour
     // MONOBEHAVIOUR METHODS 
     //=============================================
     //
-    void Start()      => CalculateAspect();
+    void Start()
+    {
+        targetRotationY = transform.eulerAngles.y;
+        CalculateAspect();
+    }
+
     void LateUpdate() => UpdateOrthoSize();
 
     void Awake()
@@ -55,7 +51,7 @@ public class StageCamera : MonoBehaviour
     private void Update()
     {
         if (Input.touchCount > 0)
-            HandleSwiped();
+            HandleDrag();
     }
 
     //
@@ -97,117 +93,47 @@ public class StageCamera : MonoBehaviour
     }
 
     /// <summary>
-    /// Detect swipe gestures and handle the view switching accordingly
+    /// Detect drag gestures and handle the view switching accordingly
     /// </summary>
-    private void HandleSwiped()
+    private void HandleDrag()
     {
-        var touch = Input.GetTouch(0);
+        Touch touch = Input.GetTouch(0);
 
         switch (touch.phase)
         {
             case TouchPhase.Began:
+                touchStart = touch.position;
+                isDragging = false;
+                break;
 
-                // Register the touch position when the finger landed on the screen
-                fingerDownPosition = touch.position;
+            case TouchPhase.Moved:
+                Vector2 touchDelta = touch.position - touchStart;
 
+                if (!isDragging && touchDelta.magnitude > minDragDistance)
+                {
+                    isDragging = true;
+                }
+
+                if (isDragging)
+                {
+                    float rotationY = touchDelta.x * rotationSpeed * Time.deltaTime;
+
+                    // Update the target rotation (but reverse it to match drag direction)
+                    targetRotationY += rotationY * -1.0F;
+
+                    touchStart = touch.position; // Update the start position for continuous drag
+                }
                 break;
 
             case TouchPhase.Ended:
-
-                // Get the touch position when the finger leaves the screen
-                fingerUpPosition = touch.position;
-
-                // We need to detect the swipe only when the swipe distance is greater than
-                // the swipe (threshold) sensitivity. This is to prevent false swipe as any
-                // distance that is non-zero is considered as "Swipe".
-                var swipeLength = Vector2.Distance(fingerDownPosition, fingerUpPosition);
-
-                if (Mathf.Abs(swipeLength) > swipeThreshold)
-                    SwitchViewDirection(fingerUpPosition);
-
-                // Reset the fingerUp position into fingerDown position.
-                // This is to prepare for the next consecutive swipes.
-                fingerUpPosition = fingerDownPosition;
-
+                isDragging = false;
                 break;
         }
-    }
 
-    /// <summary>
-    /// Determine which direction we should rotate according to swipe
-    /// </summary>
-    private void SwitchViewDirection(Vector2 fingerUpPosition)
-    {
-        if (freeze)
-            return;
+        // Smoothly interpolate to the target rotation
+        float smoothedRotationY = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref currentVelocity, smoothTime);
 
-        var rotationY = transform.rotation.eulerAngles.y.WrapAngles();
-
-        // Swiped LEFT
-        if (fingerUpPosition.x < fingerDownPosition.x && !IsRotating)
-        {
-            // Determine the current viewing rotation by subtracting the current Y rotation 
-            // from the last direction ("initial" or "targetLeft"). Wrap the result into a
-            // positive value and if it is less than 0.01, we assume we're facing that
-            // direction and intend to rotate the opposite way.
-
-            if (Mathf.Abs(rotationY - _initialView) < 0.01f)
-
-                // From Center going to Right
-                StartCoroutine(RotateToTarget(ViewTargetRight));
-
-            else if (Mathf.Abs(rotationY - ViewTargetLeft) < 0.01f)
-
-                // From Left back to Center
-                StartCoroutine(RotateToTarget(_initialView));
-
-        }
-
-        // Swiped RIGHT
-        if (fingerUpPosition.x > fingerDownPosition.x && !IsRotating)
-        {
-            if (Mathf.Abs(rotationY - _initialView) < 0.01f)
-
-                // From Center going to Left
-                StartCoroutine(RotateToTarget(ViewTargetLeft));
-
-            else if (Mathf.Abs(rotationY - ViewTargetRight) < 0.01f)
-
-                // From Right back to Center
-                StartCoroutine(RotateToTarget(_initialView));
-        }
-    }
-
-    /// <summary>
-    /// Interpolate the camera to rotate at the target rotation
-    /// </summary>
-    private IEnumerator RotateToTarget(float target)
-    {
-        // Setting this flag to TRUE prevents interrupting the
-        // interpolation while the rotation is still going on.
-        // This means we cant rotate to a different direction
-        // during ongoing rotation interpolation.
-        IsRotating = true;
-
-        var startRotation = transform.rotation;
-
-        var endRotation   = Quaternion.Euler(
-            transform.rotation.eulerAngles.x,
-            target,
-            transform.rotation.eulerAngles.z
-        );
-
-        // Interoplation time from startRotation to endRotation
-        var t = 0.0f;
-
-        while (t < 1.0f)
-        {
-            t += Time.deltaTime * rotationSpeed;
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
-            yield return null;
-        }
-
-        // Interpolation completed
-        IsRotating = false;
+        // Apply the smoothed rotation while keeping the X and Z rotation the same
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, smoothedRotationY, transform.eulerAngles.z);
     }
 }

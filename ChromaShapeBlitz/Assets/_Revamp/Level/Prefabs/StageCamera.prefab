@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 9103373241168907080}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 0, y: 4, z: 0}
+  m_LocalPosition: {x: 0, y: 4, z: 0.76}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -124,8 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinOrthoSize: 5.6
   MaxOrthoSize: 7.55
-  swipeThreshold: 120
-  rotationSpeed: 5
-  ViewTargetLeft: 0
-  ViewTargetRight: 0
+  minDragDistance: 20
+  rotationSpeed: 2
+  smoothTime: 0.05
   freeze: 0
