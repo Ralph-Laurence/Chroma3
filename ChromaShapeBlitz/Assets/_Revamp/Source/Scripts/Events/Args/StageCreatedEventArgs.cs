@@ -6,6 +6,7 @@ public class StageCreatedEventArgs
     public Sprite StagePattern;
     public LevelDifficulties StageLevel;
     public RewardTypes RewardType;
+    public Transform StageTransform;
 
     public int StageNumber;
 

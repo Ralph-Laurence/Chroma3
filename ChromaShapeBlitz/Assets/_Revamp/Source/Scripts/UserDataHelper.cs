@@ -100,6 +100,9 @@ public class UserDataHelper : MonoBehaviour
                 Purple  = 5,
                 Yellow  = 6
             },
+
+            ActiveBackground = 0,
+            OwnedBackgroundIds = new List<int>{ 0 }
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

@@ -21,6 +21,8 @@ namespace Revamp
 
             pauseMenu.SetActive(true);
             sfx.PlayOnce(pauseSound);
+
+            MainCamera.Freeze();
         }
 
         private void GMAEV_Resume()
@@ -29,14 +31,20 @@ namespace Revamp
             ResumeTimeScale();
 
             pauseMenu.SetActive(false);
-
+            MainCamera.UnFreeze();
             StartCoroutine(ResumeBgm());
         }
 
         private void GMAEV_Retry()
         {
             ResumeTimeScale();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            stageTimer.Stop();
+            stageFactory.Clear();
+            stageFactory.Create(gsm.SelectedDifficulty, gsm.SelectedStageNumber);
+
+            MainCamera.ResetView(true);
+            pauseMenu.SetActive(false);
         }
 
         private void GMAEV_ExitToMainMenu()
@@ -62,6 +70,8 @@ namespace Revamp
 
             gsm.SelectedDifficulty = difficulty;
             gsm.SelectedStageNumber = stageNumber;
+
+            MainCamera.ResetView();
         }
     }
 }

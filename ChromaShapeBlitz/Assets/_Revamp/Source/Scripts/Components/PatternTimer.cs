@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PatternTimer : MonoBehaviour
 {
+    [SerializeField] private RectTransform effector;
+
     [SerializeField] private Image patternPreviewer;
     [SerializeField] private GameObject timesUpOverlay;
     [SerializeField] private RectTransform timesUpCaption;
@@ -46,7 +48,7 @@ public class PatternTimer : MonoBehaviour
 
         // Update the fill amount of the image smoothly
         timerFill.fillAmount = remainingTime / duration;
-
+//PositionEffector();
         elapsedTime += Time.deltaTime;
 
          // Check if a full second has passed
@@ -140,5 +142,72 @@ public class PatternTimer : MonoBehaviour
     {
         if (bgm != null)
             bgm.ResetVolume();
+    }
+
+    void PositionEffector()
+    {
+        var radius = 60f;
+
+        float fillAmount = timerFill.fillAmount;
+
+        // Calculate the angle based on fill amount
+        float angle = 360f * fillAmount;
+
+        // Convert angle to radians
+        float angleRad = angle * Mathf.Deg2Rad;
+
+        // Calculate position on the circle
+        float x = Mathf.Cos(angleRad) * radius;
+        float y = Mathf.Sin(angleRad) * radius;
+
+        // Adjust for the rounded corners
+        if (fillAmount < 0.125f || (fillAmount > 0.375f && fillAmount < 0.625f) || (fillAmount > 0.875f && fillAmount < 1f))
+        {
+            // In the corner areas
+            x *= Mathf.Sqrt(2) / 2;
+            y *= Mathf.Sqrt(2) / 2;
+        }
+
+        // Update the follower position
+        effector.localPosition = new Vector3(x, y, 0f);
+        
+        // float fillAmount = timerFill.fillAmount;
+        // float angle = fillAmount * 360f;
+        // float halfWidth = timerFill.rectTransform.rect.width / 2f;
+        // float halfHeight = timerFill.rectTransform.rect.height / 2f;
+        
+        // Vector2 position = Vector2.zero;
+
+        // if (angle <= 90f)
+        // {
+        //     // Top edge
+        //     position.x = Mathf.Lerp(0, halfWidth, angle / 90f);
+        //     position.y = halfHeight;
+        // }
+        // else if (angle <= 180f)
+        // {
+        //     // Right edge
+        //     angle -= 90f;
+        //     position.x = halfWidth;
+        //     position.y = Mathf.Lerp(halfHeight, -halfHeight, angle / 90f);
+        // }
+        // else if (angle <= 270f)
+        // {
+        //     // Bottom edge
+        //     angle -= 180f;
+        //     position.x = Mathf.Lerp(halfWidth, -halfWidth, angle / 90f);
+        //     position.y = -halfHeight;
+        // }
+        // else
+        // {
+        //     // Left edge
+        //     angle -= 270f;
+        //     position.x = -halfWidth;
+        //     position.y = Mathf.Lerp(-halfHeight, halfHeight, angle / 90f);
+        // }
+
+        // position.x *= -1.0F;
+        // // Set the position of the effector
+        // effector.anchoredPosition = position;
     }
 }

@@ -38,7 +38,7 @@ namespace Revamp
         {
             bgm.Stop();
             bgm.SetClip(e.StageBgm);
-
+            bgm.ResetVolume();
             bgm.Play();
 
             stageTimer.Prepare(e.TotalStageTime, e.StagePattern);

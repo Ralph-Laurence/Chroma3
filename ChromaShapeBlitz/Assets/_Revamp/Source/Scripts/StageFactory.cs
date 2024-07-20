@@ -17,7 +17,8 @@ public class StageFactory : MonoBehaviour
         // Select a random prefab from the loaded prefabs
         var stage = variants[Random.Range(0, variants.Length)];
 
-        Instantiate(stage).TryGetComponent(out _createdStage);
+        var stageObj = Instantiate(stage);
+        stageObj.TryGetComponent(out _createdStage);
 
         OnStageCreated.NotifyObserver(new StageCreatedEventArgs
         {
@@ -29,7 +30,8 @@ public class StageFactory : MonoBehaviour
             MaxStageTime    = _createdStage.MaxStageTime,
             TotalStageTime  = _createdStage.TotalStageTime,
             RewardType      = _createdStage.RewardType,
-            TotalReward     = _createdStage.TotalReward
+            TotalReward     = _createdStage.TotalReward,
+            StageTransform  = stageObj.transform
         });
     }
 

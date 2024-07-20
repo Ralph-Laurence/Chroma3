@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 public class StageCamera : MonoBehaviour
@@ -10,35 +9,26 @@ public class StageCamera : MonoBehaviour
     private float originalOrthographicSize;
     private float originalAspectRatio;
 
-
     [Header("Camera Dragging")]
-    [SerializeField] [Range(0f, 30.0F)] private float minDragDistance = 20.0F;
-    [SerializeField] [Range(1.0F, 10.0F)] private float rotationSpeed = 2.5f;
-    [SerializeField] private float smoothTime = 0.05f; // Time it takes to reach the target rotation
+    [SerializeField][Range(0.0F, 10.0F)] private float rotationSpeed = 0.08F;
 
-    private Vector2 touchStart;
-    private bool isDragging;
-    private float targetRotationY;
-    private float currentVelocity;
-    
     [SerializeField] private bool freeze;
 
     public void Freeze() => freeze = true;
     public void UnFreeze() => freeze = false;
 
-    public Camera AttachedCamera {get; private set; }
+    public Camera AttachedCamera { get; private set; }
     //
     //=============================================
     // MONOBEHAVIOUR METHODS 
     //=============================================
     //
+    private Quaternion initialRotation;
     void Start()
     {
-        targetRotationY = transform.eulerAngles.y;
+        initialRotation = transform.rotation;
         CalculateAspect();
     }
-
-    void LateUpdate() => UpdateOrthoSize();
 
     void Awake()
     {
@@ -48,8 +38,10 @@ public class StageCamera : MonoBehaviour
             AttachedCamera = cam;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
+        UpdateOrthoSize();
+
         if (Input.touchCount > 0)
             HandleDrag();
     }
@@ -95,45 +87,57 @@ public class StageCamera : MonoBehaviour
     /// <summary>
     /// Detect drag gestures and handle the view switching accordingly
     /// </summary>
+    private float previousTouchPositionX;
+    private bool isTouching = false;
+
     private void HandleDrag()
     {
-        Touch touch = Input.GetTouch(0);
+        if (freeze)
+            return;
+
+        var touch = Input.GetTouch(0);
 
         switch (touch.phase)
         {
             case TouchPhase.Began:
-                touchStart = touch.position;
-                isDragging = false;
+                isTouching = true;
+                previousTouchPositionX = touch.position.x;
                 break;
 
             case TouchPhase.Moved:
-                Vector2 touchDelta = touch.position - touchStart;
-
-                if (!isDragging && touchDelta.magnitude > minDragDistance)
+                if (isTouching)
                 {
-                    isDragging = true;
-                }
+                    float deltaX = touch.position.x - previousTouchPositionX;
+                    float rotationY = deltaX * rotationSpeed;
 
-                if (isDragging)
-                {
-                    float rotationY = touchDelta.x * rotationSpeed * Time.deltaTime;
+                    // Only rotate around the Y-axis
+                    transform.Rotate(0, -rotationY, 0);
 
-                    // Update the target rotation (but reverse it to match drag direction)
-                    targetRotationY += rotationY * -1.0F;
+                    // Maintain the original X and Z rotations
+                    Vector3 eulerAngles = transform.eulerAngles;
+                    eulerAngles.x = initialRotation.eulerAngles.x;
+                    eulerAngles.z = initialRotation.eulerAngles.z;
+                    transform.eulerAngles = eulerAngles;
 
-                    touchStart = touch.position; // Update the start position for continuous drag
+                    previousTouchPositionX = touch.position.x;
                 }
                 break;
 
             case TouchPhase.Ended:
-                isDragging = false;
+            case TouchPhase.Canceled:
+                isTouching = false;
                 break;
         }
+    }
 
-        // Smoothly interpolate to the target rotation
-        float smoothedRotationY = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotationY, ref currentVelocity, smoothTime);
+    public void ResetView(bool unfreeze = false)
+    {
+        var currentAngles = transform.rotation.eulerAngles;
+        currentAngles.y = 0.0F;
 
-        // Apply the smoothed rotation while keeping the X and Z rotation the same
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, smoothedRotationY, transform.eulerAngles.z);
+        transform.eulerAngles = currentAngles;
+
+        if (unfreeze)
+            UnFreeze();
     }
 }

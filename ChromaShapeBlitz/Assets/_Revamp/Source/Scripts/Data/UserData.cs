@@ -52,4 +52,6 @@ public class UserData
     //===========================
     public List<int> OwnedBlockSkinIDs;
     public ActiveBlockSkinIDs ActiveBlockSkins;
+    public List<int> OwnedBackgroundIds;
+    public int ActiveBackground;
 }

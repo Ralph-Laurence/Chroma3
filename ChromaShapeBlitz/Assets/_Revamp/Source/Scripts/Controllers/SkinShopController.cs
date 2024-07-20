@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class SkinShopController : MonoBehaviour
@@ -121,7 +118,7 @@ public class SkinShopController : MonoBehaviour
 
             if (userData.OwnedBlockSkinIDs.Contains(id))
             {
-                // Even if an item was already owned, we cant mark it as active
+                // Although an item was already owned, we cant mark it as active
                 // unless it is currently in use.
                 var markActive = activeBlockSkins.Contains(id);
 

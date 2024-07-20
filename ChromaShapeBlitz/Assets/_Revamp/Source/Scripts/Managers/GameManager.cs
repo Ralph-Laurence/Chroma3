@@ -77,7 +77,7 @@ namespace Revamp
         #region GAME_OVER
         private void OnGameSuccess()
         {
-            int stars;
+            int stars = 1;
             var playTime = stageTimer.ElapsedSeconds;
 
             // To get a full-three star, finish the game in the given minimum time
@@ -88,10 +88,7 @@ namespace Revamp
             else if (playTime > gsm.SelectedStageMinTime && playTime <= gsm.SelectedStageMaxTime)
                 stars = 2;
 
-            else
-                stars = 1;
-
-            StartCoroutine(SaveProgress(stars, stageFactory.CreatedStage, (userData) => {
+            StartCoroutine(SaveProgress(stars, (userData) => {
 
                 gameOverScreenOverlay.SetActive(true);
                 GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs
@@ -127,7 +124,7 @@ namespace Revamp
             bgm.Stop();
         }
 
-        private IEnumerator SaveProgress(int stars, StageVariant currentStage, Action<UserData> callback)
+        private IEnumerator SaveProgress(int stars, Action<UserData> callback)
         {
             var userData = gsm.UserSessionData;
             StageProgress stageProgress = default;
