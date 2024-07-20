@@ -101,7 +101,7 @@ public class UserDataHelper : MonoBehaviour
                 Yellow  = 6
             },
 
-            ActiveBackground = 0,
+            ActiveBackgroundID = 0,
             OwnedBackgroundIds = new List<int>{ 0 }
         };
 

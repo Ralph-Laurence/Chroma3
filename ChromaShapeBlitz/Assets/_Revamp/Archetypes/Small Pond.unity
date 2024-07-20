@@ -2818,6 +2818,7 @@ GameObject:
   - component: {fileID: 543450653160702790}
   - component: {fileID: 3469287836943256803}
   - component: {fileID: 1711813856168704041}
+  - component: {fileID: 3469287836943256804}
   m_Layer: 0
   m_Name: Small Pond
   m_TagString: Untagged
@@ -3215,6 +3216,34 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132148620417532}
   m_Mesh: {fileID: -1978840633088635249, guid: 574ed46b034742a4c817dedd28a327f7, type: 3}
+--- !u!114 &3469287836943256804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148620417532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1a1750af8a67304a958454bcce41276, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Skybox: {fileID: 2100000, guid: 5459d932d1393dc4d8c6df7b50fc6af7, type: 2}
+  YPositionOffset: 0
+  UsePostProcess: 1
+  EnableBloom: 1
+  BloomColor: {r: 0, g: 0.2, b: 0.5568628, a: 1}
+  BloomIntensity: 0.18
+  BloomDiffuse: 0.75
+  BloomThreshold: 0.2
+  BloomSoftness: 0.5
+  EnableLut: 1
+  LutSource: {fileID: 2800000, guid: 58ad132fb6b09c3439a1d0e53c81729e, type: 3}
+  LutIntensity: 0.75
+  EnableVignette: 1
+  VignetteColor: {r: 0, g: 0, b: 0, a: 1}
+  VignetteIntensity: 0.038
+  VignetteSoftness: 0.422
 --- !u!33 &3469287837314322938
 MeshFilter:
   m_ObjectHideFlags: 0

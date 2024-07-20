@@ -40,7 +40,7 @@ public class StageBackgroundManager : MonoBehaviour
         if (!isBackgroundCreated)
         {
             // Load the background asset from the resources folder
-            var backgroundName = gsm.UserSessionData.ActiveBackground;
+            var backgroundName = gsm.UserSessionData.ActiveBackgroundID;
             var background = Resources.Load<GameObject>($"Backgrounds/{backgroundName}");
 
             backgroundGameObject = Instantiate(background);
