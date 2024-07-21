@@ -1,48 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class NavButton : MonoBehaviour
 {
-    [SerializeField] private Color NormalColor = Color.white;
-    [SerializeField] private Color SelectedColor = new Color(1.0F, 0.78F, 0.15F, 1.0F);
-    [SerializeField] private float SelectedTextSize = 26.0F;
-    [SerializeField] private float NormalTextSize = 22.0F;
-    public bool Selected;
+    public int TargetPageIndex;
+    [SerializeField] private Image navIcon;
+    [SerializeField] private Color activeColor = new(0.49F, 1.0F, 0.0F, 1.0F);
 
-    private TextMeshProUGUI tmp;
-    
-    private bool isInitialized;
+    private readonly Color defaultColor = Color.white;
+    private Button button;
 
-    private void Initialize()
+    void OnEnable() => NavButtonSelectedNotifier.BindEvent(ObserveSelected);
+    void OnDisable() => NavButtonSelectedNotifier.UnbindEvent(ObserveSelected);
+
+    private void ObserveSelected(int targetPageIndex)
     {
-        if (isInitialized)
+        if (targetPageIndex != TargetPageIndex)
+        {
+            navIcon.color = defaultColor;
             return;
-
-        TryGetComponent(out tmp);
-
-        if (Selected)
-        {
-            tmp.fontSize = NormalTextSize;
-            tmp.color = NormalColor;
-        }
-        else
-        {
-            tmp.fontSize = NormalTextSize;
-            tmp.color = NormalColor;
         }
 
-        isInitialized = true;
+        navIcon.color = activeColor;
     }
 
-    void OnEnable() => Initialize();
-    void Awake() => Initialize();
-
-    public void SetSelected()
+    public Button ButtonComponent
     {
-        Selected = true;
-        tmp.fontSize = SelectedTextSize;
-        tmp.color = SelectedColor;
+        get 
+        {
+            if (button == null)
+                TryGetComponent(out button);
+
+            return button;
+        }
     }
 }

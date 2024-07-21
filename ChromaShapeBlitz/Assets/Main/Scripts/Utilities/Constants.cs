@@ -19,6 +19,12 @@ public class Constants
         public static readonly string MainCamera  = "MainCamera";
     }
 
+    public readonly struct CurrencySprites
+    {
+        public static readonly string GoldCoin = "<sprite=2>";
+        public static readonly string GemCoin = "<sprite=3>";
+    }
+
     public readonly struct ColorSwatches
     {
         public static readonly Color BLUE           = new(r: 0.0F, g: 0.3921566F, b: 1.0F, a: 1.0F);

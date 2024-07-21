@@ -56,7 +56,7 @@ public class BuySkinPrompt : MonoBehaviour
                  ? $"<space=0.2em><color=#CF00FF>{itemData.Price}\u00d7</color><size=140%><sprite={spriteGem}></size>"
                  : $"<space=0.2em><color=#81D621>{itemData.Price}\u00d7</color><size=140%><sprite={spriteCoin}></size>";
 
-        promptMessage.text = $"Do you want to buy this item for {cost} ?";
+        promptMessage.text = $"Do you want to buy this block skin for {cost} ?";
         itemPreview.sprite = itemData.PreviewImage;
         itemLabel.text     = itemData.Name;
         

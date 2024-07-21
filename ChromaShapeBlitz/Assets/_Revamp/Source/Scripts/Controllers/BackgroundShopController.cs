@@ -108,7 +108,9 @@ public class BackgroundShopController : MonoBehaviour
             PlayerCurrencyNotifier.NotifyObserver(new PlayerCurrencyEventArgs
             {
                 Currency = data.CostCurrency,
-                Amount = playerBalance
+                Amount = playerBalance,
+                Animate = true,
+                AnimationType = PlayerCurrencyParticleAnimator.ANIMATION_MODE_DECREASE_AMOUNT
             });
 
             buyConfirmPrompt.Hide();
