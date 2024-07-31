@@ -37,6 +37,7 @@ public class BackgroundShopItemCard : MonoBehaviour, IPointerClickHandler
 
     public void SetToggleGroup(ToggleGroup toggleGroup) => toggle.group = toggleGroup;
     public void Toggle(bool toggled) => toggle.isOn = toggled;
+    public bool IsMarkedActive => toggle.isOn;
     public void SetItemData(BackgroundItemData data)
     {
         _itemData = data;

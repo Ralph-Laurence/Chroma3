@@ -79,12 +79,12 @@ namespace Revamp
         {
             switch (eventType)
             {
-                case GameManagerActionEvents.Pause:   GMAEV_Pause();   break;
-                case GameManagerActionEvents.Resume:  GMAEV_Resume();  break;
-                case GameManagerActionEvents.Retry:   GMAEV_Retry();   break;
+                case GameManagerActionEvents.Pause:   GMEV_Pause();   break;
+                case GameManagerActionEvents.Resume:  GMEV_Resume();  break;
+                case GameManagerActionEvents.Retry:   GMEV_Retry();   break;
                 
                 case GameManagerActionEvents.NextStage:  GMAEV_NextStage(); break;
-                case GameManagerActionEvents.ExitToMenu: GMAEV_ExitToMainMenu(); break;
+                case GameManagerActionEvents.ExitToMenu: GMEV_ExitToMainMenu(); break;
             }
         }
     }

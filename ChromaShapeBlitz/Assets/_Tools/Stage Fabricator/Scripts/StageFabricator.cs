@@ -158,6 +158,14 @@ public partial class StageFabricator : MonoBehaviour
         {
             var bgmName = bgm.name.Replace("_", " ");
             bgmName = textInfo.ToTitleCase(bgmName);
+            
+            // Skip Bgm names that do not contain number
+            // and does not start with prefix "stage_upbeat"
+            if (!bgmName.Any(char.IsDigit) && !bgmName.StartsWith("stage_upbeat_"))
+            {
+                Debug.Log($"SKip: {bgmName}");
+                continue;
+            }
 
             bgmMap.Add(bgmName, bgm);
             bgmNames.Add(bgmName);
@@ -165,7 +173,7 @@ public partial class StageFabricator : MonoBehaviour
 
         bgmNames.OrderBy(b => {
             var parts  = b.Split(' ');
-            var number = int.Parse(parts[parts.Length-1]);
+            var number = int.Parse(parts[^1]); // indexing ^1 = parts.Length-1
             return number;
         })
         .ToList()

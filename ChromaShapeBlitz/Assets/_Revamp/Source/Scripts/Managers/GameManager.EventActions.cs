@@ -14,7 +14,7 @@ namespace Revamp
         /// <summary>
         /// Game Manager Action Events are prefixed with "GMAEV_"
         /// </summary>
-        private void GMAEV_Pause()
+        private void GMEV_Pause()
         {
             bgm.Pause();
             PauseTimeScale();
@@ -25,7 +25,7 @@ namespace Revamp
             MainCamera.Freeze();
         }
 
-        private void GMAEV_Resume()
+        private void GMEV_Resume()
         {
             sfx.PlayOnce(resumeSound);
             ResumeTimeScale();
@@ -35,7 +35,7 @@ namespace Revamp
             StartCoroutine(ResumeBgm());
         }
 
-        private void GMAEV_Retry()
+        private void GMEV_Retry()
         {
             ResumeTimeScale();
             // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -47,7 +47,7 @@ namespace Revamp
             pauseMenu.SetActive(false);
         }
 
-        private void GMAEV_ExitToMainMenu()
+        private void GMEV_ExitToMainMenu()
         {
             gsm.ClearSession();
             stageTimer.Stop();
@@ -58,13 +58,43 @@ namespace Revamp
             loader.LoadScene(Constants.Scenes.MainMenu);
         }
 
-        private void GMAEV_NextStage()
+        private void GMAEV_NextStage() => MoveNextStage();
+
+        public void MoveNextStage()
         {
             var stageNumber = gsm.SelectedStageNumber + 1;
-            var difficulty = gsm.SelectedDifficulty;
+            var difficulty  = gsm.SelectedDifficulty;
 
             gsm.ClearSession();
-            
+
+            // Decide which stage to spawn next.
+            switch (difficulty)
+            {
+                // After completing the Easy stages, move on to Normal
+                case LevelDifficulties.Easy:
+
+                    if (stageNumber > TotalEasyStages)
+                    {
+                        difficulty  = LevelDifficulties.Normal;
+                        stageNumber = 1;
+                    }
+                    break;
+
+                case LevelDifficulties.Normal:
+                    
+                    // After completing the Easy stages, move on to Hard
+                    if (stageNumber > TotalNormalStages)
+                    {
+                        difficulty  = LevelDifficulties.Hard;
+                        stageNumber = 1;
+                    }
+                    break;
+                
+                case LevelDifficulties.Hard:
+                    // stageNumber = Mathf.Clamp(stageNumber, 1, TotalHardStages);
+                    break;
+            }
+
             stageFactory.Clear();
             stageFactory.Create(difficulty, stageNumber);
 

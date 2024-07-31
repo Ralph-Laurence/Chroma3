@@ -24,6 +24,9 @@ public class MastBeacon : MonoBehaviour
 
     private void Start()
     {
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
         beacon.TryGetComponent(out beaconFlare);
         beaconFlare.brightness = beaconFlareMinIntensity;
 

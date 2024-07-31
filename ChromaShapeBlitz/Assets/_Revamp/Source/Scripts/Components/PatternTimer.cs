@@ -119,14 +119,15 @@ public class PatternTimer : MonoBehaviour
     {
         isStopped = true;
         PlayClip(timesUpSfx);
-
+        bgm.Stop();
+        ResetBgmVolume();
+        
         timesUpOverlay.SetActive(true);
         LeanTween.scale(timesUpCaption, Vector3.one * 1.35F, 0.25F)
             .setEaseInBounce()
             .setDelay(0.5F)
             .setOnComplete(() =>
             {
-                ResetBgmVolume();
                 timesUpOverlay.SetActive(false);
                 OnTimesUp?.Invoke();
             });

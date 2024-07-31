@@ -116,10 +116,12 @@ public partial class StageFabricator : MonoBehaviour
                 );
 
                 blockObj.TryGetComponent(out Block blockNew);
+                
                 blockNew.name               = block.name;
+                blockNew.tag                = block.tag;
+
                 blockNew.DarkerFill         = block.DarkerFill;
                 blockNew.IsDestinationBlock = block.IsDestinationBlock;
-
                 blockNew.SetColor(ColorSwatches.None);
                 blockNew.SetRequiredColor(block.RequiredColor);
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class SkinShopController : MonoBehaviour
@@ -29,16 +30,20 @@ public class SkinShopController : MonoBehaviour
     [SerializeField] private Image skinsScrollViewport;
     [SerializeField] private ColorSelect skinColorFilter;
 
+    [FormerlySerializedAs("navbarObj")]
+    [SerializeField] private GameObject navbarObj;
+
     private Dictionary<int, BlockSkinsAsset> skinsLookupTable;
     private List<SkinShopItemCard> skinItemCards;
+    private SkinShopItemCard m_activeItemCard;
 
     private readonly Color viewportTransparent = new(1.0F, 1.0F, 1.0F, 0.0F);
     private readonly Color viewportOpaque = new(1.0F, 1.0F, 1.0F, 1.0F);
 
     private ToggleGroup skinsItemsToggleGroup;
-
     private GameSessionManager gsm;
     private UserDataHelper userDataHelper;
+    private bool isInitialized;
 
     void Awake()
     {
@@ -53,15 +58,25 @@ public class SkinShopController : MonoBehaviour
         blockSkinGroups.ForEach(group => group.AddTo(skinsLookupTable));
     }
 
-    void Start()
+    private void HandleShopMenuRootShown() => StartCoroutine(Initialize());
+
+    private IEnumerator Initialize()
     {
-        BuildSkinShopMenu();
-        StartCoroutine(FilterItems(skinColorFilter.Value));
+        if (isInitialized)
+            yield break;
+        
+        navbarObj.SetActive(false);
+
+        yield return new WaitForSeconds(0.1F);
+
+        yield return StartCoroutine(BuildSkinShopMenu());
+        yield return StartCoroutine(FilterItems(skinColorFilter.Value, () => navbarObj.SetActive(true)));
 
         skinColorFilter.OnColorSelected += (color) => StartCoroutine(FilterItems(color));
+        isInitialized = true;
     }
 
-    private void BuildSkinShopMenu()
+    private IEnumerator BuildSkinShopMenu()
     {
         var cardBackgroundMapping = new Dictionary<ColorSwatches, Sprite>
         {
@@ -96,10 +111,28 @@ public class SkinShopController : MonoBehaviour
             card.SetToggleGroup(skinsItemsToggleGroup);
 
             skinItemCards.Add(card);
+            yield return null;
         }
     }
 
-    private IEnumerator FilterItems(ColorSwatches colorFilter)
+    /// <summary>
+    /// This must be called everytime this gameobject gets active.
+    /// The menu must be reset so that the active item card goes to the top
+    /// of the scrollview as the first sibling, and also marking it active.
+    /// </summary>
+    private void ResetMenu()
+    {
+        if (m_activeItemCard == null)
+            return;
+
+        if (m_activeItemCard.transform.GetSiblingIndex() != 0)
+            m_activeItemCard.transform.SetAsFirstSibling();
+
+        if (!m_activeItemCard.IsMarkedActive)
+            m_activeItemCard.Toggle(true);
+    }
+
+    private IEnumerator FilterItems(ColorSwatches colorFilter, Action afterFilter = null)
     {
         skinColorFilter.SetInteractable(false);
         skinsScrollViewport.color = viewportTransparent;
@@ -109,12 +142,15 @@ public class SkinShopController : MonoBehaviour
         Transform activeItemCard = default;
         var userData = gsm.UserSessionData;
         var activeBlockSkins = gsm.UserSessionData.ActiveBlockSkins.ToList();
-
+        
         foreach (var card in skinItemCards)
         {
-            var activate = card.GetItemData().ColorCategory == colorFilter;
+            var cardData = card.GetItemData();
+            var activate = cardData.ColorCategory == colorFilter;
+
             card.gameObject.SetActive(activate);
-            var id = card.GetItemData().ID;
+
+            var id = cardData.ID;
 
             if (userData.OwnedBlockSkinIDs.Contains(id))
             {
@@ -123,17 +159,20 @@ public class SkinShopController : MonoBehaviour
                 var markActive = activeBlockSkins.Contains(id);
 
                 card.SetOwned(markActive);
-                activeItemCard = card.transform;
+
+                if (cardData.ColorCategory == colorFilter && activeBlockSkins.Contains(id))
+                {
+                    activeItemCard = card.transform;
+                    m_activeItemCard = card;
+                }
             }
-            else
-                card.Toggle(false);
 
             yield return null;
         }
 
         // Move the active item card to the very top of scrollview
         if (activeItemCard != null)
-            activeItemCard.SetSiblingIndex(0);
+            activeItemCard.SetAsFirstSibling();
 
         ResetScrollView(scrollRect);
 
@@ -142,6 +181,8 @@ public class SkinShopController : MonoBehaviour
         CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
         skinsScrollViewport.color = viewportOpaque;
         skinColorFilter.SetInteractable(true);
+
+        afterFilter?.Invoke();
     }
 
     /// <summary>
@@ -189,12 +230,16 @@ public class SkinShopController : MonoBehaviour
     {
         BlockSkinShopItemClickNotifier.BindEvent(ObserveBlockSkinItemClicked);
         BlockSkinItemPurchaseNotifier.BindEvent(ObserveBlockSkinPurchase);
+        ShopMenuShownNotifier.BindEvent(HandleShopMenuRootShown);
+   
+        ResetMenu();
     }
 
     void OnDisable()
     {
         BlockSkinShopItemClickNotifier.UnbindEvent(ObserveBlockSkinItemClicked);
         BlockSkinItemPurchaseNotifier.UnbindEvent(ObserveBlockSkinPurchase);
+        ShopMenuShownNotifier.UnbindEvent(HandleShopMenuRootShown);
     }
 
     /// <summary>
@@ -241,6 +286,7 @@ public class SkinShopController : MonoBehaviour
 
             buySkinPrompt.Hide();
             sender.SetOwned(true);
+            m_activeItemCard = sender;
             CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
         }));
     }
@@ -261,6 +307,7 @@ public class SkinShopController : MonoBehaviour
 
         StartCoroutine(UseSkin(skinData, gsm.UserSessionData, () => {
             sender.Toggle(true);
+            m_activeItemCard = sender;
             CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
         }));
     }

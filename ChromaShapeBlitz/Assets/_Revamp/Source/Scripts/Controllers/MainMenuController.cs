@@ -7,6 +7,7 @@ public class MainMenuController : MonoBehaviour
     void Awake()
     {
         bgmManager = BackgroundMusic.Instance;
+        LeanTween.init();
     }
 
     void Start()
@@ -15,8 +16,12 @@ public class MainMenuController : MonoBehaviour
             bgmManager.PlayMainBgm();
     }
 
+    #region UI_EVENT_ACTIONS
+
     public void Ev_Quit()
     {
         Application.Quit();
     }
+
+    #endregion
 }

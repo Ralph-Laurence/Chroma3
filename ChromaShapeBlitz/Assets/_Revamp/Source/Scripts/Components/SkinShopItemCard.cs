@@ -38,6 +38,7 @@ public class SkinShopItemCard : MonoBehaviour, IPointerClickHandler
 
     public void SetToggleGroup(ToggleGroup toggleGroup) => toggle.group = toggleGroup;
     public void Toggle(bool toggled) => toggle.isOn = toggled;
+    public bool IsMarkedActive => toggle.isOn;
     public void SetItemData(SkinItemData data)
     {
         _itemData = data;

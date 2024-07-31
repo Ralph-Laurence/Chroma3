@@ -50,15 +50,13 @@ public class NavBar : MonoBehaviour
     {
         if (pageIdx >= navPages.Count)
         {
-            Debug.LogWarning($"No page at index: {pageIdx}");
+            //Debug.LogWarning($"No page at index: {pageIdx}");
             return;
         }
 
+        // We are on the same page.
         if (lastSelectedPageIndex == pageIdx)
-        {
-            Debug.LogWarning("We are on the same page.");
             return;
-        }
 
         var lastSelectedPageObj = navPages[lastSelectedPageIndex].gameObject;
         lastSelectedPageObj.TryGetComponent(out RectTransform lastSelectedPageRect);

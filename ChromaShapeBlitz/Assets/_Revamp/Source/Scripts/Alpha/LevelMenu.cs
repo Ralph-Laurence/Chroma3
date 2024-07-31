@@ -9,12 +9,26 @@ public partial class LevelMenu : MonoBehaviour
 {
     [SerializeField] private GameObject fancySceneLoader;
 
-    [Space(10)] [Header("Page Transition Behaviour")]
+    [Space(10)] 
+    [Header("..:: Page Transition Behaviour ::..", order = 1)]
+    [Header("[A] Content Scrolling", order = 2)]
     [SerializeField] private RectTransform content;
     [SerializeField] private RectTransform pages; // Assign the <Pages> RectTransform in the inspector
     [SerializeField] private float pageWidth = 300f; // Width of each page
     [SerializeField] private float spacing = 300f; // Spacing between the pages
     [SerializeField] private float duration = 0.5f; // Duration of the tween
+
+    [Space(5)]
+    [Header("[B] Background Transition")]
+    private Image rootBackground;
+    // [SerializeField] private Color[] pageBackgrounds = new[] 
+    // {
+    //     new Color(0.0F, 0.5F, 1.0F, 1.0F),     // Blue | Easy
+    //     new Color(0.98F, 0.49F, 0.0F, 1.0F),    // Orange | Normal
+    //     new Color(1.0F, 0.26F, 0.31F, 1.0F)     // Red | Hard
+    // };
+
+    [SerializeField] private Sprite[] pageBackgrounds;
 
     [Space(10)] [Header("Page Location Tracking")]
     [SerializeField] private Image[] pageTrackers;
@@ -31,12 +45,10 @@ public partial class LevelMenu : MonoBehaviour
     [SerializeField] private GameObject stageSelectMenuContent;
 
     [Space(10)]
-    [SerializeField] private Slider levelProgressEasy;
-    [SerializeField] private Slider levelProgressNormal;
-    [SerializeField] private Slider levelProgressHard;
-    [SerializeField] private Text levelProgressTextEasy;
-    [SerializeField] private Text levelProgressTextNormal;
-    [SerializeField] private Text levelProgressTextHard;
+    [Header("Level Difficulty Selections")]
+    [SerializeField] private LevelSelectPage levelSelectPageEasy;
+    [SerializeField] private LevelSelectPage levelSelectPageNormal;
+    [SerializeField] private LevelSelectPage levelSelectPageHard;
     
     [Space(10)] [Header("Stage Selection Behaviour")]
     [SerializeField] private GameObject stageSelectButtonPrefab;
@@ -84,6 +96,9 @@ public partial class LevelMenu : MonoBehaviour
         userDataHelper  = UserDataHelper.Instance;
         userData        = userDataHelper.GetLoadedData();
         
+        // The Image component attached to this gameobject
+        TryGetComponent(out rootBackground);
+
         stageSelectMenuContent.TryGetComponent(out stageSelectionMenuRect);
 
         stageButtonAppearances = new()
@@ -118,31 +133,30 @@ public partial class LevelMenu : MonoBehaviour
 
         ResetDifficultyPagerScrollPosition();
 
-        // Update the overall progress of the level
-        UpdateLevelProgressMeter
-        (
-            levelProgressEasy, 
-            levelProgressTextEasy, 
-            userData.HighestEasyStage, 
-            GameManager.TotalEasyStages
-        );
+        // Update the overall progress of the level into a meterbar
+        var progressEasy = userData.HighestEasyStage;
 
-        UpdateLevelProgressMeter
-        (
-            levelProgressNormal, 
-            levelProgressTextNormal, 
-            userData.HighestNormalStage, 
-            GameManager.TotalNormalStages
-        );
+        if (userData.HighestEasyStage <= GameManager.TotalEasyStages-1)
+           progressEasy -= 1;
 
-        UpdateLevelProgressMeter
-        (
-            levelProgressHard, 
-            levelProgressTextHard, 
-            userData.HighestHardStage, 
-            GameManager.TotalHardStages
-        );
-        
+        levelSelectPageEasy.UpdateLevelProgressMeter(progressEasy, GameManager.TotalEasyStages);
+        levelSelectPageNormal.UpdateLevelProgressMeter(userData.HighestNormalStage, GameManager.TotalNormalStages);
+        levelSelectPageHard.UpdateLevelProgressMeter(userData.HighestHardStage, GameManager.TotalHardStages);
+
+        // Unlock the level selection pages
+        levelSelectPageNormal.SetLocked( userData.HighestEasyStage != GameManager.TotalEasyStages );
+        levelSelectPageHard.SetLocked( userData.HighestNormalStage != GameManager.TotalNormalStages);
+
+        // Mark the level select pages as completed (if they really are)
+        if (userData.EasyStagesCompleted)
+            levelSelectPageEasy.MarkCompleted();
+
+        if (userData.NormalStagesCompleted)
+           levelSelectPageNormal.MarkCompleted();
+
+        if (userData.HardStagesCompleted)
+            levelSelectPageHard.MarkCompleted();
+            
         isInitialized = true;
     }
 
@@ -155,10 +169,32 @@ public partial class LevelMenu : MonoBehaviour
 
         // Animate to the target position using LeanTween
         LeanTween.moveX(pages, targetPosition, duration).setEase(LeanTweenType.easeInOutQuad);
+        
+        // Interpolate the background color of the target page
+        // TransitionBackgroundColor(pageIndex);
+        var nextBg = pageBackgrounds[pageIndex];
+        rootBackground.sprite = nextBg;
 
         AdjustScales(pageIndex);
         UpdateTrackerLocation(pageIndex);
     }
+
+    /// <summary>
+    /// Change the level select menu's background color as we scroll through pages.
+    /// This utilizes the common tween duration.
+    /// </summary>
+    /// <param name="to">The target page index</param>
+    // private void TransitionBackgroundColor(int to)
+    // {
+    //     var currentColor = rootBackground.color;
+    //     var nextColor = pageBackgrounds[to];
+        
+    //     LeanTween.value(gameObject, 0f, 1f, duration).setOnUpdate((float t) => {
+    //         rootBackground.color = Color.Lerp(currentColor, nextColor, t);
+    //     });
+    // }
+
+    private void SetColorCallback(Color color) => rootBackground.color = color;
 
     private float CalculateTargetXPosition(int pageIndex)
     {
@@ -215,14 +251,6 @@ public partial class LevelMenu : MonoBehaviour
             backButton.gameObject.SetActive(true);
             nextButton.gameObject.SetActive(true);
         }
-    }
-
-    private void UpdateLevelProgressMeter(Slider meter, Text progressText, int currentValue, int maxValue)
-    {
-        meter.maxValue = maxValue;
-        meter.value    = currentValue-1;
-
-        progressText.text = $"{meter.value}/{meter.maxValue}";
     }
     
     #region UI_EVENTS

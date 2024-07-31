@@ -65,7 +65,7 @@ public class UserDataHelper : MonoBehaviour
 
         deserializedUserData = input;
         callback?.Invoke(deserializedUserData);
-        //File.WriteAllText(Application.persistentDataPath + "/test.json", JsonUtility.ToJson(input));
+        File.WriteAllText(Application.persistentDataPath + "/user.sav.json", JsonUtility.ToJson(input));
         yield return null;
     }
 

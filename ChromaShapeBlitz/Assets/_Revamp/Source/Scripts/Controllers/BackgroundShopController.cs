@@ -18,6 +18,8 @@ public class BackgroundShopController : MonoBehaviour
     private GameSessionManager gsm;
     private UserDataHelper userDataHelper;
 
+    private BackgroundShopItemCard m_activeItemCard;
+
     void Awake()
     {
         gsm = GameSessionManager.Instance;
@@ -39,6 +41,8 @@ public class BackgroundShopController : MonoBehaviour
     {
         BackgroundShopItemClickNotifier.BindEvent(ObserveBackgroundShopItemClicked);
         BackgroundPurchaseNotifier.BindEvent(ObserveBackgroundPurchase);
+
+        ResetMenu();
     }
 
     void OnDisable()
@@ -50,6 +54,10 @@ public class BackgroundShopController : MonoBehaviour
     private void BuildShopMenu()
     {
         var ownedBackgrounds = gsm.UserSessionData.OwnedBackgroundIds;
+        var activeBackground = gsm.UserSessionData.ActiveBackgroundID;
+        
+        Transform activeBackgroundTransform = null;
+        BackgroundShopItemCard activeCard = null;
 
         foreach (var kvp in backgroundsLookUp)
         {
@@ -67,12 +75,40 @@ public class BackgroundShopController : MonoBehaviour
 
             card.SetItemData(data);
             card.SetToggleGroup(toggleGroup);
-
+            
             if (ownedBackgrounds.Contains(itemData.Id))
-            {
                 card.SetOwned(true);
+            
+            if (itemData.Id == activeBackground)
+            {
+                // card.Toggle(true);
+                activeCard = card;
+                activeBackgroundTransform = card.transform;
             }
         }
+
+        if (activeBackgroundTransform != null)
+            activeBackgroundTransform.SetAsFirstSibling();
+
+        if (activeCard)
+            activeCard.Toggle(true);
+    }
+
+    /// <summary>
+    /// This must be called everytime this gameobject gets active.
+    /// The menu must be reset so that the active item card goes to the top
+    /// of the scrollview as the first sibling, and also marking it active.
+    /// </summary>
+    private void ResetMenu()
+    {
+        if (m_activeItemCard == null)
+            return;
+
+        if (m_activeItemCard.transform.GetSiblingIndex() != 0)
+            m_activeItemCard.transform.SetAsFirstSibling();
+
+        if (!m_activeItemCard.IsMarkedActive)
+            m_activeItemCard.Toggle(true);
     }
 
     #region EVENT_OBSERVERS
@@ -115,6 +151,7 @@ public class BackgroundShopController : MonoBehaviour
 
             buyConfirmPrompt.Hide();
             sender.SetOwned(true);
+            m_activeItemCard = sender;
             CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
         }));
     }
@@ -137,6 +174,7 @@ public class BackgroundShopController : MonoBehaviour
 
         StartCoroutine(UseBackground(skinData, gsm.UserSessionData, () => {
             sender.Toggle(true);
+            m_activeItemCard = sender;
             CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
         }));
     }

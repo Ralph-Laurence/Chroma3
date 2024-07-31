@@ -43,6 +43,10 @@ public class UserData
     public List<StageProgress> StageProgressNormal;
     public List<StageProgress> StageProgressHard;
 
+    public bool EasyStagesCompleted;
+    public bool NormalStagesCompleted;
+    public bool HardStagesCompleted;
+
     public bool EasyStageUnlocked;
     public bool NormalStageUnlocked;
     public bool HardStageUnlocked;
