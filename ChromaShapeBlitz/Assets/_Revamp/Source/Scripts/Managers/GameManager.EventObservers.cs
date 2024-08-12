@@ -40,9 +40,9 @@ namespace Revamp
             bgm.SetClip(e.StageBgm);
             bgm.ResetVolume();
             bgm.Play();
-
+    
             stageTimer.Prepare(e.TotalStageTime, e.StagePattern);
-            stageTimer.Begin();
+            stageTimer.Begin(e.StageLevel != LevelDifficulties.Easy);
 
             gsm.SelectedStageMinTime = e.MinStageTime;
             gsm.SelectedStageMaxTime = e.MaxStageTime;
@@ -82,12 +82,12 @@ namespace Revamp
         {
             switch (eventType)
             {
-                case GameManagerActionEvents.Pause:   GMEV_Pause();   break;
-                case GameManagerActionEvents.Resume:  GMEV_Resume();  break;
-                case GameManagerActionEvents.Retry:   GMEV_Retry();   break;
-                
-                case GameManagerActionEvents.NextStage:  GMAEV_NextStage(); break;
-                case GameManagerActionEvents.ExitToMenu: GMEV_ExitToMainMenu(); break;
+                case GameManagerActionEvents.Pause      : GMEV_Pause();          break;
+                case GameManagerActionEvents.Resume     : GMEV_Resume();         break;
+                case GameManagerActionEvents.Retry      : GMEV_Retry();          break;
+                case GameManagerActionEvents.VisitShop  : GMEV_VisitShop();      break;
+                case GameManagerActionEvents.NextStage  : GMAEV_NextStage();     break;
+                case GameManagerActionEvents.ExitToMenu : GMEV_ExitToMainMenu(); break;
             }
         }
     }

@@ -77,7 +77,8 @@ public enum GameManagerActionEvents
     Resume,
     Retry,
     ExitToMenu,
-    NextStage
+    NextStage,
+    VisitShop
 }
 
 /// <summary>

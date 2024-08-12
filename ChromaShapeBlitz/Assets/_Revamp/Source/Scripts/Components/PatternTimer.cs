@@ -118,10 +118,17 @@ public class PatternTimer : MonoBehaviour
     public int ElapsedSeconds => Mathf.FloorToInt(duration - remainingTime);
 
     // Start is called before the first frame update
-    public void Begin()
+    public void Begin(bool blackenPattern = false)
     {
         isStopped = false;
         ResetBgmVolume();
+        
+        // Reset the pattern color to default
+        LightenPattern();
+        
+        // Blackening the pattern is used in Hard Mode
+        if (blackenPattern)
+            BlackenPattern();
     }
 
     public void Stop() 
@@ -206,6 +213,36 @@ public class PatternTimer : MonoBehaviour
 
         yield return new WaitUntil(() => animationCompleted);
     }
+
+    private void BlackenPattern(float fadeOutDelay = 3.0F, float duration = 0.35F)
+    {
+        // Blink the pattern for 3 times before blackening it
+        var blinkCount = 3;
+
+        // Chain the blink animations using LeanTween
+        var callback = new Action<Color>((color) => patternPreviewer.color = color);
+        var finalColor = new Action(() => {
+            LeanTween.value
+            (
+                patternPreviewer.gameObject, 
+                (color) => patternPreviewer.color = color, 
+                Color.white, 
+                Color.black, 
+                duration
+            ).setOnComplete(() => {
+                // Set the final color to black after blinking
+                patternPreviewer.color = Color.black;
+            });
+        });
+
+        LeanTween.value(patternPreviewer.gameObject, callback, Color.white, Color.black, duration)
+                 .setDelay(fadeOutDelay)
+                 .setEase(LeanTweenType.easeInQuad)
+                 .setLoopPingPong(blinkCount)
+                 .setOnComplete(() => finalColor.Invoke());
+    }
+
+    public void LightenPattern() => patternPreviewer.color = Color.white;
 
     private void InvokeTimesUp()
     {

@@ -6,6 +6,8 @@ namespace Revamp
 {
     public partial class GameManager : MonoBehaviour
     {
+        private readonly int FLAG_VISIT_SHOP = 1;
+
         private IEnumerator ResumeBgm()
         {
             yield return new WaitForSeconds(0.4F);
@@ -47,7 +49,13 @@ namespace Revamp
             pauseMenu.SetActive(false);
         }
 
-        private void GMEV_ExitToMainMenu()
+        private void GMEV_ExitToMainMenu() => ExitToMainMenu();
+
+        private void GMEV_VisitShop() => ExitToMainMenu(FLAG_VISIT_SHOP);
+
+        private void GMAEV_NextStage() => MoveNextStage();
+
+        private void ExitToMainMenu(int flag = 0)
         {
             gsm.ClearSession();
             stageTimer.Stop();
@@ -55,10 +63,11 @@ namespace Revamp
             ResumeTimeScale();
             Instantiate(mainMenuSceneLoader).TryGetComponent(out FancySceneLoader loader);
 
+            if (flag == FLAG_VISIT_SHOP)
+                gsm.IsVisitShopOnGameOver = true;
+
             loader.LoadScene(Constants.Scenes.MainMenu);
         }
-
-        private void GMAEV_NextStage() => MoveNextStage();
 
         public void MoveNextStage()
         {

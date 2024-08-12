@@ -38,6 +38,8 @@ public class GameSessionManager
 
     public UserData UserSessionData;
 
+    public bool IsVisitShopOnGameOver { get; set; }
+
     public void ClearSession()
     {
         SelectedDifficulty   = default;
