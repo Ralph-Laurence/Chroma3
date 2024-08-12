@@ -115,6 +115,9 @@ public partial class StageFabricator : MonoBehaviour
         {
             { "3x3", new DimenGrid { Rows = 3, Columns = 3 } },
             { "4x4", new DimenGrid { Rows = 4, Columns = 4 } },
+            { "4x5", new DimenGrid { Rows = 4, Columns = 5 } },
+            //{ "5x4", new DimenGrid { Rows = 5, Columns = 4 } },
+            { "5x3", new DimenGrid { Rows = 5, Columns = 3 } },
             { "5x5", new DimenGrid { Rows = 5, Columns = 5 } },
             { "6x6", new DimenGrid { Rows = 6, Columns = 6 } },
             { "8x8", new DimenGrid { Rows = 8, Columns = 8 } },

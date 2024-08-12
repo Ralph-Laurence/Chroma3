@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,14 @@ public class PatternTimer : MonoBehaviour
     [Header("Timer Logic")]
     [SerializeField] private Image timerFill;
     [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private GameObject timerBadge;
+    [SerializeField] private Color normalTimerBadgeColor = new(0.41F, 1.0F, 0.0F, 1.0F);
+    [SerializeField] private Color normalTimerTextColor = Color.white;
+    [SerializeField] private Color criticalTimerBadgeColor = new(1.0F, 0.74F, 0.13F, 1.0F);
+    [SerializeField] private Color criticalTimerTextColor = new(1.0F, 0.14F, 0.23F, 1.0F);
+
+    private RectTransform timerTextRect;
+    private RectTransform timerBadgeRect;
 
     private SoundEffects sfx;
     private BackgroundMusic bgm;
@@ -28,12 +37,20 @@ public class PatternTimer : MonoBehaviour
     private bool isStopped;
     //private bool isPaused;
 
+    private bool pulseTextBegan;
+    private readonly int CriticalSecOffset = 5;
+    private readonly float TimerTextMaxPulseScale = 1.5F;
+    private readonly float TimerTextPulseDuration = 0.5F;
+
     private float lastTickPlayedSecond;
 
     void Awake()
     {
         sfx = SoundEffects.Instance;
         bgm = BackgroundMusic.Instance;
+
+        timerText.TryGetComponent(out timerTextRect);
+        timerBadge.TryGetComponent(out timerBadgeRect);
     }
 
     void Update()
@@ -61,15 +78,26 @@ public class PatternTimer : MonoBehaviour
             var remainingSecs = Mathf.CeilToInt(remainingTime);
             timerText.text = remainingSecs.ToString();
 
-            // Tone the bgm down to hear the countdown
-            if (remainingSecs == 6)
+            // Tone the bgm down to hear the countdown sound
+            if (remainingSecs == CriticalSecOffset + 1)
+            {
                 bgm.ToneDown();
+                pulseTextBegan = true;
+            }
 
             // Play the critical tick sound
-            if (remainingTime <= 5.0F && remainingTime > 0 && lastTickPlayedSecond != remainingTime)
+            if (remainingTime <= CriticalSecOffset)
             {
-                PlayClip(countdownSfx);
-                lastTickPlayedSecond = remainingTime;
+                // Keep playing the critical tick sound until the remaining 1second
+                if (remainingTime > 0 && lastTickPlayedSecond != remainingTime)
+                {
+                    PlayClip(countdownSfx);
+                    lastTickPlayedSecond = remainingTime;
+                }
+
+                // Pulse the timer text even if it reached zero
+                if (pulseTextBegan && remainingTime >= 0)
+                    StartCoroutine(PulsateTimerText());
             }
 
             // Check if the timer has reached zero
@@ -77,6 +105,9 @@ public class PatternTimer : MonoBehaviour
             {
                 Stop();
                 InvokeTimesUp();
+
+                pulseTextBegan = false;
+                ResetTimerText();
             }
         }
     }
@@ -114,6 +145,67 @@ public class PatternTimer : MonoBehaviour
     }
 
     public void SetPattern(Sprite pattern) => patternPreviewer.sprite = pattern;
+
+    private IEnumerator PulsateTimerText()
+    {
+        var animationCompleted = false;
+
+        // Store the original scale
+        var originalScale = Vector3.one;
+
+        var pulseDuration = TimerTextPulseDuration / 2.0F;
+
+        timerText.color = criticalTimerTextColor;
+
+        StartCoroutine(PulsateTimerBadge(pulseDuration));
+
+        // Pulse effect: scale up and then back to original
+        LeanTween.scale(timerTextRect, originalScale * TimerTextMaxPulseScale, pulseDuration)
+                 .setEase(LeanTweenType.easeOutQuad).setOnComplete(() =>
+                 {
+                    LeanTween.scale(timerTextRect, originalScale, pulseDuration)
+                             .setEase(LeanTweenType.easeInQuad)
+                             .setOnComplete(() => {
+                                timerText.color = normalTimerTextColor;
+                                animationCompleted = true;
+                             });
+                 });
+
+        // Wait until the animation completes
+        yield return new WaitUntil(() => animationCompleted);
+    }
+
+    private void ResetTimerText()
+    {
+        timerBadge.TryGetComponent(out Image image);
+
+        if (image == null)
+            return;
+
+        image.color = normalTimerBadgeColor;
+        timerText.color = normalTimerTextColor;
+    }
+
+    private IEnumerator PulsateTimerBadge(float duration)
+    {
+        var animationCompleted = false;
+
+        // Pulsate text
+        var normalBadgeColor = new Action(() => {
+            LeanTween.color(timerBadgeRect, normalTimerBadgeColor, duration)
+                 .setEase(LeanTweenType.easeOutQuad)
+                 .setOnComplete(() => animationCompleted = true);
+        });
+
+        // Pulsate badge
+        LeanTween.color(timerBadgeRect, criticalTimerBadgeColor, duration)
+                 .setEase(LeanTweenType.easeOutQuad)
+                 .setOnComplete(() => {
+                    normalBadgeColor.Invoke();
+                 });
+
+        yield return new WaitUntil(() => animationCompleted);
+    }
 
     private void InvokeTimesUp()
     {

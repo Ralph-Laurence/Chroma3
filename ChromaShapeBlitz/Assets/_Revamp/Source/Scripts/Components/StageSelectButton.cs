@@ -43,6 +43,8 @@ public class StageSelectButton : MonoBehaviour
             StageNumber = StageNumber,
             Difficulty = DifficultyLevel
         };
+        
+        Debug.Log($"Select Args -> {eventArgs.Difficulty} -- {eventArgs.StageNumber}");
 
         StageSelectedNotifier.NotifyObserver(eventArgs);
     }

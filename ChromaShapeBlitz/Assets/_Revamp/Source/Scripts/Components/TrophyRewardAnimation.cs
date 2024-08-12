@@ -158,7 +158,7 @@ public class TrophyRewardAnimation : MonoBehaviour
         rewardsText.text = reward;
         levelsText.text = $"{level}<space=0.25rem>1-{totalLevels}";
 
-        if (continueButtonAction != null)
+        if (continueButton != null && continueButtonAction != null)
             continueButton.onClick.AddListener(() => continueButtonAction.Invoke());
     }
 }

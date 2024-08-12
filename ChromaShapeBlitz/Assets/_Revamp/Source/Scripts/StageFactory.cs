@@ -14,6 +14,12 @@ public class StageFactory : MonoBehaviour
         // Load all prefabs in the specified folder
         var variants = Resources.LoadAll<GameObject>(prefabPath);
 
+        if (variants == null || variants?.Length == 0)
+        {
+            Debug.LogWarning("Stage prefab does not exist.");
+            return;
+        }
+
         // Select a random prefab from the loaded prefabs
         var stage = variants[Random.Range(0, variants.Length)];
 

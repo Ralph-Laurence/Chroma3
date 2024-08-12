@@ -46,6 +46,9 @@ namespace Revamp
 
             gsm.SelectedStageMinTime = e.MinStageTime;
             gsm.SelectedStageMaxTime = e.MaxStageTime;
+
+            // gsm.SelectedDifficulty  = e.StageLevel;
+            // gsm.SelectedStageNumber = e.StageNumber;
             
             var stageTitle  = $"{e.StageLevel} - {e.StageNumber:D2}";
             //var rewardStyle = e.RewardType.Equals(RewardTypes.Gems) ? "Gem" : "Coin";

@@ -66,23 +66,25 @@ namespace Revamp
             var difficulty  = gsm.SelectedDifficulty;
 
             gsm.ClearSession();
-
+            
             // Decide which stage to spawn next.
             switch (difficulty)
             {
                 // After completing the Easy stages, move on to Normal
                 case LevelDifficulties.Easy:
 
+                    // If the current selected stage was the ending stage...
                     if (stageNumber > TotalEasyStages)
                     {
                         difficulty  = LevelDifficulties.Normal;
                         stageNumber = 1;
                     }
+                    
                     break;
 
                 case LevelDifficulties.Normal:
                     
-                    // After completing the Easy stages, move on to Hard
+                    // After completing the Normal stages, move on to Hard
                     if (stageNumber > TotalNormalStages)
                     {
                         difficulty  = LevelDifficulties.Hard;
@@ -94,7 +96,7 @@ namespace Revamp
                     // stageNumber = Mathf.Clamp(stageNumber, 1, TotalHardStages);
                     break;
             }
-
+            // Debug.Log($"Load Next stage : {stageNumber}; Lvl : {difficulty}");
             stageFactory.Clear();
             stageFactory.Create(difficulty, stageNumber);
 

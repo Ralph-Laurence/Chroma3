@@ -294,7 +294,11 @@ namespace Revamp
             Instantiate(trophy, mainCanvas).TryGetComponent(out TrophyRewardAnimation anim);
             sfx.PlayOnce(trophyScreenSfx);
 
-            var continueButtonAction = new Action(() => MoveNextStage());
+            var continueButtonAction = new Action(() => {
+                Debug.Log("This is called");
+                MoveNextStage();
+                Destroy(anim.gameObject);
+            });
             
             anim.SetParams(level, maxLevels, rewardCoins, rewardGems, continueButtonAction);
 
