@@ -44,6 +44,8 @@ public class PatternTimer : MonoBehaviour
 
     private float lastTickPlayedSecond;
 
+    private LTDescr tweenBlackenPattern;
+
     void Awake()
     {
         sfx = SoundEffects.Instance;
@@ -106,7 +108,6 @@ public class PatternTimer : MonoBehaviour
                 Stop();
                 InvokeTimesUp();
 
-                pulseTextBegan = false;
                 ResetTimerText();
             }
         }
@@ -120,6 +121,8 @@ public class PatternTimer : MonoBehaviour
     // Start is called before the first frame update
     public void Begin(bool blackenPattern = false)
     {
+        ResetTimerText();
+
         isStopped = false;
         ResetBgmVolume();
         
@@ -134,6 +137,7 @@ public class PatternTimer : MonoBehaviour
     public void Stop() 
     {
         isStopped = true;
+            
         ResetBgmVolume();
     }
 
@@ -191,6 +195,8 @@ public class PatternTimer : MonoBehaviour
 
         image.color = normalTimerBadgeColor;
         timerText.color = normalTimerTextColor;
+        timerTextRect.localScale = Vector3.one;
+        pulseTextBegan = false;
     }
 
     private IEnumerator PulsateTimerBadge(float duration)
@@ -235,7 +241,9 @@ public class PatternTimer : MonoBehaviour
             });
         });
 
-        LeanTween.value(patternPreviewer.gameObject, callback, Color.white, Color.black, duration)
+        tweenBlackenPattern?.reset();
+
+        tweenBlackenPattern = LeanTween.value(patternPreviewer.gameObject, callback, Color.white, Color.black, duration)
                  .setDelay(fadeOutDelay)
                  .setEase(LeanTweenType.easeInQuad)
                  .setLoopPingPong(blinkCount)

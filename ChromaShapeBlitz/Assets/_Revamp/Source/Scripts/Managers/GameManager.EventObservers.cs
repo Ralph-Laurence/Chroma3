@@ -40,9 +40,11 @@ namespace Revamp
             bgm.SetClip(e.StageBgm);
             bgm.ResetVolume();
             bgm.Play();
-    
+            
+            var shouldFadeOutPattern = e.StageLevel == LevelDifficulties.Hard;
+
             stageTimer.Prepare(e.TotalStageTime, e.StagePattern);
-            stageTimer.Begin(e.StageLevel != LevelDifficulties.Easy);
+            stageTimer.Begin(shouldFadeOutPattern);
 
             gsm.SelectedStageMinTime = e.MinStageTime;
             gsm.SelectedStageMaxTime = e.MaxStageTime;
