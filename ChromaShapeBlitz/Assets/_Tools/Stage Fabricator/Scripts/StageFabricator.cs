@@ -113,11 +113,11 @@ public partial class StageFabricator : MonoBehaviour
     {
         gridDimensions = new Dictionary<string, DimenGrid>
         {
-            { "3x3", new DimenGrid { Rows = 3, Columns = 3 } },
-            { "4x4", new DimenGrid { Rows = 4, Columns = 4 } },
-            { "4x5", new DimenGrid { Rows = 4, Columns = 5 } },
-            //{ "5x4", new DimenGrid { Rows = 5, Columns = 4 } },
-            { "5x3", new DimenGrid { Rows = 5, Columns = 3 } },
+            { "3x3", new DimenGrid { Columns = 3, Rows = 3 } },
+            { "3x4", new DimenGrid { Columns = 3, Rows = 4 } },
+            { "3x5", new DimenGrid { Columns = 3, Rows = 5 } },
+            { "4x4", new DimenGrid { Columns = 4, Rows = 4 } },
+            { "5x4", new DimenGrid { Columns = 5, Rows = 4 } },
             { "5x5", new DimenGrid { Rows = 5, Columns = 5 } },
             { "6x6", new DimenGrid { Rows = 6, Columns = 6 } },
             { "8x8", new DimenGrid { Rows = 8, Columns = 8 } },
