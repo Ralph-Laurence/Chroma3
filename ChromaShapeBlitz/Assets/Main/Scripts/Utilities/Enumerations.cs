@@ -122,3 +122,55 @@ public enum GameManagerStates
     Active,
     Stopped
 }
+
+public enum PowerupType
+{
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Once enabled, the effect is permanent</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Max. 1 item</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    LIFE_TIME_USE,
+
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Single-Use item that gets depleted upon activation.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Max. 1 item</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    CONSUMABLE_SINGLE,
+
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Single-Use items that get depleted upon activation.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Can add more items</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    CONSUMABLE_STACKABLE
+}
+
+public enum PowerupActivation
+{
+    /// <summary>
+    /// Powerup gets activated immediately upon purchase
+    /// </summary>
+    INSTANT,
+
+    /// <summary>
+    /// Requires the user to activate the powerup while in game
+    /// </summary>
+    MANUAL
+}
