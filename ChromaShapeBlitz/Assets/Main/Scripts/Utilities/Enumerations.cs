@@ -135,7 +135,7 @@ public enum PowerupType
     ///     </item>
     /// </list>
     /// </summary>
-    LIFE_TIME_USE,
+    Permanent,
 
     /// <summary>
     /// <list type="bullet">
@@ -147,7 +147,7 @@ public enum PowerupType
     ///     </item>
     /// </list>
     /// </summary>
-    CONSUMABLE_SINGLE,
+    ConsumableSingle,
 
     /// <summary>
     /// <list type="bullet">
@@ -159,7 +159,7 @@ public enum PowerupType
     ///     </item>
     /// </list>
     /// </summary>
-    CONSUMABLE_STACKABLE
+    ConsumableStackable
 }
 
 public enum PowerupActivation
@@ -167,10 +167,19 @@ public enum PowerupActivation
     /// <summary>
     /// Powerup gets activated immediately upon purchase
     /// </summary>
-    INSTANT,
+    Instant,
 
     /// <summary>
     /// Requires the user to activate the powerup while in game
     /// </summary>
-    MANUAL
+    Manual
+}
+
+public enum PowerupItemCardColor
+{
+    Blue,
+    Green,
+    Pink,
+    Orange,
+    Purple
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Tagger : MonoBehaviour
 {
+#if UNITY_EDITOR
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -78,6 +79,6 @@ public class Tagger : MonoBehaviour
 
         yield return null;
     }
-
+#endif
     private bool IsEven(int value) => value % 2 == 0;
 }

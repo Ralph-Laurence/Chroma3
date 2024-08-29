@@ -62,7 +62,7 @@ public class NavBar : MonoBehaviour
         lastSelectedPageObj.TryGetComponent(out RectTransform lastSelectedPageRect);
 
         // Scale down the currently open page, then hide it
-        LeanTween.scale(lastSelectedPageRect, Vector2.zero, 0.25F)
+        LeanTween.scale(lastSelectedPageRect, new Vector3(0.01F, 0.01F, 1.0F), 0.25F)
                  .setOnComplete(() => {
                     
                     // Mark the nav button as active
