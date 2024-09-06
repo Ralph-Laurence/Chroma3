@@ -28,12 +28,17 @@ public class NavBar : MonoBehaviour
             var page = navPagesObj[i];
             page.TryGetComponent(out NavContentPage contentPage);
 
+            // Minimize the remaining pages other than the first page (0)
             if (i > 0)
             {
                 page.TryGetComponent(out RectTransform rect);
                 rect.localScale = Vector2.zero;
             }
 
+            // Assign a page id into each menu controller page
+            if (contentPage.PageMenuController != null)
+                contentPage.PageMenuController.PageID = i;
+            
             navPages.Add(contentPage);
         }
     }
@@ -81,13 +86,17 @@ public class NavBar : MonoBehaviour
                     tweenTargetContentPage = navPages[pageIdx];
                     navContentPageTweenBegan = true;
 
+                    // Show target page;
                     // Update the last page index after scaling
                     LeanTween.scale(currentPageRect, Vector2.one, 0.25F)
                              .setOnComplete(() => 
                              {
-                                lastSelectedPageIndex = pageIdx;
-                                navContentPageTweenBegan = false;
-                                tweenTargetContentPage = null;
+                                 lastSelectedPageIndex    = pageIdx;
+                                 navContentPageTweenBegan = false;
+                                 tweenTargetContentPage   = null;
+
+                                 if (navPages[pageIdx].PageMenuController != null)
+                                    navPages[pageIdx].PageMenuController.OnBecameFullyVisible(pageIdx);
                              });
                  });
     }

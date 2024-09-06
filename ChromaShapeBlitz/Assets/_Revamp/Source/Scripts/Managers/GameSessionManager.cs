@@ -40,6 +40,8 @@ public class GameSessionManager
 
     public bool IsVisitShopOnGameOver { get; set; }
 
+    private bool m_inventoryPageNeedsReload;
+
     public void ClearSession()
     {
         SelectedDifficulty   = default;
@@ -56,14 +58,22 @@ public class GameSessionManager
     {
         switch (color)
         {
-            case ColorSwatches.Blue: BlockSkinMaterialsInUse.BlueSkinMat = material; break;
-            case ColorSwatches.Green: BlockSkinMaterialsInUse.GreenSkinMat = material; break;
-            case ColorSwatches.Magenta: BlockSkinMaterialsInUse.MagentaSkinMat = material; break;
-            case ColorSwatches.Orange: BlockSkinMaterialsInUse.OrangeSkinMat = material; break;
-            case ColorSwatches.Purple: BlockSkinMaterialsInUse.PurpleSkinMat = material; break;
-            case ColorSwatches.Yellow: BlockSkinMaterialsInUse.YellowSkinMat = material; break;
+            case ColorSwatches.Blue:    BlockSkinMaterialsInUse.BlueSkinMat         = material; break;
+            case ColorSwatches.Green:   BlockSkinMaterialsInUse.GreenSkinMat        = material; break;
+            case ColorSwatches.Magenta: BlockSkinMaterialsInUse.MagentaSkinMat      = material; break;
+            case ColorSwatches.Orange:  BlockSkinMaterialsInUse.OrangeSkinMat       = material; break;
+            case ColorSwatches.Purple:  BlockSkinMaterialsInUse.PurpleSkinMat       = material; break;
+            case ColorSwatches.Yellow:  BlockSkinMaterialsInUse.YellowSkinMat       = material; break;
         }
     }
+
+    /// <summary>
+    /// Should the inventory page needs reload ... ?
+    /// This should be used only every after purchasing a purchase.
+    /// </summary>
+    /// <param name="needsReload"></param>
+    public void SetInventoryPageNeedsReload(bool needsReload) => m_inventoryPageNeedsReload = needsReload;
+    public bool IsInventoryPageNeedsReload => m_inventoryPageNeedsReload;
 
     #endregion GAME_LOGIC
 }

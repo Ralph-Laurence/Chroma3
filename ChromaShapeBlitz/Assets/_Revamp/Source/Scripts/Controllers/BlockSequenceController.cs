@@ -197,6 +197,11 @@ public class BlockSequenceController : MonoBehaviour
         return incorrectBlocks;
     }
 
+    /// <summary>
+    /// Adjust the current fill rate. This is used effectively with powerups
+    /// </summary>
+    public void SetFillRate(float rate) => waitFillRate = new WaitForSeconds(rate);
+
     //============= USED ONLY DURING FABRICATION ================//
 
     // Notifies an event to when this object was clicked

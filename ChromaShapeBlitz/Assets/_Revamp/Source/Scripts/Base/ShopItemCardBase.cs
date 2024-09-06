@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopItemCardBase : MonoBehaviour
+public abstract class ShopItemCardBase : MonoBehaviour
 {
     [SerializeField] protected TextMeshProUGUI  itemNameLabel;
     [SerializeField] protected TextMeshProUGUI  priceLabel;
@@ -14,6 +13,9 @@ public class ShopItemCardBase : MonoBehaviour
     public void SetItemPreviewBackground(Sprite background) => previewBackground.sprite = background;
 
     private BaseItemData m_itemData;
+
+    protected abstract void HandleClicked();
+    public abstract void SetOwned();
 
     public virtual void SetItemData(BaseItemData itemData)
     {

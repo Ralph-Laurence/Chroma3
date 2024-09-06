@@ -8,6 +8,7 @@ public class PowerupsAsset : ScriptableObject
     public Sprite               PreviewImage;
     public CurrencyType         Cost;
     public int                  Price;
+    public PowerupCategories    PowerupCategory;
     public PowerupType          ItemType;
     public PowerupActivation    ActivationMode;
     public PowerupItemCardColor CardColor;

@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class NavContentPage : MonoBehaviour
 {
+    public NavContentPageMenuController PageMenuController;
+
     [SerializeField] private ScrollRect scrollRect;
 
     /// <summary>

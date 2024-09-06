@@ -20,6 +20,7 @@ public abstract class BuyItemPromptBase : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI  promptMessage;
     [SerializeField] protected Image            itemPreview;
     [SerializeField] protected Button           buyButton;
+    [SerializeField] protected TextMeshProUGUI  buyButtonText;
 
     protected SoundEffects  sfx;
     protected RectTransform dialogRect;
@@ -37,13 +38,20 @@ public abstract class BuyItemPromptBase : MonoBehaviour
     protected abstract void OnAwake();
 
     /// <summary>
-    /// Invoked before showing the prompt
+    /// Invoked before transitioning to show the prompt
     /// </summary>
     protected Action OnBeforeShow;
 
+    /// <summary>
+    /// Invoked when the prompt was fully shown and done transitioning
+    /// </summary>
+    protected Action OnPromptShown;
+
+    protected abstract void OnBuyButtonClick();
+
     public BaseItemData ItemData { get; set; }
     
-    private ShopItemCardBase eventSender;
+    protected ShopItemCardBase EventSender;
 
     private bool isInitialized;
     
@@ -65,6 +73,9 @@ public abstract class BuyItemPromptBase : MonoBehaviour
         if (closeButton != null)
             closeButton.onClick.AddListener(Close);
 
+        if (buyButton != null)
+            buyButton.onClick.AddListener(() => OnBuyButtonClick());
+
         dialogPosition = new Vector2
         (
             dialogRect.anchoredPosition.x,
@@ -80,7 +91,7 @@ public abstract class BuyItemPromptBase : MonoBehaviour
     /// <param name="sender">The shop item card that triggered the prompt</param>
     public void SetEventSender(ShopItemCardBase sender)
     {
-        eventSender = sender;
+        EventSender = sender;
         ItemData    = sender.GetItemData();
     }
 
@@ -89,11 +100,13 @@ public abstract class BuyItemPromptBase : MonoBehaviour
     /// </summary>
     public void Show()
     {
-        OnBeforeShow?.Invoke();
-
         promptMessage.text  = $"Do you want to buy this {BaseItemName} for {FormatCostPrice(ItemData)} ?";
         itemPreview.sprite  = ItemData.PreviewImage;
         itemLabel.text      = ItemData.Name;
+
+        OnBeforeShow?.Invoke();
+
+        // ## BEGIN THE TRANSITION ## //
 
         // Set the initial position to the bottom of the screen
         dialogRect.anchoredPosition = dialogPosition;
@@ -105,7 +118,8 @@ public abstract class BuyItemPromptBase : MonoBehaviour
         LeanTween.moveY(dialogRect, 0.0F, 0.25F)
                  .setEase(LeanTweenType.easeInOutQuad)
                  .setOnComplete(() => {
-                     buyButton.interactable = true;
+                     // buyButton.interactable = true;
+                     OnPromptShown?.Invoke();
                  });
     }
 
@@ -149,5 +163,25 @@ public abstract class BuyItemPromptBase : MonoBehaviour
             return;
 
         sfx.PlayOnce(clip);
+    }
+
+    /// <summary>
+    /// Give the buy button a new text, with an option to make it interactable.
+    /// </summary>
+    /// <param name="text">The new text</param>
+    /// <param name="interactable">Should the button be disabled or enabled?</param>
+    public void SetBuyButtonText(string text, bool interactable = true)
+    {
+        buyButtonText.text = text;
+        buyButton.interactable = interactable;
+    }
+
+    /// <summary>
+    /// Revert the buy button's text back to "Buy" and make it interactable again.
+    /// </summary>
+    public void ResetBuyButton()
+    {
+        buyButtonText.text = "Buy";
+        buyButton.interactable = true;
     }
 }

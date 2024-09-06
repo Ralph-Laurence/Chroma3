@@ -29,7 +29,7 @@ public partial class StageVariant : MonoBehaviour
     public int TotalReward;
 
     [Space(10)] 
-    public List<BlockSequenceController> SequenceSet = new List<BlockSequenceController>();
+    public List<BlockSequenceController> SequenceSet = new();
 
     //
     //==========================================
@@ -94,5 +94,13 @@ public partial class StageVariant : MonoBehaviour
             cameraPosition.y - verticalDistance + StageOffset.y,
             cameraPosition.z
         );
+    }
+
+    /// <summary>
+    /// Used effectively when applying powerups
+    /// </summary>
+    public void SetFillRate(float rate)
+    {
+        SequenceSet.ForEach(sequence => sequence.SetFillRate(rate));
     }
 }

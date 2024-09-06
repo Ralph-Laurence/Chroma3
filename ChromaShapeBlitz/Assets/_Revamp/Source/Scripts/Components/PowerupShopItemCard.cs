@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class PowerupShopItemCard : ShopItemCardBase //MonoBehaviour
+public class PowerupShopItemCard : ShopItemCardBase
 {
     private readonly string ACTIVATION_INSTANT  = "<sprite=0>";
     private readonly string ACTIVATION_MANUAL   = "<sprite=1>";
@@ -13,16 +12,16 @@ public class PowerupShopItemCard : ShopItemCardBase //MonoBehaviour
     private readonly string ITEM_STACKABLE      = "<sprite=3>";
     private readonly string BADGE_SPACE         = "<space=.1rem>";
 
-    // [SerializeField] private TextMeshProUGUI itemNameLabel;
-    // [SerializeField] private TextMeshProUGUI priceLabel;
     [SerializeField] private TextMeshProUGUI badgeLabel;
+    [SerializeField] private TextMeshProUGUI stackLabel;
 
-    //[SerializeField] private Image           previewBackground;
-    //[SerializeField] private Image           previewImage;
-    // [SerializeField] private GameObject      activeIndicator;
+    [Space(5)]
+    [SerializeField] private Sprite indicatorPermanent;
+    [SerializeField] private Sprite indicatorNormal;
 
     private Button m_button;
     private PowerupItemData m_itemData;
+    private Image activeIndicatorImg;
 
     void Awake()
     {
@@ -30,37 +29,46 @@ public class PowerupShopItemCard : ShopItemCardBase //MonoBehaviour
 
         if (m_button != null)
             m_button.onClick.AddListener(HandleClicked);
-    }
 
-    //public void SetItemData(PowerupItemData itemData)
-    //{
-    //    m_itemData = itemData;
-    //    ApplyCardViewData(itemData);
-    //}
+        activeIndicator.TryGetComponent(out activeIndicatorImg);
+    }
 
     protected override void ApplyCardViewData(BaseItemData itemData)
     {
         base.ApplyCardViewData(itemData);
 
         var powerupItemData = itemData as PowerupItemData;
-
+        m_itemData = powerupItemData;
         badgeLabel.text = SelectBadges(powerupItemData);
+
+        if (powerupItemData.IsOwned)
+            SetOwned();
     }
 
-    //private void ApplyCardViewData(PowerupItemData itemData)
-    //{
-    //    itemNameLabel.text  = itemData.Name;
-    //    previewImage.sprite = itemData.PreviewImage;
+    public override void SetOwned()
+    {
+        if (m_itemData == null)
+            return;
 
-    //    var cost = itemData.Cost == CurrencyType.Coin
-    //             ? $"<style=\"Coin\">{itemData.Price}"
-    //             : $"<style=\"Gem\">{itemData.Price}";
+        // Show the indicator icon
+        activeIndicator.SetActive(true);
 
-    //    priceLabel.text = cost;
-    //    badgeLabel.text = SelectBadges(itemData);
-    //}
+        // If it is a permanent effect, dont show the stack count
+        // but show a white check
+        if (m_itemData.ItemType == PowerupType.Permanent)
+        {
+            activeIndicatorImg.sprite = indicatorPermanent;
+            stackLabel.text = string.Empty;
+        }
+        else
+        {
+            activeIndicatorImg.sprite = indicatorNormal;
+            stackLabel.text = m_itemData.CurrentAmount.ToString();
+        }
 
-    private string SelectBadges(PowerupItemData itemData)
+    }
+
+    public string SelectBadges(PowerupItemData itemData)
     {
         var mode = itemData.ActivationMode switch
         {
@@ -80,7 +88,7 @@ public class PowerupShopItemCard : ShopItemCardBase //MonoBehaviour
         return string.Join(BADGE_SPACE, output);
     }
 
-    private void HandleClicked()
+    protected override void HandleClicked()
     {
         PowerupShopItemClickNotifier.NotifyObserver(this);
     }

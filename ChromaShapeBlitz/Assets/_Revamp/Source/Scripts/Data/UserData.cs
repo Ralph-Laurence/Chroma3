@@ -21,6 +21,20 @@ public struct ActiveBlockSkinIDs
 }
 
 [Serializable]
+public struct PowerupInventory
+{
+    public int PowerupID;
+    public int CurrentAmount;
+}
+
+[Serializable]
+public struct PlayerInventory
+{
+    public List<PowerupInventory> OwnedPowerups;    // Stored Powerups
+    public List<int> EquippedPowerupIds;            // Inventory 3-bar slots
+}
+
+[Serializable]
 public class UserData
 {
     //===========================
@@ -52,10 +66,19 @@ public class UserData
     public bool HardStageUnlocked;
 
     //===========================
-    // OTHER DATA
+    // CUSTOMIZATIONS
     //===========================
-    public List<int> OwnedBlockSkinIDs;
-    public ActiveBlockSkinIDs ActiveBlockSkins;
-    public List<int> OwnedBackgroundIds;
-    public int ActiveBackgroundID;
+    public List<int>            OwnedBlockSkinIDs;
+    public ActiveBlockSkinIDs   ActiveBlockSkins;
+    public List<int>            OwnedBackgroundIds;
+    public int                  ActiveBackgroundID;
+
+    //===========================
+    // POWERUP EFFECTS
+    //===========================
+    public PlayerInventory Inventory;
+
+    public float     SequenceFillRate;
+    public int       CoinMultiplier;
+    public int       GemMultiplier;
 }

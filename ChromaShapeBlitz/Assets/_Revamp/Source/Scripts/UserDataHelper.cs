@@ -69,6 +69,10 @@ public class UserDataHelper : MonoBehaviour
         yield return null;
     }
 
+    /// <summary>
+    /// Seed the user data with starting values
+    /// </summary>
+    /// <returns>Default UserData</returns>
     private UserData SeedDefault()
     {
         int[] defaultBlockSkinIds = { 1,2,3,4,5,6 };
@@ -102,7 +106,11 @@ public class UserDataHelper : MonoBehaviour
             },
 
             ActiveBackgroundID = 0,
-            OwnedBackgroundIds = new List<int>{ 0 }
+            OwnedBackgroundIds = new List<int>{ 0 },
+
+            SequenceFillRate = 0.24F,
+            CoinMultiplier   = 1,
+            GemMultiplier    = 1
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

@@ -15,40 +15,51 @@ Remember, each powerup is designed to help you succeed and make your gameplay ex
 “Tip: Use powerups to overcome challenges!”
 “Tip: Use powerups to enhance your abilities!”
 
+--save powerup count in userdata as list of common powerups--
+--for every powerup usage, validate if it reached 0 then unlist it--
+--only for those temporary powerups--
+
+** When you buy a powerup, the last purchased is automatically equipped in the hotbar
+replacing the older items in the slot
+
+**The first two slots are reserved for special items /
+**The first two slots are reserved for special items such as those permanent effects
+
+**When you own a permanent powerup, it is blah blah
 POWERUP ITEMS:
 
 [Block Sequence Fill, Permanent]
 [Speedup]
-Rush	- Speedup block sequence filling 25%
-Sprint	- Speedup block sequence filling 50%
-Turbo	- Speedup block sequence filling 75%
+101 -> Rush	- Speedup block sequence filling 25%
+102 -> Sprint	- Speedup block sequence filling 50%
+103 -> Turbo	- Speedup block sequence filling 75%
+104 -> Blitz	- Speedup block sequence filling 100%
 
 [Block Sequence Fill, Temporary]
-Blitz	- Speedup block sequence filling 100%
-Flash 	- Instant Sequence Fill, no delay
+105 -> Flash 	- Instant Sequence Fill, no delay
 
-Idea		 - Hint the player which tiles to tap
-Wizard		 - Solves the first 3 sequence for you
-Grand Master - Solves the entire sequence for you
+100 -> Idea		 - Hint the player which tiles to tap
+106 -> Wizard		 - Solves the first 3 sequence for you
+107 -> Grand Master - Solves the entire sequence for you
 
 [Time Effects, Temporary, Cant be used when seconds = 0]
-Adrenaline 	- pause the time for 3secs
-Flux 		- pause the time for 5secs
+108 -> Adrenaline 	- pause the time for 3secs
+109 -> Flux 		- pause the time for 5secs
 
-Continuity	- add +2 extra seconds to timer
-Stretch		- add +3 extra seconds to timer 
-Endurance	- add +5 extra seconds to timer 
+110 -> Continuity	- add +2 extra seconds to timer
+111 -> Stretch		- add +3 extra seconds to timer 
+112 -> Endurance	- add +5 extra seconds to timer 
 
 [Pattern Effects, Temporary]
 <Only applies to Hard Mode>
 
-Glance		- reveal the darkened pattern frame for 2secs
-Peek 		- reveal the darkened pattern frame for 3secs
-Recon		- reveal the darkened pattern frame for 5secs
+113 -> Glance		- reveal the darkened pattern frame for 2secs
+114 -> Peek 		- reveal the darkened pattern frame for 3secs
+115 -> Recon		- reveal the darkened pattern frame for 5secs
 
-Visor		- reveal the guide blocks
-XRay 		- reveal both the guide blocks and pattern frame (must be expensive)
+116 -> Visor		- reveal the guide blocks
+117 -> XRay 		- reveal both the guide blocks and pattern frame (must be expensive)
 
-[Currency Effects, Temporary, Immediate, Stackable, Consumed on game start]
-Looter 		- Double the gold coin reward
-Buccaneer	- Double the gem coin reward
+[Currency Effects, Permanent, Immediate]
+118 -> Looter 		- Double the gold coin reward
+119 -> Buccaneer	- Double the gem coin reward
