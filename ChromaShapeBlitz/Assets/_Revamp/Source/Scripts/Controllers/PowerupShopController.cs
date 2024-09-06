@@ -17,16 +17,20 @@ public class PowerupShopController : MonoBehaviour
     [SerializeField] private Sprite             itemCardBgPink;
     [SerializeField] private Sprite             itemCardBgPurple;
 
+    [Header("Powerup Shop UI")]
     [SerializeField] private RectTransform      scrollRectContent;
     [SerializeField] private BuyPowerupPrompt   buyConfirmPrompt;
 
+    [SerializeField] private BuyPowerupResultDialog buyResultDialog;
+
     private Dictionary<int, PowerupsAsset>  powerupsLookUp = new();
-    private GameSessionManager              gsm;
-    private UserDataHelper                  userDataHelper;
+    private GameSessionManager  gsm;
+    private UserDataHelper      userDataHelper;
 
     void Awake()
     {
-        gsm            = GameSessionManager.Instance;
+        gsm = GameSessionManager.Instance;
+
         userDataHelper = UserDataHelper.Instance;
         
         powerupAssetsContainer.AddToLookup(powerupsLookUp);
@@ -50,6 +54,15 @@ public class PowerupShopController : MonoBehaviour
         PowerupPurchaseNotifier.UnbindEvent(ObservePowerupPurchase);
     }
 
+    // void Update()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.F1))
+    //         
+
+    //     if (Input.GetKeyDown(KeyCode.F2))
+    //         buyResultDialog.ShowFailResult("Fail Test", powerupsLookUp[109].PreviewImage);
+    // }
+
     private void ObservePowerupItemClicked(PowerupShopItemCard sender)
     {
         if (sender == null)
@@ -72,46 +85,93 @@ public class PowerupShopController : MonoBehaviour
 
     private void ObservePowerupPurchase(PowerupShopItemCard sender)
     {
-        CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_SHOW);
-
-        var data            = sender.GetItemData();
-        var userData        = gsm.UserSessionData;
-        int playerBalance   = default;
-
-        // Decrease player's bank
-        //switch (data.Cost)
-        //{
-        //    case CurrencyType.Coin:
-        //        userData.TotalCoins -= data.Price;
-        //        playerBalance = userData.TotalCoins;
-        //        break;
-
-        //    case CurrencyType.Gem:
-        //        userData.TotalGems -= data.Price;
-        //        playerBalance = userData.TotalGems;
-        //        break;
-        //}
-
-        // Remember the item as owned
-        //if (!userData.OwnedBackgroundIds.Contains(data.ID))
-        //    userData.OwnedBackgroundIds.Add(data.ID);
-
-        // Equip the background
-        //StartCoroutine(UseBackground(data, userData, onComplete: () => {
-
-        //    PlayerCurrencyNotifier.NotifyObserver(new PlayerCurrencyEventArgs
-        //    {
-        //        Currency = data.CostCurrency,
-        //        Amount = playerBalance,
-        //        Animate = true,
-        //        AnimationType = PlayerCurrencyParticleAnimator.ANIMATION_MODE_DECREASE_AMOUNT
-        //    });
-
+        StartCoroutine(IEHandlePurchase(sender));
         //    buyConfirmPrompt.Hide();
         //    sender.SetOwned(true);
         //    m_activeItemCard = sender;
         //    CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
         //}));
+    }
+
+    private IEnumerator IEHandlePurchase(PowerupShopItemCard sender)
+    {
+        ProgressLoaderNotifier.NotifyFourSegment(true);
+
+        var data            = sender.GetItemData();
+        var userData        = gsm.UserSessionData;
+        int playerBalance   = default;
+        var ownedPowerups   = userData.Inventory.OwnedPowerups;
+
+        // Decrease player's bank
+        switch (data.Cost)
+        {
+           case CurrencyType.Coin:
+               userData.TotalCoins -= data.Price;
+               playerBalance = userData.TotalCoins;
+               break;
+
+           case CurrencyType.Gem:
+               userData.TotalGems -= data.Price;
+               playerBalance = userData.TotalGems;
+               break;
+        }
+
+        // TASK: Remember the item as owned.
+        //
+        // It would be better to use .Any() as it is more efficient in our requirement
+        // to just check for the existence of an item in the list without retrieving it.
+        // userData.Inventory.OwnedPowerups.FirstOrDefault(powerup => powerup.PowerupID == data.Id);
+        var isOwned = ownedPowerups.Any(powerup => powerup.PowerupID == data.Id);
+
+        // If we already own a powerup, just update its current amount.
+        if (isOwned)
+        {
+            for (var i = 0; i < ownedPowerups.Count; i++)
+            {
+                if (ownedPowerups[i].PowerupID == data.Id)
+                {
+                    var ownedPowerup = ownedPowerups[i];
+                    var powerupAsset = powerupsLookUp[data.Id];
+
+                    ownedPowerup.CurrentAmount += 1; //powerupAsset.Amount; // or set it to a specific value
+                    ownedPowerups[i] = ownedPowerup;
+                    
+                    // Exit the loop once the powerup is found and updated.
+                    break;
+                }
+
+                yield return null;
+            }
+        }
+
+        // Otherwise add it
+        else
+        {
+            ownedPowerups.Add(new PowerupInventory
+            {
+                PowerupID = data.Id,
+                CurrentAmount = 1
+            });
+        }
+        
+        yield return new WaitForSeconds(1.5F);
+        buyConfirmPrompt.Close();
+        
+        ProgressLoaderNotifier.NotifyFourSegment(false);
+        yield return new WaitForSeconds(0.25F);
+
+        PlayerCurrencyNotifier.NotifyObserver(new PlayerCurrencyEventArgs
+        {
+            Currency = data.Cost,
+            Amount = playerBalance,
+            Animate = true,
+            AnimationType = PlayerCurrencyParticleAnimator.ANIMATION_MODE_DECREASE_AMOUNT
+        });
+
+        gsm.UserSessionData = userData;
+        gsm.SetInventoryPageNeedsReload(true);
+
+        buyResultDialog.ShowSuccessResult(data.PreviewImage);
     }
 
     public IEnumerator BuildShopMenu()
@@ -168,4 +228,6 @@ public class PowerupShopController : MonoBehaviour
         PowerupItemCardColor.Purple => itemCardBgPurple,
         _ => null
     };
+
+    
 }

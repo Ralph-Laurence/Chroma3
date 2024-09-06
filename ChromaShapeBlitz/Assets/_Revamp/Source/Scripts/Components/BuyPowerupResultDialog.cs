@@ -1,0 +1,84 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public struct BuyPowerupResult
+{
+    public string DialogMessage;
+    public Sprite ItemIcon;
+}
+
+public class BuyPowerupResultDialog : MonoBehaviour
+{
+    [SerializeField] private GameObject dialogContent;
+    [SerializeField] private Button[] dialogCloseButtons;
+    [SerializeField] private GameObject btnSuccess;
+    [SerializeField] private GameObject btnFail;
+    [SerializeField] private TextMeshProUGUI messageLabel;
+    [SerializeField] private Image itemThumbnail;
+    
+    [SerializeField] private AudioClip  sfxShowSuccessResult;
+    [SerializeField] private AudioClip  sfxShowFailResult;
+
+    private RectTransform dialogContentRect;
+    private Image m_image;
+
+    private readonly string SUCCESS_TEXT_COLOR = "#7DFF00";
+    private readonly string FAILURE_TEXT_COLOR = "#EC4531";
+    private SoundEffects sfx;
+
+    void Awake()
+    {
+        TryGetComponent(out m_image);
+
+        sfx = SoundEffects.Instance;
+
+        dialogContent.TryGetComponent(out dialogContentRect);
+
+        foreach (var btn in dialogCloseButtons)
+        {
+            btn.onClick.AddListener(CloseDialog);
+        }
+    }
+
+    public void ShowFailResult(string message, Sprite itemIcon)
+    {
+        messageLabel.text = $"<color={FAILURE_TEXT_COLOR}>Purchase Failed.\n</color>{message}";
+        itemThumbnail.sprite = itemIcon;
+        
+        sfx.PlayOnce(sfxShowFailResult);
+        
+        btnFail.SetActive(true);
+        ShowDialog();
+    }
+
+    public void ShowSuccessResult(Sprite itemIcon, string message = "Head over to your inventory to equip this item")
+    {
+        messageLabel.text = $"<color={SUCCESS_TEXT_COLOR}>Purchase Successful!\n</color>{message}";
+        itemThumbnail.sprite = itemIcon;
+
+        sfx.PlayOnce(sfxShowSuccessResult);
+        
+        btnSuccess.SetActive(true);
+        ShowDialog();
+    }
+
+    private void CloseDialog()
+    {
+        LeanTween.scale(dialogContentRect, Vector3.zero, 0.25F)
+                 .setOnComplete(() => {
+                    dialogContent.SetActive(false);
+                    m_image.enabled = false;
+                    btnFail.SetActive(false);
+                    btnSuccess.SetActive(false);
+                 });
+    }
+
+    private void ShowDialog()
+    {
+        m_image.enabled = true;
+        Debug.Log($"IS IMG ENABLED -> {m_image.enabled}");
+        dialogContent.SetActive(true);
+        LeanTween.scale(dialogContentRect, Vector3.one, 0.25F);
+    }
+}

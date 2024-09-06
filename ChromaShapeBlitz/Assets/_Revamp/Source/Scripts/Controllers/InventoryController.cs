@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class InventoryController : NavContentPageMenuController
 {
-    private readonly int LOAD_ACTION_STATUS_COMPLETE = 2;
 
     #region INVENTORY_UI
     //
@@ -105,10 +104,23 @@ public class InventoryController : NavContentPageMenuController
     /// <param name="fullReload">Applicable only if performing a full data loading. This includes reading the subsprites.</param>
     private IEnumerator IEBeginLoadData()
     {
-        // If we already initialized the inventory page before,
-        // but it is not marked for reload, we do nothing.
-        if (!gsm.IsInventoryPageNeedsReload && m_IsInitialized)
-            yield break;
+        if (m_IsInitialized)
+        {
+            // If we already initialized the inventory page before,
+            // but it is not marked for reload, we do nothing.
+            if (!gsm.IsInventoryPageNeedsReload)
+                yield break;
+
+            // However, if this page is already initialized but it needs
+            // to be redrawn, we reset its contents for redraw
+            while (scrollRectContent.childCount > 0)
+            {
+                DestroyImmediate(scrollRectContent.GetChild(0).gameObject);
+                yield return null;
+            }
+
+            m_ownedPowerups.Clear();
+        }
 
         ProgressLoaderNotifier.NotifyIndefiniteBar(true);
         
