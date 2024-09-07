@@ -9,20 +9,23 @@ using UnityEngine;
 /// </summary>
 public abstract class CommonHotbar : MonoBehaviour
 {
+    /// <summary>
+    /// Invoked when the internal Awake() has finished
+    /// </summary>
+    protected abstract void OnAwake();
+
     [SerializeField] protected HotBarSlot[] dynamicSlots;
     [SerializeField] protected AudioClip enqueueSfx;
     [SerializeField] protected AudioClip dequeueSfx;
 
     private Dictionary<int, InventoryItemData> itemQueue = new();
 
-    private SoundEffects sfx;
     private bool isDirty = false;
 
     void Awake()
     {
         AssignSlotIndeces();
-
-        sfx = SoundEffects.Instance;
+        OnAwake();
     }
 
     private void AssignSlotIndeces()
@@ -35,8 +38,13 @@ public abstract class CommonHotbar : MonoBehaviour
         }
     }
 
-    public void EnqueueItem(InventoryItemData itemData)
+    /// <summary>
+    /// Add an item to the slot
+    /// </summary>
+    public virtual void EnqueueItem(InventoryItemData itemData)
     {
+        var itemQueue = GetItemQueue();
+
         if (itemQueue.ContainsKey(itemData.ID) || itemQueue.Count >= dynamicSlots.Length)
             return;
 
@@ -44,11 +52,8 @@ public abstract class CommonHotbar : MonoBehaviour
         
         // Adding an item makes the queue dirty
         isDirty = true;
-
+        
         itemData.SetInvisible();
-
-        if (enqueueSfx != null)
-            sfx.PlayOnce(enqueueSfx);
 
         // Find which slot is unoccupied
         for (var i = 0; i < dynamicSlots.Length; i++)
@@ -69,9 +74,13 @@ public abstract class CommonHotbar : MonoBehaviour
         }
     }
 
-    public void DequeueItem(int slotIndex)
+    /// <summary>
+    /// Remove an item from the slot, by its index
+    /// </summary>
+    public virtual void DequeueItem(int slotIndex)
     {
-        var slot = dynamicSlots[slotIndex];
+        var slot        = dynamicSlots[slotIndex];
+        var itemQueue   = GetItemQueue();
 
         // If an item does not exist from the queue, skip..
         if (!itemQueue.ContainsKey(slot.GetItemID()))
@@ -87,19 +96,20 @@ public abstract class CommonHotbar : MonoBehaviour
         // Removing an item makes the queue dirty
         isDirty = true;
 
-        if (enqueueSfx != null)
-            sfx.PlayOnce(dequeueSfx);
-
         // Redraw the hotbar at given index
         dynamicSlots[slotIndex].Reset();
     }
-
+    
     /// <summary>
     /// Reset the dirty state
     /// </summary>
     public void CleanUpState() => isDirty = false;
-    public bool IsDirty   => isDirty;
 
+    /// <summary>
+    /// Get the dirty state
+    /// </summary>
+    public bool IsDirty   => isDirty;
+    
     /// <summary>
     /// Get the Ids of the queued items
     /// </summary>
@@ -108,20 +118,16 @@ public abstract class CommonHotbar : MonoBehaviour
     /// <summary>
     /// Give the hotbar's item queue with newer values
     /// </summary>
-    /// <param name="itemQueue"></param>
-    public void UpdateItemQueue(Dictionary<int, InventoryItemData> itemQueue) => this.itemQueue = itemQueue;
+    public void SetItemQueueSource(Dictionary<int, InventoryItemData> itemQueue) => this.itemQueue = itemQueue;
     
     /// <summary>
     /// THe internal itemsource datasource of hotbar
     /// </summary>
-    /// <returns></returns>
     public Dictionary<int, InventoryItemData> GetItemQueue() => itemQueue;
 
     /// <summary>
     /// Check if an item ID exists in the internal item queue
     /// </summary>
-    /// <param name="itemId"></param>
-    /// <returns></returns>
     public bool ItemQueueContains(int itemId)
     {
         if (itemQueue == null)

@@ -134,7 +134,8 @@ public class InventoryController : NavContentPageMenuController
         m_loadTasks.Add(FIllInventoryListView);
 
         if (gsm.IsInventoryPageNeedsReload || !m_IsInitialized)
-            m_loadTasks.Add(IERepopulateHotbar);
+            m_loadTasks.Add(hotbar.RePopulateHotbar);
+            //m_loadTasks.Add(IERepopulateHotbar);
 
         for (var i = 0; i < m_loadTasks.Count; i++)
         {
@@ -180,7 +181,7 @@ public class InventoryController : NavContentPageMenuController
             powerupsIO.LoadOwnedPowerupsAssetsAsync((owned, equipped) =>
             {
                 m_ownedPowerups  = owned;
-                hotbar.UpdateItemQueue(equipped);
+                hotbar.SetItemQueueSource(equipped);
             })
         );        
     }
@@ -234,10 +235,10 @@ public class InventoryController : NavContentPageMenuController
     /// <summary>
     /// Refill the hotbar and force reset each slot then assign a new item.
     /// </summary>
-    private IEnumerator IERepopulateHotbar()
-    {
-        yield return StartCoroutine(hotbar.RePopulateHotbar());
-    }
+    // private IEnumerator IERepopulateHotbar()
+    // {
+    //     yield return StartCoroutine(hotbar.RePopulateHotbar());
+    // }
     //
     //
     #endregion ASSET_LOADING

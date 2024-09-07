@@ -45,11 +45,6 @@ public class PowerupShopItemCard : ShopItemCardBase
         var powerupItemData = itemData as PowerupItemData;
         m_itemData = powerupItemData;
 
-        if (m_itemData.Id == 111)
-        {
-            Debug.LogWarning($"Selected Item -> {m_itemData.Name} = {m_itemData.CurrentAmount}");
-        }
-
         badgeLabel.text = SelectBadges(powerupItemData);
 
         if (powerupItemData.IsOwned)
