@@ -23,6 +23,10 @@ public abstract class ShopItemCardBase : MonoBehaviour
         ApplyCardViewData(itemData);
     }
 
+    /// <summary>
+    /// Get the superclass item data
+    /// </summary>
+    /// <returns>Base item data</returns>
     public BaseItemData GetItemData() => m_itemData;
 
     /// <summary>

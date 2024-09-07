@@ -86,52 +86,34 @@ public class PowerupShopController : MonoBehaviour
     private void ObservePowerupPurchase(PowerupShopItemCard sender)
     {
         StartCoroutine(IEHandlePurchase(sender));
-        //    buyConfirmPrompt.Hide();
-        //    sender.SetOwned(true);
-        //    m_activeItemCard = sender;
-        //    CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
-        //}));
     }
 
     private IEnumerator IEHandlePurchase(PowerupShopItemCard sender)
     {
         ProgressLoaderNotifier.NotifyFourSegment(true);
 
-        var data            = sender.GetItemData();
-        var userData        = gsm.UserSessionData;
-        int playerBalance   = default;
-        var ownedPowerups   = userData.Inventory.OwnedPowerups;
-
-        // Decrease player's bank
-        switch (data.Cost)
-        {
-           case CurrencyType.Coin:
-               userData.TotalCoins -= data.Price;
-               playerBalance = userData.TotalCoins;
-               break;
-
-           case CurrencyType.Gem:
-               userData.TotalGems -= data.Price;
-               playerBalance = userData.TotalGems;
-               break;
-        }
+        var powerupItemData     = sender.GetPowerupItemData(); //GetItemData();
+        var userData            = gsm.UserSessionData;
+        int playerBalance       = default;
+        var ownedPowerups       = userData.Inventory.OwnedPowerups;
 
         // TASK: Remember the item as owned.
         //
         // It would be better to use .Any() as it is more efficient in our requirement
         // to just check for the existence of an item in the list without retrieving it.
         // userData.Inventory.OwnedPowerups.FirstOrDefault(powerup => powerup.PowerupID == data.Id);
-        var isOwned = ownedPowerups.Any(powerup => powerup.PowerupID == data.Id);
+        var isOwned = ownedPowerups.Any(powerup => powerup.PowerupID == powerupItemData.Id);
 
         // If we already own a powerup, just update its current amount.
+        // In this case, we will update the amount stored into the disk
         if (isOwned)
         {
             for (var i = 0; i < ownedPowerups.Count; i++)
             {
-                if (ownedPowerups[i].PowerupID == data.Id)
+                if (ownedPowerups[i].PowerupID == powerupItemData.Id)
                 {
                     var ownedPowerup = ownedPowerups[i];
-                    var powerupAsset = powerupsLookUp[data.Id];
+                    var powerupAsset = powerupsLookUp[powerupItemData.Id];
 
                     ownedPowerup.CurrentAmount += 1; //powerupAsset.Amount; // or set it to a specific value
                     ownedPowerups[i] = ownedPowerup;
@@ -149,12 +131,33 @@ public class PowerupShopController : MonoBehaviour
         {
             ownedPowerups.Add(new PowerupInventory
             {
-                PowerupID = data.Id,
+                PowerupID = powerupItemData.Id,
                 CurrentAmount = 1
             });
         }
         
-        yield return new WaitForSeconds(1.5F);
+        // Increase the card's displayed amount by 1
+        powerupItemData.CurrentAmount++;
+        powerupItemData.IsOwned = true;
+        
+        // Apply the updated item card data
+        sender.SetItemData(powerupItemData);
+
+        // Decrease player's bank
+        switch (powerupItemData.Cost)
+        {
+           case CurrencyType.Coin:
+               userData.TotalCoins -= powerupItemData.Price;
+               playerBalance = userData.TotalCoins;
+               break;
+
+           case CurrencyType.Gem:
+               userData.TotalGems -= powerupItemData.Price;
+               playerBalance = userData.TotalGems;
+               break;
+        }
+
+        yield return new WaitForSeconds(1.25F);
         buyConfirmPrompt.Close();
         
         ProgressLoaderNotifier.NotifyFourSegment(false);
@@ -162,16 +165,16 @@ public class PowerupShopController : MonoBehaviour
 
         PlayerCurrencyNotifier.NotifyObserver(new PlayerCurrencyEventArgs
         {
-            Currency = data.Cost,
-            Amount = playerBalance,
-            Animate = true,
-            AnimationType = PlayerCurrencyParticleAnimator.ANIMATION_MODE_DECREASE_AMOUNT
+            Currency        = powerupItemData.Cost,
+            Amount          = playerBalance,
+            Animate         = true,
+            AnimationType   = PlayerCurrencyParticleAnimator.ANIMATION_MODE_DECREASE_AMOUNT
         });
 
         gsm.UserSessionData = userData;
         gsm.SetInventoryPageNeedsReload(true);
 
-        buyResultDialog.ShowSuccessResult(data.PreviewImage);
+        buyResultDialog.ShowSuccessResult(powerupItemData.PreviewImage);
     }
 
     public IEnumerator BuildShopMenu()
