@@ -33,6 +33,8 @@ public class SkinShopController : MonoBehaviour
     [FormerlySerializedAs("navbarObj")]
     [SerializeField] private GameObject navbarObj;
 
+    [SerializeField] private BuySkinsResultDialog buySkinsResultDialog;
+
     private Dictionary<int, BlockSkinsAsset> skinsLookupTable;
     private List<SkinShopItemCard> skinItemCards;
     private SkinShopItemCard m_activeItemCard;
@@ -249,11 +251,41 @@ public class SkinShopController : MonoBehaviour
     /// <param name="sender"></param>
     private void ObserveBlockSkinPurchase(SkinShopItemCard sender)
     {
-        CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_SHOW);
-
-        var data = sender.GetItemData();
-        var userData = gsm.UserSessionData;
+        var data          = sender.GetItemData();
+        var userData      = gsm.UserSessionData;
         int playerBalance = default;
+        var canBuy        = true;
+        var notEnoughWhat = "Coins";
+
+        switch (data.CostCurrency)
+        {
+            case CurrencyType.Coin:
+
+                if (data.CostCurrency == CurrencyType.Coin && data.Price > gsm.UserSessionData.TotalCoins)
+                    canBuy = false;
+
+                break;
+
+            case CurrencyType.Gem:
+
+                if (data.Price > gsm.UserSessionData.TotalGems)
+                {
+                    canBuy = false;
+                    notEnoughWhat = "Gems";
+                }
+                break;
+        }
+
+        if (!canBuy)
+        {
+            var msg = $"You don't have enough <color=#EC4531>{notEnoughWhat}</color> to buy this item.";
+            
+            buySkinPrompt.Hide();
+            buySkinsResultDialog.ShowFailResult(msg, data.PreviewImage);
+            return;
+        }
+
+        ProgressLoaderNotifier.NotifyFourSegment(true);
 
         // Decrease player's bank
         switch (data.CostCurrency)

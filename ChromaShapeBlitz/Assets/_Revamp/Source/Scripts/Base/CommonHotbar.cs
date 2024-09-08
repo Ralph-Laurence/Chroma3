@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,8 +16,6 @@ public abstract class CommonHotbar : MonoBehaviour
     protected abstract void OnAwake();
 
     [SerializeField] protected HotBarSlot[] dynamicSlots;
-    [SerializeField] protected AudioClip enqueueSfx;
-    [SerializeField] protected AudioClip dequeueSfx;
 
     private Dictionary<int, InventoryItemData> itemQueue = new();
 
@@ -38,13 +37,57 @@ public abstract class CommonHotbar : MonoBehaviour
         }
     }
 
+    private IEnumerator IEPopulateHotbar(Dictionary<int, InventoryItemData> dataSource)
+    {
+        if (dataSource == null || dataSource.Count <= 0)
+            yield break;
+
+        var items = new List<InventoryItemData>();
+
+        // Collect every item data from the pair
+        foreach (var item in dataSource)
+        {
+            items.Add(item.Value);
+            yield return null;
+        }
+
+        // Force reset all slots then fill them with new items
+        for (var i = 0; i < dynamicSlots.Length; i++)
+        {
+            var slot = dynamicSlots[i];
+            slot.Reset();
+
+            if (i < dataSource.Count)
+            {
+                var itemData = items[i];
+
+                slot.FillItem(new HotbarSlotDataSource
+                {
+                    ItemId = itemData.ID,
+                    ItemCountSprite = itemData.AmountIcon,
+                    ItemThumbnail = itemData.Thumbnail,
+                });
+            }
+
+            yield return null;
+        }
+
+        yield return null;
+    }
+
+    /// <summary>
+    /// Fills the hotbar with new items. This will force each slot to reset their current state.
+    /// </summary>
+    public IEnumerator RePopulateHotbar()
+    {
+        yield return StartCoroutine(IEPopulateHotbar( itemQueue ));
+    }
+
     /// <summary>
     /// Add an item to the slot
     /// </summary>
     public virtual void EnqueueItem(InventoryItemData itemData)
     {
-        var itemQueue = GetItemQueue();
-
         if (itemQueue.ContainsKey(itemData.ID) || itemQueue.Count >= dynamicSlots.Length)
             return;
 
@@ -64,9 +107,9 @@ public abstract class CommonHotbar : MonoBehaviour
             {
                 slot.FillItem(new HotbarSlotDataSource
                 {
-                    ItemId = itemData.ID,
+                    ItemId          = itemData.ID,
                     ItemCountSprite = itemData.AmountIcon,
-                    ItemThumbnail = itemData.Thumbnail,
+                    ItemThumbnail   = itemData.Thumbnail,
                 });
 
                 break;
@@ -79,8 +122,7 @@ public abstract class CommonHotbar : MonoBehaviour
     /// </summary>
     public virtual void DequeueItem(int slotIndex)
     {
-        var slot        = dynamicSlots[slotIndex];
-        var itemQueue   = GetItemQueue();
+        var slot = dynamicSlots[slotIndex];
 
         // If an item does not exist from the queue, skip..
         if (!itemQueue.ContainsKey(slot.GetItemID()))
@@ -90,9 +132,10 @@ public abstract class CommonHotbar : MonoBehaviour
         var itemData = itemQueue[slot.GetItemID()];
         itemData.SetVisible();
 
+        Debug.LogWarning($"Queue count before Dequeue: {itemQueue.Count}");
         // Remove it from the queue
         itemQueue.Remove(itemData.ID);
-
+        Debug.LogWarning($"Queue count after Dequeue: {itemQueue.Count}");
         // Removing an item makes the queue dirty
         isDirty = true;
 
@@ -108,7 +151,7 @@ public abstract class CommonHotbar : MonoBehaviour
     /// <summary>
     /// Get the dirty state
     /// </summary>
-    public bool IsDirty   => isDirty;
+    public bool IsDirty => isDirty;
     
     /// <summary>
     /// Get the Ids of the queued items

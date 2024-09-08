@@ -7,13 +7,11 @@ using System.Collections;
 
 public class PowerupsIO : MonoBehaviour
 {
-    private PlayerInventory m_PlayerInventory;
     private GameSessionManager gsm;
 
-    public void Setup(GameSessionManager gameSessionManager)
+    void Awake()
     {
-        gsm = gameSessionManager;
-        m_PlayerInventory = gsm.UserSessionData.Inventory;
+        gsm = GameSessionManager.Instance;
     }
 
     public IEnumerator LoadOwnedPowerupsAssetsAsync(Action
@@ -43,11 +41,11 @@ public class PowerupsIO : MonoBehaviour
         // # LOAD OWNED POWERUPS FROM SERIALIZED INVENTORY #
         // .................................................
 
-        var ownedPowerupsLookup = new Dictionary<int, InventoryItemData>();
-        var activePowerupsLookup = new Dictionary<int, InventoryItemData>();
-
-        var ownedPowerupsInventory = m_PlayerInventory.OwnedPowerups;
-        var equippedPowerupsInventory = m_PlayerInventory.EquippedPowerupIds;
+        var ownedPowerupsLookup         = new Dictionary<int, InventoryItemData>();
+        var activePowerupsLookup        = new Dictionary<int, InventoryItemData>();
+        var playerInventory             = gsm.UserSessionData.Inventory;
+        var ownedPowerupsInventory      = playerInventory.OwnedPowerups;
+        var equippedPowerupsInventory   = playerInventory.EquippedPowerupIds;
 
         // No owned powerups yet ... skip.
         if (ownedPowerupsInventory == null || ownedPowerupsInventory?.Count == 0)
@@ -85,11 +83,11 @@ public class PowerupsIO : MonoBehaviour
             // Update the owned powerups data, i.e. assign thumbnail
             var ownedPowerupData = ownedPowerupsLookup[powerup.Id];
 
-            ownedPowerupData.Name = powerup.Name;
-            ownedPowerupData.Thumbnail = powerup.PreviewImage;
-            ownedPowerupData.ItemType = powerup.ItemType.ToInventoryItemType();
-            ownedPowerupData.MaxAmount = powerup.MaxCount;
-            ownedPowerupData.IsVisible = true;
+            ownedPowerupData.Name           = powerup.Name;
+            ownedPowerupData.Thumbnail      = powerup.PreviewImage;
+            ownedPowerupData.ItemType       = powerup.ItemType.ToInventoryItemType();
+            ownedPowerupData.MaxAmount      = powerup.MaxCount;
+            ownedPowerupData.IsVisible      = true;
 
             ownedPowerupsLookup[powerup.Id] = ownedPowerupData;
 
@@ -135,12 +133,13 @@ public class PowerupsIO : MonoBehaviour
     /// Helper method of the UpdateEquippedPowerups coroutine.
     /// </summary>
     /// <param name="equippedPowerups">The updated powerups</param>
-    public void UpdateEquippedPowerups(Dictionary<int, InventoryItemData> equippedPowerups)
+    public void UpdateEquippedPowerups(Dictionary<int, InventoryItemData> equippedPowerups, Action onComplete = null)
     {
         ProgressLoaderNotifier.NotifyFourSegment(true);
 
         StartCoroutine(IEUpdateEquippedPowerups(equippedPowerups, () => {
             ProgressLoaderNotifier.NotifyFourSegment(false);
+            onComplete?.Invoke();
         }));
     }
 

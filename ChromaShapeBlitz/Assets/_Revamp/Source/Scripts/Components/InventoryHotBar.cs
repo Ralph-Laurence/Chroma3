@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class InventoryHotBar : CommonHotbar
 {
+    [SerializeField] protected AudioClip enqueueSfx;
+    [SerializeField] protected AudioClip dequeueSfx;
+    
     private SoundEffects sfx;
     
     protected override void OnAwake()
@@ -48,50 +51,4 @@ public class InventoryHotBar : CommonHotbar
     //     // No Changes: If all elements are the same and in the same order, it returns false.
     //     return false;
     // }
-
-    /// <summary>
-    /// Fills the hotbar with new items. This will force each slot to reset their current state.
-    /// </summary>
-    public IEnumerator RePopulateHotbar()
-    {
-        yield return StartCoroutine(IEPopulateHotbar(GetItemQueue()));
-    }
-
-    private IEnumerator IEPopulateHotbar(Dictionary<int, InventoryItemData> dataSource)
-    {
-        if (dataSource == null || dataSource.Count <= 0)
-            yield break;
-
-        var items = new List<InventoryItemData>();
-
-        // Collect every item data from the pair
-        foreach (var item in dataSource)
-        {
-            items.Add(item.Value);
-            yield return null;
-        }
-
-        // Force reset all slots then fill them with new items
-        for (var i = 0; i < dynamicSlots.Length; i++)
-        {
-            var slot = dynamicSlots[i];
-            slot.Reset();
-
-            if (i < dataSource.Count)
-            {
-                var itemData = items[i];
-
-                slot.FillItem(new HotbarSlotDataSource
-                {
-                    ItemId = itemData.ID,
-                    ItemCountSprite = itemData.AmountIcon,
-                    ItemThumbnail = itemData.Thumbnail,
-                });
-            }
-
-            yield return null;
-        }
-
-        yield return null;
-    }
 }

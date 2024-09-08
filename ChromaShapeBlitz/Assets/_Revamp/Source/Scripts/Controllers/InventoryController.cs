@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class InventoryController : NavContentPageMenuController
@@ -90,11 +88,14 @@ public class InventoryController : NavContentPageMenuController
     /// </summary>
     private void HandleInventoryClosing()
     {
-        if (!hotbar.IsDirty)
+        if (!hotbar.IsDirty || powerupsIO == null)
             return;
 
-        powerupsIO.UpdateEquippedPowerups(hotbar.GetItemQueue());
-        hotbar.CleanUpState();
+        powerupsIO.UpdateEquippedPowerups(hotbar.GetItemQueue(), onComplete: () =>
+        {
+            gsm.SetInventoryPageNeedsReload(true);
+            hotbar.CleanUpState();
+        });
     }
 
     #region ASSET_LOADING
@@ -124,8 +125,6 @@ public class InventoryController : NavContentPageMenuController
 
         ProgressLoaderNotifier.NotifyIndefiniteBar(true);
         
-        powerupsIO.Setup(gsm);
-
         // Required only during first run
         if (!m_IsInitialized)
             m_loadTasks.Add(IELoadSubSprites);
@@ -180,6 +179,7 @@ public class InventoryController : NavContentPageMenuController
         (
             powerupsIO.LoadOwnedPowerupsAssetsAsync((owned, equipped) =>
             {
+                Debug.LogWarning($"Equipped Items size on disk: {equipped.Count}");
                 m_ownedPowerups  = owned;
                 hotbar.SetItemQueueSource(equipped);
             })
@@ -232,14 +232,5 @@ public class InventoryController : NavContentPageMenuController
         }
     }
 
-    /// <summary>
-    /// Refill the hotbar and force reset each slot then assign a new item.
-    /// </summary>
-    // private IEnumerator IERepopulateHotbar()
-    // {
-    //     yield return StartCoroutine(hotbar.RePopulateHotbar());
-    // }
-    //
-    //
     #endregion ASSET_LOADING
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 
 public class PowerupShopController : MonoBehaviour
 {
+    [SerializeField] private PowerupsIO         powerupsIO;
     [SerializeField] private PowerupsAssetGroup powerupAssetsContainer;
     [SerializeField] private GameObject         itemCard;
 
@@ -23,7 +25,7 @@ public class PowerupShopController : MonoBehaviour
 
     [SerializeField] private BuyPowerupResultDialog buyResultDialog;
 
-    private Dictionary<int, PowerupsAsset>  powerupsLookUp = new();
+    private readonly Dictionary<int, PowerupsAsset>  powerupsLookUp = new();
     private GameSessionManager  gsm;
     private UserDataHelper      userDataHelper;
 
@@ -53,23 +55,12 @@ public class PowerupShopController : MonoBehaviour
         PowerupShopItemClickNotifier.UnbindEvent(ObservePowerupItemClicked);
         PowerupPurchaseNotifier.UnbindEvent(ObservePowerupPurchase);
     }
-
-    // void Update()
-    // {
-    //     if (Input.GetKeyDown(KeyCode.F1))
-    //         
-
-    //     if (Input.GetKeyDown(KeyCode.F2))
-    //         buyResultDialog.ShowFailResult("Fail Test", powerupsLookUp[109].PreviewImage);
-    // }
-
+    
     private void ObservePowerupItemClicked(PowerupShopItemCard sender)
     {
         if (sender == null)
-        {
-            Debug.Log("No sender");
             return;
-        }
+        
         var itemData = sender.GetItemData();
 
         if (itemData == null)
@@ -85,6 +76,39 @@ public class PowerupShopController : MonoBehaviour
 
     private void ObservePowerupPurchase(PowerupShopItemCard sender)
     {
+        var data   = sender.GetItemData();
+        var canBuy = true;
+
+        var notEnoughWhat = "Coins";
+
+        switch (data.Cost)
+        {
+            case CurrencyType.Coin:
+
+                if (data.Cost == CurrencyType.Coin && data.Price > gsm.UserSessionData.TotalCoins)
+                    canBuy = false;
+
+                break;
+
+            case CurrencyType.Gem:
+
+                if (data.Price > gsm.UserSessionData.TotalGems)
+                {
+                    canBuy = false;
+                    notEnoughWhat = "Gems";
+                }
+                break;
+        }
+
+        if (!canBuy)
+        {
+            var msg = $"You don't have enough <color=#EC4531>{notEnoughWhat}</color> to buy this item.";
+            
+            buyConfirmPrompt.Close();
+            buyResultDialog.ShowFailResult(msg, data.PreviewImage);
+            return;
+        }
+
         StartCoroutine(IEHandlePurchase(sender));
     }
 
@@ -157,7 +181,7 @@ public class PowerupShopController : MonoBehaviour
                break;
         }
 
-        yield return new WaitForSeconds(1.25F);
+        yield return new WaitForSeconds(0.75F);
         buyConfirmPrompt.Close();
         
         ProgressLoaderNotifier.NotifyFourSegment(false);
@@ -171,10 +195,14 @@ public class PowerupShopController : MonoBehaviour
             AnimationType   = PlayerCurrencyParticleAnimator.ANIMATION_MODE_DECREASE_AMOUNT
         });
 
-        gsm.UserSessionData = userData;
-        gsm.SetInventoryPageNeedsReload(true);
+        // Save the changes into disk
+        yield return StartCoroutine(IESaveOwnedPowerups(gsm.UserSessionData, onComplete: () =>
+        {
+            gsm.UserSessionData = userData;
 
-        buyResultDialog.ShowSuccessResult(powerupItemData.PreviewImage);
+            gsm.SetInventoryPageNeedsReload(true);
+            buyResultDialog.ShowSuccessResult(powerupItemData.PreviewImage, "Head over to your inventory to equip this item");
+        }));
     }
 
     public IEnumerator BuildShopMenu()
@@ -232,5 +260,15 @@ public class PowerupShopController : MonoBehaviour
         _ => null
     };
 
-    
+    /// <summary>
+    /// Save the updated user data onto disk
+    /// </summary>
+    private IEnumerator IESaveOwnedPowerups(UserData userData, Action onComplete = null)
+    {
+        // Write the changes to file
+        yield return StartCoroutine(UserDataHelper.Instance.SaveUserData(userData, (d) =>
+        {
+            onComplete?.Invoke();   
+        }));
+    }
 }
