@@ -41,7 +41,8 @@ public partial class PatternTimer : MonoBehaviour
     private readonly int CriticalSecOffset = 5;
     private readonly float TimerTextMaxPulseScale = 1.5F;
     private readonly float TimerTextPulseDuration = 0.5F;
-
+    
+    private bool patternConcealed;
     private float lastTickPlayedSecond;
 
     private LTDescr tweenBlackenPattern;

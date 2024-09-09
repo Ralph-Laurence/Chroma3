@@ -98,7 +98,7 @@ public partial class PatternTimer : MonoBehaviour
 
             case PowerupCategories.PatternReveal:
 
-                if (isPatternReveal) return;
+                if (isPatternReveal || !patternConcealed) return;
 
                 var seconds = effectData.EffectValue;
                 RevealPatternForSeconds(seconds);
@@ -244,6 +244,8 @@ public partial class PatternTimer : MonoBehaviour
         // We will only show the laser when we want to reveal the pattern
         darkenerMask.SetActive(true);
         patternLaser.SetActive(false);
+
+        patternConcealed = true;
     }
 
     /// <summary>
@@ -289,6 +291,7 @@ public partial class PatternTimer : MonoBehaviour
                  .setEase(LeanTweenType.easeInOutQuad)
                  .setOnComplete(() => {
                     darkenerMask.SetActive(false);
+                    patternConcealed = false;
 
                     // Darken the pattern again
                     StartCoroutine(IEDarkenPattern(seconds));
