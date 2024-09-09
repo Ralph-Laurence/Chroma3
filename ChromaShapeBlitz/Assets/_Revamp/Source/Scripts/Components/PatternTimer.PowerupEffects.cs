@@ -67,19 +67,21 @@ public partial class PatternTimer : MonoBehaviour
 
             case PowerupCategories.TimerIncrease:
                 
-                AddTime(effectData.EffectValue);
+                var increase = effectData.EffectValue;
+
+                AddTime(increase);
 
                 // Immediately apply the text without waiting for the Update() to handle it
-                timerText.text = Mathf.CeilToInt(remainingTime + effectData.EffectValue).ToString();
+                timerText.text = Mathf.CeilToInt(remainingTime + increase).ToString();
 
                 // If the remaining time after applying the powerup is greater than the critical,
                 // we must reset the bgm volume as it reduces upon reaching critical seconds
                 if (remainingTime > CriticalSecOffset)
                     bgm.ResetVolume();
 
-                // Add 2 secs lock to avoid abuse of power
-                sender.BeginLockSlot(2);
-                
+                // Add extra secs lock to avoid abuse of power
+                sender.BeginLockSlot(increase);
+
                 break;
         }
     }
