@@ -15,6 +15,10 @@ public class PowerupsAsset : ScriptableObject
     public int                  MaxCount = 1;
 
     [Space(10)]
+    [Header("For powerups driven by values (i.e. time)")]
+    public int                  EffectValue;
+
+    [Space(10)]
     [TextArea]
     public string Description;
 }

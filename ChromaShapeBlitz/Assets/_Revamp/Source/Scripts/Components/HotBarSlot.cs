@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -39,7 +40,7 @@ public class HotBarSlot : MonoBehaviour
     [SerializeField] private Image countIndicator;
     
     private Button m_button;
-
+    private bool slotLocked;
     private int  itemId;
     public bool  IsSlotFilled;
     public int   SlotIndex;
@@ -84,4 +85,63 @@ public class HotBarSlot : MonoBehaviour
     /// Get the ID of the item data attached to this slot
     /// </summary>
     public int GetItemID() => itemId;
+
+    /// <summary>
+    /// Make the slot NOT interactable
+    /// </summary>
+    // public void Lock()
+    // {
+    //     if (m_button == null)
+    //         return;
+
+    //     m_button.interactable = false;
+    // }
+
+    /// <summary>
+    /// Make the slot interactable
+    /// </summary>
+    // public void Unlock()
+    // {
+    //     if (m_button == null)
+    //         return;
+
+    //     m_button.interactable = true;
+    // }
+
+    /// <summary>
+    /// Make the slot NOT interactable for a given duration,
+    /// the make it interactable again
+    /// </summary>
+    public void BeginLockSlot(int duration)
+    {
+        if (slotLocked) return;
+
+        StartCoroutine(CooldownHotbarSlot(duration));
+    }
+
+    private IEnumerator CooldownHotbarSlot(int duration)
+    {
+        slotLocked = true;
+        m_button.interactable = false;
+
+        var timeRemaining = duration;
+        var wait = new WaitForSeconds(1.0F);
+
+        while (timeRemaining > 0.0F)
+        {
+            if (Time.timeScale > 0.0F)
+            {
+                yield return wait;
+                timeRemaining--;
+            }
+            else
+            {
+                // Wait for the next frame if the game is paused
+                yield return null;
+            }
+        }
+
+        slotLocked = false;
+        m_button.interactable = true;
+    }
 }

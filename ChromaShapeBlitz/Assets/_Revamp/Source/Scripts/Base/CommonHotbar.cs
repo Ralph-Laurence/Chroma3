@@ -132,10 +132,9 @@ public abstract class CommonHotbar : MonoBehaviour
         var itemData = itemQueue[slot.GetItemID()];
         itemData.SetVisible();
 
-        Debug.LogWarning($"Queue count before Dequeue: {itemQueue.Count}");
         // Remove it from the queue
         itemQueue.Remove(itemData.ID);
-        Debug.LogWarning($"Queue count after Dequeue: {itemQueue.Count}");
+
         // Removing an item makes the queue dirty
         isDirty = true;
 
@@ -188,5 +187,45 @@ public abstract class CommonHotbar : MonoBehaviour
             return;
 
         itemQueue[itemId] = data;
+    }
+
+    /// <summary>
+    /// Select the item by its id, from the item queue
+    /// </summary>
+    public InventoryItemData GetQueueItem(int itemId)
+    {
+        if (!ItemQueueContains(itemId))
+            return default;
+
+        return itemQueue[itemId];
+    }
+
+    /// <summary>
+    /// Retrieve the item's ID at the selected hotbar slot index
+    /// </summary>
+    public int GetItemIDAtSlot(int slotIndex)
+    {
+        if (slotIndex >= dynamicSlots.Length)
+            return default;
+        
+        var slotItem = dynamicSlots[slotIndex];
+        var itemId   = slotItem.GetItemID();
+        
+        return itemId;
+        // if (!ItemQueueContains(itemId))
+        //     return default;
+
+        // return itemQueue[itemId];
+    }
+
+    /// <summary>
+    /// Get the hotbar slot at the selected index
+    /// </summary>
+    public HotBarSlot GetSlot(int slotIndex)
+    {
+        if (slotIndex >= dynamicSlots.Length) 
+            return default;
+
+        return dynamicSlots[slotIndex];
     }
 }

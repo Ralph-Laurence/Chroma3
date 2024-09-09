@@ -10,7 +10,7 @@ public class BackgroundShopController : MonoBehaviour
     [SerializeField] private GameObject itemCard;
     [SerializeField] private RectTransform scrollRectContent;
     [SerializeField] private BuyBackgroundPrompt buyConfirmPrompt;
-    // [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private BuyBackgroundResultDialog buyResultDialog;
 
     private Dictionary<int, BackgroundsAsset> backgroundsLookUp;
     private ToggleGroup toggleGroup;
@@ -114,11 +114,41 @@ public class BackgroundShopController : MonoBehaviour
     #region EVENT_OBSERVERS
     private void ObserveBackgroundPurchase(BackgroundShopItemCard sender)
     {
-        CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_SHOW);
-
-        var data = sender.GetItemData();
-        var userData = gsm.UserSessionData;
+        var data          = sender.GetItemData();
+        var userData      = gsm.UserSessionData;
         int playerBalance = default;
+        var canBuy        = true;
+        var notEnoughWhat = "Coins";
+
+        switch (data.CostCurrency)
+        {
+            case CurrencyType.Coin:
+
+                if (data.CostCurrency == CurrencyType.Coin && data.Price > gsm.UserSessionData.TotalCoins)
+                    canBuy = false;
+
+                break;
+
+            case CurrencyType.Gem:
+
+                if (data.Price > gsm.UserSessionData.TotalGems)
+                {
+                    canBuy = false;
+                    notEnoughWhat = "Gems";
+                }
+                break;
+        }
+
+        if (!canBuy)
+        {
+            var msg = $"You don't have enough <color=#EC4531>{notEnoughWhat}</color> to buy this item.";
+            
+            buyConfirmPrompt.Hide();
+            buyResultDialog.ShowFailResult(msg, data.PreviewImage);
+            return;
+        }
+
+        ProgressLoaderNotifier.NotifyFourSegment(true);
 
         // Decrease player's bank
         switch (data.CostCurrency)
@@ -152,7 +182,8 @@ public class BackgroundShopController : MonoBehaviour
             buyConfirmPrompt.Hide();
             sender.SetOwned(true);
             m_activeItemCard = sender;
-            CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
+            
+            ProgressLoaderNotifier.NotifyFourSegment(false);
         }));
     }
 

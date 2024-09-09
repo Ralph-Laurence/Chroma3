@@ -38,6 +38,8 @@ public class Constants
         public static readonly Color TEAL           = new(r: 0.0F, g: 0.7176471F, b: 0.6F, a: 1.0F);
         public static readonly Color DARK_TEAL      = new(r: 0.0F, g: 0.49411765F, b: 0.41960785F, a: 1.0F);
         public static readonly Color WHITE          = new(r: 1, g: 1, b: 1, a: 1);
+
+        public static readonly Color TRANSPARENT = new(r: 0.0F, g: 0.0F, b: 0.0F, a: 0.0F);
     }
 
     public static readonly Color DefaultAmbientColor = new(0.212F, 0.227F, 0.259F, 1.0F);

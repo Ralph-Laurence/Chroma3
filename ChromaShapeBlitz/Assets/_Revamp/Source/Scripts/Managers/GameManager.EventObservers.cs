@@ -44,7 +44,7 @@ namespace Revamp
             var shouldFadeOutPattern = e.StageLevel == LevelDifficulties.Hard;
 
             stageTimer.Prepare(e.TotalStageTime, e.StagePattern);
-            stageTimer.Begin(shouldFadeOutPattern);
+            // stageTimer.Begin(shouldFadeOutPattern);
 
             gsm.SelectedStageMinTime = e.MinStageTime;
             gsm.SelectedStageMaxTime = e.MaxStageTime;
@@ -62,6 +62,8 @@ namespace Revamp
             rewardsText.SetTextMultiple(rewardText);
             objectiveTextsMinTime.SetTextMultiple(minTimeText);
             objectiveTextsMaxTime.SetTextMultiple(maxTimeText);
+
+            stageTimer.Begin(shouldFadeOutPattern);
         }
 
         private void ObserveStageComplete(StageCompletionType stageCompletionType)

@@ -350,10 +350,11 @@ RectTransform:
   m_Children:
   - {fileID: 1126065023}
   - {fileID: 1177039801}
-  - {fileID: 53074392}
+  - {fileID: 1575616019}
   - {fileID: 1879091172}
   - {fileID: 694674205}
   - {fileID: 1529877933}
+  - {fileID: 53074392}
   - {fileID: 1612780655}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -670,6 +671,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 78283114}
+  m_CullTransparentMesh: 0
+--- !u!1 &89724969
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 89724970}
+  - component: {fileID: 89724972}
+  - component: {fileID: 89724971}
+  m_Layer: 5
+  m_Name: Time Freeze Effect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &89724970
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89724969}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2114851366}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 76.50001}
+  m_SizeDelta: {x: 128, y: 128}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &89724971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89724969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 522c1c8908b73f1409cbe90a9aaf5279, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &89724972
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89724969}
   m_CullTransparentMesh: 0
 --- !u!1 &91685724
 GameObject:
@@ -1948,10 +2024,18 @@ MonoBehaviour:
   timerFill: {fileID: 1388335903}
   timerText: {fileID: 323722903}
   timerBadge: {fileID: 0}
+  normalTimerFillColor: {r: 1, g: 0.73, b: 0, a: 1}
   normalTimerBadgeColor: {r: 0.41, g: 1, b: 0, a: 1}
   normalTimerTextColor: {r: 1, g: 1, b: 1, a: 1}
   criticalTimerBadgeColor: {r: 1, g: 0.74, b: 0.13, a: 1}
   criticalTimerTextColor: {r: 0.63, g: 0.13, b: 0.13, a: 1}
+  freezeEffectOverlayObj: {fileID: 0}
+  frozenTimeLabelEffect: {fileID: 0}
+  sfxThreeSecs: {fileID: 0}
+  sfxFiveSecs: {fileID: 0}
+  freezeEffectSpeed: 4
+  frozenTimeBadgeColor: {r: 0.58, g: 0.83, b: 0.97, a: 1}
+  frozenTimerFillColor: {r: 0.04, g: 0.32, b: 0.99, a: 1}
 --- !u!1 &252250196
 GameObject:
   m_ObjectHideFlags: 0
@@ -21447,6 +21531,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hotbar: {fileID: 1503395605}
+  hotbarPosX: 12
+  hotbarSlideInDuration: 0.25
   powerupsIO: {fileID: 1953124916}
 --- !u!4 &972592395
 Transform:
@@ -26160,6 +26246,97 @@ RectTransform:
   m_AnchoredPosition: {x: -55, y: 45}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1457812830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1457812831}
+  - component: {fileID: 1457812833}
+  - component: {fileID: 1457812832}
+  - component: {fileID: 1457812834}
+  m_Layer: 5
+  m_Name: FreezeOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1457812831
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457812830}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1575616019}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1457812832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457812830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 98ed4af6ebfe5f54696d75aad183ae13, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1457812833
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457812830}
+  m_CullTransparentMesh: 1
+--- !u!114 &1457812834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457812830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bb50a9f3ce13af40b4447dd47ef9d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxThreeSecs: {fileID: 8300000, guid: 42ca00a6c437cde4bbb7a69b2bf44b24, type: 3}
+  sfxFiveSecs: {fileID: 8300000, guid: cb011eef75cd22749921516165156a9a, type: 3}
+  effectSpeed: 4
 --- !u!1 &1459268574
 GameObject:
   m_ObjectHideFlags: 0
@@ -27619,6 +27796,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1567262827}
   m_CullTransparentMesh: 0
+--- !u!1 &1575616018
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1575616019}
+  m_Layer: 5
+  m_Name: EffectsOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1575616019
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575616018}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1457812831}
+  m_Father: {fileID: 47360450}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1584936380
 GameObject:
   m_ObjectHideFlags: 0
@@ -28361,7 +28574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4084612, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.40784314, g: 1, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -29399,10 +29612,18 @@ MonoBehaviour:
   timerFill: {fileID: 1018600164}
   timerText: {fileID: 388308001}
   timerBadge: {fileID: 0}
+  normalTimerFillColor: {r: 1, g: 0.73, b: 0, a: 1}
   normalTimerBadgeColor: {r: 0.41, g: 1, b: 0, a: 1}
   normalTimerTextColor: {r: 1, g: 1, b: 1, a: 1}
   criticalTimerBadgeColor: {r: 1, g: 0.74, b: 0.13, a: 1}
   criticalTimerTextColor: {r: 0.63, g: 0.13, b: 0.13, a: 1}
+  freezeEffectOverlayObj: {fileID: 0}
+  frozenTimeLabelEffect: {fileID: 0}
+  sfxThreeSecs: {fileID: 0}
+  sfxFiveSecs: {fileID: 0}
+  freezeEffectSpeed: 4
+  frozenTimeBadgeColor: {r: 0.58, g: 0.83, b: 0.97, a: 1}
+  frozenTimerFillColor: {r: 0.04, g: 0.32, b: 0.99, a: 1}
 --- !u!1 &1814930163
 GameObject:
   m_ObjectHideFlags: 0
@@ -36289,10 +36510,18 @@ MonoBehaviour:
   timerFill: {fileID: 1561644428}
   timerText: {fileID: 1190564815}
   timerBadge: {fileID: 1671530106}
-  normalTimerBadgeColor: {r: 0.41, g: 1, b: 0, a: 1}
+  normalTimerFillColor: {r: 1, g: 0.73, b: 0, a: 1}
+  normalTimerBadgeColor: {r: 0.40784314, g: 1, b: 0, a: 1}
   normalTimerTextColor: {r: 1, g: 1, b: 1, a: 1}
   criticalTimerBadgeColor: {r: 1, g: 0.74, b: 0.13, a: 1}
   criticalTimerTextColor: {r: 0.99607843, g: 0.13725491, b: 0.22745098, a: 1}
+  freezeEffectOverlayObj: {fileID: 1457812830}
+  frozenTimeLabelEffect: {fileID: 89724969}
+  sfxThreeSecs: {fileID: 8300000, guid: 42ca00a6c437cde4bbb7a69b2bf44b24, type: 3}
+  sfxFiveSecs: {fileID: 8300000, guid: cb011eef75cd22749921516165156a9a, type: 3}
+  freezeEffectSpeed: 4
+  frozenTimeBadgeColor: {r: 0.3927999, g: 0.6568194, b: 0.9150943, a: 1}
+  frozenTimerFillColor: {r: 0.23137255, g: 0.20392157, b: 0.99, a: 1}
 --- !u!224 &2114851366
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36311,6 +36540,7 @@ RectTransform:
   - {fileID: 1145496067}
   - {fileID: 920416245}
   - {fileID: 1671530107}
+  - {fileID: 89724970}
   m_Father: {fileID: 1039485559}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}

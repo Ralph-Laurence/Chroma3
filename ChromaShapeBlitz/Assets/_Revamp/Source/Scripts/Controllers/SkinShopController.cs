@@ -319,7 +319,9 @@ public class SkinShopController : MonoBehaviour
             buySkinPrompt.Hide();
             sender.SetOwned(true);
             m_activeItemCard = sender;
-            CommonEventNotifier.NotifyObserver(CommonEventTags.INDEFINITE_LOADER_HIDE);
+            
+            buySkinsResultDialog.ShowSuccessResult(data.PreviewImage, $"This skin has been automatically applied for {data.ColorCategory} blocks");
+            ProgressLoaderNotifier.NotifyFourSegment(false);
         }));
     }
 

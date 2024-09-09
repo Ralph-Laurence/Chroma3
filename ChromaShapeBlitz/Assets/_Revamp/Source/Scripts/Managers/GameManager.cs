@@ -295,7 +295,7 @@ namespace Revamp
             sfx.PlayOnce(trophyScreenSfx);
 
             var continueButtonAction = new Action(() => {
-                Debug.Log("This is called");
+                
                 MoveNextStage();
                 Destroy(anim.gameObject);
             });

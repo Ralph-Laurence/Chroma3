@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PatternTimer : MonoBehaviour
+public partial class PatternTimer : MonoBehaviour
 {
     [SerializeField] private RectTransform effector;
 
@@ -19,10 +19,11 @@ public class PatternTimer : MonoBehaviour
     [SerializeField] private Image timerFill;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private GameObject timerBadge;
-    [SerializeField] private Color normalTimerBadgeColor = new(0.41F, 1.0F, 0.0F, 1.0F);
-    [SerializeField] private Color normalTimerTextColor = Color.white;
-    [SerializeField] private Color criticalTimerBadgeColor = new(1.0F, 0.74F, 0.13F, 1.0F);
-    [SerializeField] private Color criticalTimerTextColor = new(1.0F, 0.14F, 0.23F, 1.0F);
+    [SerializeField] private Color normalTimerFillColor     = new(1.00F, 0.73F, 0.00F, 1.0F);
+    [SerializeField] private Color normalTimerBadgeColor    = new(0.41F, 1.0F, 0.0F, 1.0F);
+    [SerializeField] private Color normalTimerTextColor     = Color.white;
+    [SerializeField] private Color criticalTimerBadgeColor  = new(1.0F, 0.74F, 0.13F, 1.0F);
+    [SerializeField] private Color criticalTimerTextColor   = new(1.0F, 0.14F, 0.23F, 1.0F);
 
     private RectTransform timerTextRect;
     private RectTransform timerBadgeRect;
@@ -35,7 +36,6 @@ public class PatternTimer : MonoBehaviour
     private float remainingTime;
     private float elapsedTime;
     private bool isStopped;
-    //private bool isPaused;
 
     private bool pulseTextBegan;
     private readonly int CriticalSecOffset = 5;
@@ -53,11 +53,13 @@ public class PatternTimer : MonoBehaviour
 
         timerText.TryGetComponent(out timerTextRect);
         timerBadge.TryGetComponent(out timerBadgeRect);
+
+        InitializePowerupEffectReciever();
     }
 
     void Update()
     {
-        if (isStopped)
+        if (isStopped || isTimeFreeze)
             return;
 
         remainingTime -= Time.deltaTime;
@@ -123,7 +125,9 @@ public class PatternTimer : MonoBehaviour
     {
         ResetTimerText();
 
-        isStopped = false;
+        isTimeFreeze = false;
+        isStopped    = false;
+        
         ResetBgmVolume();
         
         // Reset the pattern color to default
@@ -220,6 +224,9 @@ public class PatternTimer : MonoBehaviour
         yield return new WaitUntil(() => animationCompleted);
     }
 
+    /// <summary>
+    /// Darken the pattern during Hard Mode
+    /// </summary>
     private void BlackenPattern(float fadeOutDelay = 3.0F, float duration = 0.35F)
     {
         // Blink the pattern for 3 times before blackening it
@@ -250,6 +257,9 @@ public class PatternTimer : MonoBehaviour
                  .setOnComplete(() => finalColor.Invoke());
     }
 
+    /// <summary>
+    /// Bring back the pattern color after it got darkened
+    /// </summary>
     public void LightenPattern() => patternPreviewer.color = Color.white;
 
     private void InvokeTimesUp()
@@ -282,6 +292,7 @@ public class PatternTimer : MonoBehaviour
             bgm.ResetVolume();
     }
 
+    /*
     void PositionEffector()
     {
         var radius = 60f;
@@ -347,5 +358,5 @@ public class PatternTimer : MonoBehaviour
         // position.x *= -1.0F;
         // // Set the position of the effector
         // effector.anchoredPosition = position;
-    }
+    }*/
 }
