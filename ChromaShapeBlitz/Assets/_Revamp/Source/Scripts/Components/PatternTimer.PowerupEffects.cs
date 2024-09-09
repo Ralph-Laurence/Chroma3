@@ -20,14 +20,16 @@ public partial class PatternTimer : MonoBehaviour
     [SerializeField] private GameObject patternLaser;
     [SerializeField] private Image      darkPattern;
     [SerializeField] private AudioClip  sfxRevealPattern;
-    
+
+    private readonly Color TRANSPARENT = Constants.ColorSwatches.TRANSPARENT;
     private RectTransform darkenerMaskRect;
     private Image freezeOverlay;
     private Image frozenTimeLabel;
     private Image frozenTimeBadge;
     private bool isTimeFreeze;
     private float freezeTimeRemaining;
-    private readonly Color TRANSPARENT = Constants.ColorSwatches.TRANSPARENT;
+    private float patternRevealTimeRemaining;
+    private bool isPatternReveal;
 
     private LTDescr freezeTimeTween;
 
@@ -91,6 +93,18 @@ public partial class PatternTimer : MonoBehaviour
 
                 // Add extra secs lock to avoid abuse of power
                 sender.BeginLockSlot(increase);
+
+                break;
+
+            case PowerupCategories.PatternReveal:
+
+                if (isPatternReveal) return;
+
+                var seconds = effectData.EffectValue;
+                RevealPatternForSeconds(seconds);
+
+                // Disable the slot
+                sender.BeginLockSlot(seconds);
 
                 break;
         }
@@ -202,7 +216,7 @@ public partial class PatternTimer : MonoBehaviour
     }
     #endregion POWERUP_EFFECTS_ADD_SECONDS
 
-    #region  POWERUP_EFFECTS_REVEAL_PATTERN
+    #region POWERUP_EFFECTS_REVEAL_PATTERN
 
     /// 
     /// <summary>
@@ -210,33 +224,43 @@ public partial class PatternTimer : MonoBehaviour
     /// </summary>
     public void HandlePatternDarkened(Sprite pattern)
     {
-        darkenerMask.SetActive(true);
-        patternLaser.SetActive(false);
+        // Hide the pattern previewer by blocking it with a mask
+        ConcealPattern();
 
+        // Set the darkener pattern similar to the previewer
         darkPattern.sprite = pattern;
-        ResetDarkenerMaskTransforms();
     }
 
     /// <summary>
-    /// Hide the darkener MASK either thru animations or immediately.
-    /// Applicable only during hard mode. A darker variant of the pattern should
-    /// be set as it is required for animating the revealing of darkened pattern
+    /// Hide the pattern previewer by blocking it with a Mask
     /// </summary>
-    /// <param name="immediate">When TRUE, animations are ignored</param>
-    public void HideDarkenerMask(bool immediate, int effectDuration = 0)
+    private void ConcealPattern()
     {
-        if (immediate)
-        {
-            // Set the pattern previewer color to white, just in case..
-            patternPreviewer.color = Color.white;
+        // Reset the darkener mask transforms
+        darkenerMaskRect.sizeDelta = new Vector3(128.0F, 90.0F, 1.0F);
+        darkenerMaskRect.anchoredPosition = Vector2.zero;
 
-            // Reset the transforms for the next animation
-            ResetDarkenerMaskTransforms();
-            darkenerMask.SetActive(false);
-            return;
-        }
+        // Show the darkener mask, but hide the laser for now.
+        // We will only show the laser when we want to reveal the pattern
+        darkenerMask.SetActive(true);
+        patternLaser.SetActive(false);
+    }
 
-        // Assume animations
+    /// <summary>
+    /// Reveal the previewer without animations
+    /// </summary>
+    private void RevealPatternImmediate()
+    {
+        darkenerMask.SetActive(false);
+        patternPreviewer.color = Color.white;
+    }
+
+    /// <summary>
+    /// Reveal the previewer for a given duration, of course with animations
+    /// </summary>
+    private void RevealPatternForSeconds(int seconds)
+    {
+        darkenerMask.SetActive(true);
         patternLaser.SetActive(true);
 
         var initialHeight   = darkenerMaskRect.sizeDelta.y;
@@ -265,26 +289,30 @@ public partial class PatternTimer : MonoBehaviour
                  .setEase(LeanTweenType.easeInOutQuad)
                  .setOnComplete(() => {
                     darkenerMask.SetActive(false);
-                    patternLaser.SetActive(true);
-                    ResetDarkenerMaskTransforms();
+
+                    // Darken the pattern again
+                    StartCoroutine(IEDarkenPattern(seconds));
                  });
     }
 
-    private void ResetDarkenerMaskTransforms()
+    private IEnumerator IEDarkenPattern(int seconds)
     {
-        darkenerMaskRect.sizeDelta        = new Vector3(128.0F, 90.0F, 1.0F);
-        darkenerMaskRect.anchoredPosition = Vector2.zero;
-    }
+        isPatternReveal = true;
+        patternRevealTimeRemaining = seconds;
 
-    public void DarkenPattern(bool immediate)
-    {
-        if (immediate)
+        // Countdown the reveal effect, respecting the game's time scale
+        while (patternRevealTimeRemaining > 0.0F)
         {
-            ResetDarkenerMaskTransforms();
-            darkenerMask.SetActive(true);
-            patternLaser.SetActive(false);
-            return;
+            // We only apply the cooldown when the game isnt paused
+            if (Time.timeScale > 0.0F)
+            {
+                patternRevealTimeRemaining -= Time.deltaTime;
+            }
+            yield return null;
         }
+        
+        ConcealPattern();
+        isPatternReveal = false; // Resume the main timer once the freeze ends
     }
 
     #endregion POWERUP_EFFECTS_REVEAL_PATTERN

@@ -59,11 +59,21 @@ public partial class PatternTimer : MonoBehaviour
 
     void Update()
     {
+        /*
         if (Input.GetKeyUp(KeyCode.F2))
-            HideDarkenerMask(false);
+            //HideDarkenerMask(false);
+            StartCoroutine(IERevealPatternFrame(2));
 
-        if (Input.GetKeyUp(KeyCode.F3))
+        else if (Input.GetKeyUp(KeyCode.F3))
+            //DarkenPattern(true);
+            StartCoroutine(IERevealPatternFrame(3));
+
+        else if (Input.GetKeyUp(KeyCode.F5))
+            StartCoroutine(IERevealPatternFrame(5));
+
+        else if (Input.GetKeyUp(KeyCode.F1))
             DarkenPattern(true);
+        */
 
         if (isStopped || isTimeFreeze)
             return;
@@ -138,7 +148,7 @@ public partial class PatternTimer : MonoBehaviour
         
         // Reset the pattern color to default
         // LightenPattern();
-        HideDarkenerMask(true);
+        RevealPatternImmediate();
         
         // Blackening the pattern is used in Hard Mode
         if (blackenPattern)
