@@ -14,6 +14,14 @@ public partial class PatternTimer : MonoBehaviour
     [SerializeField] private Color      frozenTimeBadgeColor = new(0.58F, 0.83F, 0.97F, 1.0F);
     [SerializeField] private Color      frozenTimerFillColor = new(0.04F, 0.32F, 0.99F, 1.0F);
 
+    [Space(10)]
+    [Header("Pattern Reveal Effect")]
+    [SerializeField] private GameObject darkenerMask;
+    [SerializeField] private GameObject patternLaser;
+    [SerializeField] private Image      darkPattern;
+    [SerializeField] private AudioClip  sfxRevealPattern;
+    
+    private RectTransform darkenerMaskRect;
     private Image freezeOverlay;
     private Image frozenTimeLabel;
     private Image frozenTimeBadge;
@@ -24,13 +32,15 @@ public partial class PatternTimer : MonoBehaviour
     private LTDescr freezeTimeTween;
 
     // The awake method
-    private void InitializePowerupEffectReciever()
+    private void InitializePowerupEffector()
     {
         freezeEffectOverlayObj.TryGetComponent(out freezeOverlay);
         freezeOverlay.enabled = false;
 
         timerBadge.TryGetComponent(out frozenTimeBadge);
         frozenTimeLabelEffect.TryGetComponent(out frozenTimeLabel);
+
+        darkenerMask.TryGetComponent(out darkenerMaskRect);
     }
 
     #region EVENT_OBSERVERS
@@ -190,16 +200,92 @@ public partial class PatternTimer : MonoBehaviour
         // Ensure remaining time does not exceed the original duration if needed
         remainingTime = Mathf.Clamp(remainingTime, 0, duration);
     }
-
-    // Power-up methods to add specific seconds
-    public void Add3()
-    {
-        AddTime(3); // Add 3 seconds
-    }
-
-    public void Add5()
-    {
-        AddTime(5); // Add 5 seconds
-    }
     #endregion POWERUP_EFFECTS_ADD_SECONDS
+
+    #region  POWERUP_EFFECTS_REVEAL_PATTERN
+
+    /// 
+    /// <summary>
+    /// After the main pattern gets black ...
+    /// </summary>
+    public void HandlePatternDarkened(Sprite pattern)
+    {
+        darkenerMask.SetActive(true);
+        patternLaser.SetActive(false);
+
+        darkPattern.sprite = pattern;
+        ResetDarkenerMaskTransforms();
+    }
+
+    /// <summary>
+    /// Hide the darkener MASK either thru animations or immediately.
+    /// Applicable only during hard mode. A darker variant of the pattern should
+    /// be set as it is required for animating the revealing of darkened pattern
+    /// </summary>
+    /// <param name="immediate">When TRUE, animations are ignored</param>
+    public void HideDarkenerMask(bool immediate, int effectDuration = 0)
+    {
+        if (immediate)
+        {
+            // Set the pattern previewer color to white, just in case..
+            patternPreviewer.color = Color.white;
+
+            // Reset the transforms for the next animation
+            ResetDarkenerMaskTransforms();
+            darkenerMask.SetActive(false);
+            return;
+        }
+
+        // Assume animations
+        patternLaser.SetActive(true);
+
+        var initialHeight   = darkenerMaskRect.sizeDelta.y;
+        var initialY        = darkenerMaskRect.anchoredPosition.y;
+        var scaleDown       = 0.0F;
+        var rate            = 0.75F;
+        
+        sfx.PlayOnce(sfxRevealPattern);
+
+        LeanTween.value(darkenerMask, initialHeight, scaleDown, rate)
+                 .setOnUpdate((float value) =>
+                 {
+                     var sizeDelta = darkenerMaskRect.sizeDelta;
+                     sizeDelta.y   = value;
+         
+                     darkenerMaskRect.sizeDelta = sizeDelta;
+         
+                     // Adjust the anchored position to maintain the bottom position
+                     darkenerMaskRect.anchoredPosition = new Vector2
+                     (
+                         darkenerMaskRect.anchoredPosition.x, 
+                         initialY - (initialHeight - value) / 2.0F
+                     );
+         
+                 })
+                 .setEase(LeanTweenType.easeInOutQuad)
+                 .setOnComplete(() => {
+                    darkenerMask.SetActive(false);
+                    patternLaser.SetActive(true);
+                    ResetDarkenerMaskTransforms();
+                 });
+    }
+
+    private void ResetDarkenerMaskTransforms()
+    {
+        darkenerMaskRect.sizeDelta        = new Vector3(128.0F, 90.0F, 1.0F);
+        darkenerMaskRect.anchoredPosition = Vector2.zero;
+    }
+
+    public void DarkenPattern(bool immediate)
+    {
+        if (immediate)
+        {
+            ResetDarkenerMaskTransforms();
+            darkenerMask.SetActive(true);
+            patternLaser.SetActive(false);
+            return;
+        }
+    }
+
+    #endregion POWERUP_EFFECTS_REVEAL_PATTERN
 }

@@ -24,7 +24,7 @@ public partial class PatternTimer : MonoBehaviour
     [SerializeField] private Color normalTimerTextColor     = Color.white;
     [SerializeField] private Color criticalTimerBadgeColor  = new(1.0F, 0.74F, 0.13F, 1.0F);
     [SerializeField] private Color criticalTimerTextColor   = new(1.0F, 0.14F, 0.23F, 1.0F);
-
+    
     private RectTransform timerTextRect;
     private RectTransform timerBadgeRect;
 
@@ -54,11 +54,17 @@ public partial class PatternTimer : MonoBehaviour
         timerText.TryGetComponent(out timerTextRect);
         timerBadge.TryGetComponent(out timerBadgeRect);
 
-        InitializePowerupEffectReciever();
+        InitializePowerupEffector();
     }
 
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.F2))
+            HideDarkenerMask(false);
+
+        if (Input.GetKeyUp(KeyCode.F3))
+            DarkenPattern(true);
+
         if (isStopped || isTimeFreeze)
             return;
 
@@ -127,11 +133,12 @@ public partial class PatternTimer : MonoBehaviour
 
         isTimeFreeze = false;
         isStopped    = false;
-        
+
         ResetBgmVolume();
         
         // Reset the pattern color to default
-        LightenPattern();
+        // LightenPattern();
+        HideDarkenerMask(true);
         
         // Blackening the pattern is used in Hard Mode
         if (blackenPattern)
@@ -158,8 +165,6 @@ public partial class PatternTimer : MonoBehaviour
         var remainingSecs       = Mathf.CeilToInt(remainingTime);
         timerText.text          = remainingSecs.ToString();
     }
-
-    public void SetPattern(Sprite pattern) => patternPreviewer.sprite = pattern;
 
     private IEnumerator PulsateTimerText()
     {
@@ -243,8 +248,11 @@ public partial class PatternTimer : MonoBehaviour
                 Color.black, 
                 duration
             ).setOnComplete(() => {
-                // Set the final color to black after blinking
-                patternPreviewer.color = Color.black;
+                // Set the final color to white
+                patternPreviewer.color = Color.white;
+                
+                // For powerups
+                HandlePatternDarkened(patternPreviewer.sprite);
             });
         });
 
