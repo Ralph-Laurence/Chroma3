@@ -6,6 +6,13 @@ public class StageFactory : MonoBehaviour
 {
     private StageVariant _createdStage;
 
+    private GameSessionManager gsm;
+
+    void Awake()
+    {
+        gsm = GameSessionManager.Instance;    
+    }
+
     public void Create(LevelDifficulties difficulty, int stageNumber)
     {
         // Build the path to the folder containing the variants
@@ -25,6 +32,13 @@ public class StageFactory : MonoBehaviour
 
         var stageObj = Instantiate(stage);
         stageObj.TryGetComponent(out _createdStage);
+
+        // For powerups (ie. Reveal guide blocks)
+        _createdStage.CacheDefaultBlockMaterialReferences
+        (
+            light: gsm.BLOCK_MAT_LIGHT,
+            dark:  gsm.BLOCK_MAT_DARK
+        );
 
         OnStageCreated.NotifyObserver(new StageCreatedEventArgs
         {

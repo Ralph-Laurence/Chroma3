@@ -4,8 +4,15 @@ using UnityEngine;
 
 public partial class StageVariant : MonoBehaviour
 {
-    void OnEnable() => OnBlockSequenceFillCompleted.BindEvent(Subscribe);
-    void OnDisable() => OnBlockSequenceFillCompleted.UnbindEvent(Subscribe);
+    void OnEnable()
+    {
+        OnBlockSequenceFillCompleted.BindEvent(Subscribe);
+        HotbarPowerupEffectNotifier.BindObserver(ObservePowerupReceived);
+    }
+    void OnDisable()
+    {
+        OnBlockSequenceFillCompleted.UnbindEvent(Subscribe);
+    }
 
     // Flag to track how many sequences have been completed
     private int sequenceCompleted = 0;

@@ -196,19 +196,6 @@ public class PowerupsEffectManager : MonoBehaviour
 
         var effectSlot = hotbar.GetSlot(slotIndex);
 
-        // If the selected powerup is only effective for a given period,
-        // we temporarily disable that slot until its effect completes
-        // if (effect.Category == PowerupCategories.TimerPause)
-        // {
-        //     effectSlot = hotbar.GetSlot(slotIndex);
-        
-        //     effectSlot.Lock();
-
-        //     StartCoroutine(CooldownHotbarSlot(effect.EffectValue, () => {
-        //         effectSlot.Unlock();
-        //     }));
-        // }
-
         HotbarPowerupEffectNotifier.NotifyObserver(effectSlot, effect);
     }
 }

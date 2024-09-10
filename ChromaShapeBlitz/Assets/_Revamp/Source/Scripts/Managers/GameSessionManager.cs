@@ -76,4 +76,23 @@ public class GameSessionManager
     public bool IsInventoryPageNeedsReload => m_inventoryPageNeedsReload;
 
     #endregion GAME_LOGIC
+
+    #region FOR_POWERUP_EFFECTS
+
+    public Material BLOCK_MAT_LIGHT {private set; get;}
+    public Material BLOCK_MAT_DARK  {private set; get;}
+
+    /// <summary>
+    /// We need to save references to these default block materials,
+    /// as they will be used for powerup effects such as Block Reveal.
+    /// 
+    /// Call this once from the Bootstrapper
+    /// </summary>
+    public void CacheInitialBlockMats(Material light, Material dark)
+    {
+        BLOCK_MAT_LIGHT = light;
+        BLOCK_MAT_DARK  = dark;
+    }
+
+    #endregion FOR_POWERUP_EFFECTS
 }

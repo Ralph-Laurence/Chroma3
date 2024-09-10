@@ -19,6 +19,11 @@ public class Bootstrapper : MonoBehaviour
     [SerializeField] private Text progressText;
     [SerializeField] private Text progressCaption;
 
+    [Space(10)]
+    [Header("Cache default mats used by powerups.")]
+    [SerializeField] private Material lightBlockMat;
+    [SerializeField] private Material darkBlockMat;
+
     private GameSessionManager gsm;
 
     private int totalTasks;
@@ -58,6 +63,11 @@ public class Bootstrapper : MonoBehaviour
     void Awake()
     {
         gsm = GameSessionManager.Instance;
+
+        if (lightBlockMat != null && darkBlockMat != null)
+        {
+            gsm.CacheInitialBlockMats(lightBlockMat, darkBlockMat);
+        }
     }
 
     void Update()

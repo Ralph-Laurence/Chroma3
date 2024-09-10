@@ -21,7 +21,13 @@ public class Block : MonoBehaviour
     /// 
     /// <param name="color">The color value</param>
     public void SetColor(ColorSwatches color) => currentColor = color;
-
+    
+    /// <summary>
+    /// Get the current color value applied to this block.
+    /// This is not the visible color, but just the value.
+    /// </summary>
+    /// <returns>Current applied color value</returns>
+    public ColorSwatches GetColor() => currentColor;
     /// <summary>
     /// Set the visual color by assigning a material. This is only for
     /// appearance purposes and is not updating the enumeration constant
@@ -57,6 +63,22 @@ public class Block : MonoBehaviour
     /// </summary>
     public bool IsValidColor() => requiredColor == currentColor;
 
+    #region FOR_POWERUP_EFFECTS
+    /// <summary>
+    /// This must be only used by powerups. This should reveal the
+    /// initial (ie. guide) color before it was made invisible.
+    /// This wont change the internal color state other than visuals.
+    /// </summary>
+    public void RevealGuideColor(Material light, Material dark)
+    {
+        // If this block has already been given a different color, skip.
+        if (currentColor != ColorSwatches.None)
+            return;
+
+        var newMat = DarkerFill ? new Material(dark) : new Material(light);
+        gameObject.ChangeMaterial(newMat);
+    }
+    #endregion FOR_POWERUP_EFFECTS
 
     #region STAGE_FABRICATOR_PROPERTIES
     public int RowIndex;
