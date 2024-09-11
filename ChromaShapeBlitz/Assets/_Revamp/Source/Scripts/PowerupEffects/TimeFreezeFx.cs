@@ -39,10 +39,11 @@ public class TimeFreezeFx : MonoBehaviour
                  .setOnComplete(() => {
 
                     SetImageColor(targetColor);
-                    var delay  = (freezeSeconds - effectSpeed); // / 2.0F;
+                    var delay  = freezeSeconds - effectSpeed; // / 2.0F;
 
                     LeanTween.value(m_image.gameObject, SetImageColor, m_image.color, TRANSPARENT, effectSpeed)
                              .setDelay(delay)
+                             
                              .setOnComplete(() => {
                                 SetImageColor(TRANSPARENT);
                                 m_image.enabled = false;

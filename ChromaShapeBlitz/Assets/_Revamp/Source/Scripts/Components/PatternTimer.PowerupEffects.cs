@@ -10,6 +10,7 @@ public partial class PatternTimer : MonoBehaviour
     [SerializeField] private GameObject frozenTimeLabelEffect;
     [SerializeField] private AudioClip  sfxThreeSecs;
     [SerializeField] private AudioClip  sfxFiveSecs;
+    [SerializeField] private AudioClip  sfxUnfreeze;
     [SerializeField] private float      freezeEffectSpeed = 4.0F;
     [SerializeField] private Color      frozenTimeBadgeColor = new(0.58F, 0.83F, 0.97F, 1.0F);
     [SerializeField] private Color      frozenTimerFillColor = new(0.04F, 0.32F, 0.99F, 1.0F);
@@ -162,9 +163,17 @@ public partial class PatternTimer : MonoBehaviour
 
                     SetFreezeOverlayColor(targetColor);
                     var delay = freezeSeconds - effectSpeed;
-
+                    var playUnfreeze = false;
+                    
                     LeanTween.value(freezeEffectOverlayObj, SetFreezeOverlayColor, freezeOverlay.color, TRANSPARENT, effectSpeed)
                              .setDelay(delay)
+                             .setOnUpdate((float v) => {
+                                if (!playUnfreeze)
+                                {
+                                    playUnfreeze = true;
+                                    sfx.PlayOnce(sfxUnfreeze);
+                                }
+                             })
                              .setOnComplete(() => {
                                 SetFreezeOverlayColor(TRANSPARENT);
                                 freezeOverlay.enabled = false;

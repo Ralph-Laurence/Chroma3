@@ -13,10 +13,18 @@ public class VisorMaskFx : MonoBehaviour
     [SerializeField] private AudioClip sfxVisorOff;
 
     private SoundEffects sfx;
+    private bool transitionBegan;
+
 
     void Awake()
     {
         sfx = SoundEffects.Instance;
+    }
+
+    void OnEnable()
+    {
+        if (!transitionBegan)
+            BeginTransition();
     }
 
     public void BeginTransition()
@@ -62,6 +70,8 @@ public class VisorMaskFx : MonoBehaviour
         scannerLine.gameObject.SetActive(true);
         scanCaption.text = "Scanning...";
         scanProgress.value = 0.0F;
+
+        transitionBegan = true;
     }
 
     private void OnScanComplete()
@@ -77,15 +87,17 @@ public class VisorMaskFx : MonoBehaviour
     {
         yield return new WaitForSeconds(0.45F);
         sfx.PlayOnce(sfxVisorOff);
+        
+        transitionBegan = false;
 
         gameObject.SetActive(false);
         yield return null;
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.F1))
-            BeginTransition();
-    }
+    // void Update()
+    // {
+    //     if (Input.GetKeyUp(KeyCode.F1))
+    //         BeginTransition();
+    // }
 }
