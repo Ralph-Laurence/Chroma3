@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using Revamp;
 using UnityEngine;
 
@@ -8,9 +9,23 @@ public class StageFactory : MonoBehaviour
 
     private GameSessionManager gsm;
 
+    private Dictionary<int, float> fillRates;
+    private float fillRate;
+
     void Awake()
     {
-        gsm = GameSessionManager.Instance;    
+        gsm = GameSessionManager.Instance;
+
+        fillRates = new()
+        {
+            { 1,  0.24F },      // default speed
+            { 25, 0.20F },      // 25% speed
+            { 50, 0.18F },      // 50% speed
+            { 75, 0.14F },      // 75% speed
+            {100, 0.10F }       // Full speed
+        };
+
+        fillRate = fillRates[gsm.UserSessionData.SequenceFillRate];
     }
 
     public void Create(LevelDifficulties difficulty, int stageNumber)
@@ -32,6 +47,8 @@ public class StageFactory : MonoBehaviour
 
         var stageObj = Instantiate(stage);
         stageObj.TryGetComponent(out _createdStage);
+
+        _createdStage.SetFillRate(fillRate);
 
         // For powerups (ie. Reveal guide blocks)
         _createdStage.CacheDefaultBlockMaterialReferences

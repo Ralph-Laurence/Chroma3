@@ -78,7 +78,7 @@ public class UserData
     //===========================
     public PlayerInventory Inventory;
 
-    public float     SequenceFillRate;
-    public int       CoinMultiplier;
-    public int       GemMultiplier;
+    public int SequenceFillRate;
+    public int CoinMultiplier;
+    public int GemMultiplier;
 }

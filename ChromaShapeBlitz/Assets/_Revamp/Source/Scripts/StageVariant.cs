@@ -101,6 +101,13 @@ public partial class StageVariant : MonoBehaviour
     /// </summary>
     public void SetFillRate(float rate)
     {
-        SequenceSet.ForEach(sequence => sequence.SetFillRate(rate));
+        // generally faster lookups
+        for (var i = 0; i < SequenceSet.Count; i++)
+        {
+            var sequence = SequenceSet[i];
+            sequence.SetFillRate(rate);
+        }
+        // slow performance
+        // SequenceSet.ForEach(sequence => sequence.SetFillRate(rate));
     }
 }

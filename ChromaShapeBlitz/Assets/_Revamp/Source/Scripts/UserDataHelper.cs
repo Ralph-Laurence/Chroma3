@@ -108,7 +108,7 @@ public class UserDataHelper : MonoBehaviour
             ActiveBackgroundID = 0,
             OwnedBackgroundIds = new List<int>{ 0 },
 
-            SequenceFillRate = 0.24F,
+            SequenceFillRate = 1,
             CoinMultiplier   = 1,
             GemMultiplier    = 1
         };
