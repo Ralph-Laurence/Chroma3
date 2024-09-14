@@ -160,8 +160,15 @@ public class PowerupShopController : MonoBehaviour
             });
         }
         
+        // Permanent powerups dont need item card count indicator as
+        // their effects are mostly perk/skill/ability based.
+        if (powerupItemData.ItemType == PowerupType.Permanent)
+            HandlePermanentPowerup(userData, powerupItemData);
+        
         // Increase the card's displayed amount by 1
-        powerupItemData.CurrentAmount++;
+        else
+            powerupItemData.CurrentAmount++;
+
         powerupItemData.IsOwned = true;
         
         // Apply the updated item card data
@@ -270,5 +277,20 @@ public class PowerupShopController : MonoBehaviour
         {
             onComplete?.Invoke();   
         }));
+    }
+
+    private void HandlePermanentPowerup(UserData userData, PowerupItemData powerupItemData)
+    {
+        var powerup = powerupsLookUp[powerupItemData.Id];
+
+        switch (powerup.PowerupCategory)
+        {
+            case PowerupCategories.FillRatePerk:
+                
+                //var rate = Constants.BlockFillRates[powerup.EffectValue];
+                // userData.SequenceFillRate = rate;
+                userData.SequenceFillRate = powerup.EffectValue;
+                break;
+        }
     }
 }

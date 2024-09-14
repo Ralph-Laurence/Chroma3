@@ -1,31 +1,18 @@
 
-using System.Collections.Generic;
 using Revamp;
 using UnityEngine;
 
 public class StageFactory : MonoBehaviour
 {
     private StageVariant _createdStage;
-
     private GameSessionManager gsm;
-
-    private Dictionary<int, float> fillRates;
     private float fillRate;
 
     void Awake()
     {
         gsm = GameSessionManager.Instance;
 
-        fillRates = new()
-        {
-            { 1,  0.24F },      // default speed
-            { 25, 0.20F },      // 25% speed
-            { 50, 0.18F },      // 50% speed
-            { 75, 0.14F },      // 75% speed
-            {100, 0.10F }       // Full speed
-        };
-
-        fillRate = fillRates[gsm.UserSessionData.SequenceFillRate];
+        fillRate = Constants.BlockFillRates[gsm.UserSessionData.SequenceFillRate];
     }
 
     public void Create(LevelDifficulties difficulty, int stageNumber)

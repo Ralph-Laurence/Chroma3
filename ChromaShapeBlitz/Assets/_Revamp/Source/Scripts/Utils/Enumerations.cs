@@ -164,12 +164,14 @@ public enum PowerupType
 
 public enum PowerupCategories
 { 
-    GenericItem,        // Flash, Looter, Buccaneer, Rush, Sprint, Turbo, Blitz
+    GenericItem,        // Unassigned
     StageSolver,        // Idea, Wizard, GrandMaster
     TimerPause,         // Adrenaline, Flux
     TimerIncrease,      // Continuity, Stretch, Endurance
     PatternReveal,      // Glance, Peek, Recon
-    SpecialVision       // Visor, XRay
+    SpecialVision,      // Visor, XRay
+    FillRatePerk,       // Flash, Rush, Sprint, Turbo, Blitz
+    CurrencyPerk        // Looter, Buccaneer, 
 }
 
 public enum PowerupActivation

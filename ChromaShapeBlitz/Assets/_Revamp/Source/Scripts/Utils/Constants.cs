@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Constants
@@ -69,4 +70,15 @@ public class Constants
 
         public const float VISOR_SCAN_DURATION = 2.5F;
     }
+
+    private static readonly Dictionary<int, float> fillRatesLookup = new()
+    {
+        { 1,  0.24F },      // default speed
+        { 25, 0.20F },      // 25% speed
+        { 50, 0.18F },      // 50% speed
+        { 75, 0.14F },      // 75% speed
+        {100, 0.10F }       // Full speed
+    };
+    
+    public static Dictionary<int, float> BlockFillRates => fillRatesLookup;
 }
