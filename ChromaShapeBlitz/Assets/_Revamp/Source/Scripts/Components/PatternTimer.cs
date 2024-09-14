@@ -13,6 +13,9 @@ public partial class PatternTimer : MonoBehaviour
     [SerializeField] private RectTransform timesUpCaption;
     [SerializeField] private AudioClip countdownSfx;
     [SerializeField] private AudioClip timesUpSfx;
+    [SerializeField] private Image darkPreview;
+    [SerializeField] private RectTransform darkMaskRect;
+    private Vector2 darkMaskInitialSize;
 
     [Space(5)] 
     [Header("Timer Logic")]
@@ -46,6 +49,7 @@ public partial class PatternTimer : MonoBehaviour
     private float lastTickPlayedSecond;
 
     private LTDescr tweenBlackenPattern;
+    private int tweenID_blackenPattern;
 
     void Awake()
     {
@@ -55,26 +59,19 @@ public partial class PatternTimer : MonoBehaviour
         timerText.TryGetComponent(out timerTextRect);
         timerBadge.TryGetComponent(out timerBadgeRect);
 
+        darkMaskInitialSize = darkMaskRect.sizeDelta;
+        
         InitializePowerupEffector();
     }
 
     void Update()
     {
-        /*
-        if (Input.GetKeyUp(KeyCode.F2))
-            //HideDarkenerMask(false);
-            StartCoroutine(IERevealPatternFrame(2));
-
-        else if (Input.GetKeyUp(KeyCode.F3))
-            //DarkenPattern(true);
-            StartCoroutine(IERevealPatternFrame(3));
-
-        else if (Input.GetKeyUp(KeyCode.F5))
-            StartCoroutine(IERevealPatternFrame(5));
-
-        else if (Input.GetKeyUp(KeyCode.F1))
-            DarkenPattern(true);
-        */
+        
+        // if (Input.GetKeyUp(KeyCode.F2))
+        // {
+        //     isTimeFreeze = !isTimeFreeze;
+        //     Debug.Log( isTimeFreeze ? "Time Paused" : "Resume Timer" );
+        // }
 
         if (isStopped || isTimeFreeze)
             return;
@@ -149,7 +146,7 @@ public partial class PatternTimer : MonoBehaviour
         
         // Reset the pattern color to default
         // LightenPattern();
-        RevealPatternImmediate();
+        // RevealPatternImmediate();
         
         // Blackening the pattern is used in Hard Mode
         if (blackenPattern)
@@ -175,8 +172,12 @@ public partial class PatternTimer : MonoBehaviour
         patternPreviewer.sprite = patternObjective;
         var remainingSecs       = Mathf.CeilToInt(remainingTime);
         timerText.text          = remainingSecs.ToString();
-    }
 
+        // The pattern darkener must have the same image as the previewer
+        darkPreview.sprite      = patternObjective;
+        ResetDarkMask();
+    }
+    
     private IEnumerator PulsateTimerText()
     {
         var animationCompleted = false;
@@ -240,46 +241,61 @@ public partial class PatternTimer : MonoBehaviour
         yield return new WaitUntil(() => animationCompleted);
     }
 
-    /// <summary>
-    /// Darken the pattern during Hard Mode
-    /// </summary>
     private void BlackenPattern(float fadeOutDelay = 3.0F, float duration = 0.35F)
     {
-        // Blink the pattern for 3 times before blackening it
-        var blinkCount = 3;
+        var blinkCount  = 2;
+        var from        = Constants.ColorSwatches.TRANSPARENT;
+        var to          = Color.black;
+        // var callback    = new Action<Color>((c) => darkPreview.color = c);
 
-        // Chain the blink animations using LeanTween
-        var callback = new Action<Color>((color) => patternPreviewer.color = color);
-        var finalColor = new Action(() => {
+        var finalColor  = new Action(() => {
             LeanTween.value
             (
-                patternPreviewer.gameObject, 
-                (color) => patternPreviewer.color = color, 
-                Color.white, 
-                Color.black, 
+                darkPreview.gameObject, 
+                (color) => darkPreview.color = color, 
+                from, 
+                to, 
                 duration
             ).setOnComplete(() => {
                 // Set the final color to white
-                patternPreviewer.color = Color.white;
+                //darkenerMask.color = Color.white;
                 
                 // For powerups
-                HandlePatternDarkened(patternPreviewer.sprite);
+                //HandlePatternDarkened(patternPreviewer.sprite);
             });
         });
 
         tweenBlackenPattern?.reset();
-
-        tweenBlackenPattern = LeanTween.value(patternPreviewer.gameObject, callback, Color.white, Color.black, duration)
-                 .setDelay(fadeOutDelay)
-                 .setEase(LeanTweenType.easeInQuad)
-                 .setLoopPingPong(blinkCount)
-                 .setOnComplete(() => finalColor.Invoke());
+        tweenBlackenPattern = LeanTween.value(darkPreview.gameObject, CallbackDarkPreview, from, to, duration)
+                .setDelay(fadeOutDelay)
+                .setEase(LeanTweenType.easeInQuad)
+                .setLoopPingPong(blinkCount)
+                .setOnComplete(() => {
+                    darkPreview.color = to;
+                });
+                 
+        tweenID_blackenPattern = tweenBlackenPattern.id;
     }
 
+    private void CallbackDarkPreview(Color color) => darkPreview.color = color; 
+
+    private void ResetDarkMask(bool resetRevealState = true)
+    {
+        darkPreview.color       = Constants.ColorSwatches.TRANSPARENT;
+        darkMaskRect.sizeDelta  = darkMaskInitialSize;
+        darkMaskRect.anchoredPosition = Vector2.zero;
+        patternLaser.SetActive(false);
+        
+        if (resetRevealState)
+        {
+            isPatternReveal = false;
+            isPermanentReveal = false;
+        }
+    }
     /// <summary>
     /// Bring back the pattern color after it got darkened
     /// </summary>
-    public void LightenPattern() => patternPreviewer.color = Color.white;
+    //public void LightenPattern() => patternPreviewer.color = Color.white;
 
     private void InvokeTimesUp()
     {
@@ -310,72 +326,4 @@ public partial class PatternTimer : MonoBehaviour
         if (bgm != null)
             bgm.ResetVolume();
     }
-
-    /*
-    void PositionEffector()
-    {
-        var radius = 60f;
-
-        float fillAmount = timerFill.fillAmount;
-
-        // Calculate the angle based on fill amount
-        float angle = 360f * fillAmount;
-
-        // Convert angle to radians
-        float angleRad = angle * Mathf.Deg2Rad;
-
-        // Calculate position on the circle
-        float x = Mathf.Cos(angleRad) * radius;
-        float y = Mathf.Sin(angleRad) * radius;
-
-        // Adjust for the rounded corners
-        if (fillAmount < 0.125f || (fillAmount > 0.375f && fillAmount < 0.625f) || (fillAmount > 0.875f && fillAmount < 1f))
-        {
-            // In the corner areas
-            x *= Mathf.Sqrt(2) / 2;
-            y *= Mathf.Sqrt(2) / 2;
-        }
-
-        // Update the follower position
-        effector.localPosition = new Vector3(x, y, 0f);
-        
-        // float fillAmount = timerFill.fillAmount;
-        // float angle = fillAmount * 360f;
-        // float halfWidth = timerFill.rectTransform.rect.width / 2f;
-        // float halfHeight = timerFill.rectTransform.rect.height / 2f;
-        
-        // Vector2 position = Vector2.zero;
-
-        // if (angle <= 90f)
-        // {
-        //     // Top edge
-        //     position.x = Mathf.Lerp(0, halfWidth, angle / 90f);
-        //     position.y = halfHeight;
-        // }
-        // else if (angle <= 180f)
-        // {
-        //     // Right edge
-        //     angle -= 90f;
-        //     position.x = halfWidth;
-        //     position.y = Mathf.Lerp(halfHeight, -halfHeight, angle / 90f);
-        // }
-        // else if (angle <= 270f)
-        // {
-        //     // Bottom edge
-        //     angle -= 180f;
-        //     position.x = Mathf.Lerp(halfWidth, -halfWidth, angle / 90f);
-        //     position.y = -halfHeight;
-        // }
-        // else
-        // {
-        //     // Left edge
-        //     angle -= 270f;
-        //     position.x = -halfWidth;
-        //     position.y = Mathf.Lerp(-halfHeight, halfHeight, angle / 90f);
-        // }
-
-        // position.x *= -1.0F;
-        // // Set the position of the effector
-        // effector.anchoredPosition = position;
-    }*/
 }

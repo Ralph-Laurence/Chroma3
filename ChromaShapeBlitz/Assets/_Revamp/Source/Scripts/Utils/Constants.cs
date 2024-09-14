@@ -61,4 +61,12 @@ public class Constants
         public static readonly int ITEM_COUNT_N = 6;    // Readonly Items
         public static readonly int ITEM_COUNT_X = 7;    // Special Warning
     }
+
+    public readonly struct PowerupEffectValues
+    {
+        public const int POWERUP_EFFECT_VISOR = 100;
+        public const int POWERUP_EFFECT_XRAY = 101;
+
+        public const float VISOR_SCAN_DURATION = 2.5F;
+    }
 }

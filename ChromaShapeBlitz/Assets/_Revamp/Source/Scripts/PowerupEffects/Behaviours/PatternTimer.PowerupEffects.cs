@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,20 +18,19 @@ public partial class PatternTimer : MonoBehaviour
 
     [Space(10)]
     [Header("Pattern Reveal Effect")]
-    [SerializeField] private GameObject darkenerMask;
     [SerializeField] private GameObject patternLaser;
-    [SerializeField] private Image      darkPattern;
     [SerializeField] private AudioClip  sfxRevealPattern;
 
     private readonly Color TRANSPARENT = Constants.ColorSwatches.TRANSPARENT;
-    private RectTransform darkenerMaskRect;
+
     private Image freezeOverlay;
     private Image frozenTimeLabel;
     private Image frozenTimeBadge;
     private bool isTimeFreeze;
     private float freezeTimeRemaining;
-    private float patternRevealTimeRemaining;
+    private bool shouldRedarken;    // flag by xray
     private bool isPatternReveal;
+    private bool isPermanentReveal;
 
     private LTDescr freezeTimeTween;
 
@@ -42,8 +42,6 @@ public partial class PatternTimer : MonoBehaviour
 
         timerBadge.TryGetComponent(out frozenTimeBadge);
         frozenTimeLabelEffect.TryGetComponent(out frozenTimeLabel);
-
-        darkenerMask.TryGetComponent(out darkenerMaskRect);
     }
 
     #region EVENT_OBSERVERS
@@ -99,13 +97,42 @@ public partial class PatternTimer : MonoBehaviour
 
             case PowerupCategories.PatternReveal:
 
-                if (isPatternReveal || !patternConcealed) return;
+                // if (isPatternReveal) return;
+                    
+                // isPatternReveal = true;
+                //if (isPatternReveal || !patternConcealed) return;
 
+                // if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_XRAY)
+                // {
+                //     RevealPatternImmediate();
+                // }
+
+                // Show the pattern with scanner line effect.
+                // else
+                // {
+                //     var seconds = effectData.EffectValue;
+
+                //     RevealPatternForSeconds(seconds);
+                //     sender.BeginLockSlot(seconds);
+                // }
                 var seconds = effectData.EffectValue;
+
                 RevealPatternForSeconds(seconds);
 
-                // Disable the slot
-                sender.BeginLockSlot(seconds);
+                if (sender != null)
+                    sender.BeginLockSlot(seconds);
+
+                break;
+
+            case PowerupCategories.SpecialVision:
+
+                if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_XRAY)
+                {
+                    isPatternReveal = true;
+                    isPermanentReveal = true;
+                    RevealPatternImmediate();
+                }
+                // if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_VISOR)
 
                 break;
         }
@@ -227,104 +254,80 @@ public partial class PatternTimer : MonoBehaviour
 
     #region POWERUP_EFFECTS_REVEAL_PATTERN
 
-    /// 
-    /// <summary>
-    /// After the main pattern gets black ...
-    /// </summary>
-    public void HandlePatternDarkened(Sprite pattern)
-    {
-        // Hide the pattern previewer by blocking it with a mask
-        ConcealPattern();
-
-        // Set the darkener pattern similar to the previewer
-        darkPattern.sprite = pattern;
-    }
-
-    /// <summary>
-    /// Hide the pattern previewer by blocking it with a Mask
-    /// </summary>
-    private void ConcealPattern()
-    {
-        // Reset the darkener mask transforms
-        darkenerMaskRect.sizeDelta = new Vector3(128.0F, 90.0F, 1.0F);
-        darkenerMaskRect.anchoredPosition = Vector2.zero;
-
-        // Show the darkener mask, but hide the laser for now.
-        // We will only show the laser when we want to reveal the pattern
-        darkenerMask.SetActive(true);
-        patternLaser.SetActive(false);
-
-        patternConcealed = true;
-    }
-
     /// <summary>
     /// Reveal the previewer without animations
     /// </summary>
     private void RevealPatternImmediate()
     {
-        darkenerMask.SetActive(false);
-        patternPreviewer.color = Color.white;
+        Debug.Log($"isPermanentReveal at Immediate -> {isPermanentReveal}");
+
+        // Interrup the tween
+        LeanTween.cancel(tweenID_blackenPattern);
+
+        // Hide the dark mask, but keep its revealed state
+        ResetDarkMask(false);
     }
 
     /// <summary>
-    /// Reveal the previewer for a given duration, of course with animations
+    /// Reveal the previewer by hiding the mask, for a given duration, 
+    /// of course with animations
     /// </summary>
-    private void RevealPatternForSeconds(int seconds)
+    private void RevealPatternForSeconds(int seconds, bool permanent = false)
     {
-        darkenerMask.SetActive(true);
+        if (isPatternReveal || isPermanentReveal) return;            
+        isPatternReveal = true;
+
         patternLaser.SetActive(true);
 
-        var initialHeight   = darkenerMaskRect.sizeDelta.y;
-        var initialY        = darkenerMaskRect.anchoredPosition.y;
+        var initialHeight   = darkMaskRect.sizeDelta.y;
+        var initialY        = darkMaskRect.anchoredPosition.y;
         var scaleDown       = 0.0F;
         var rate            = 0.75F;
         
         sfx.PlayOnce(sfxRevealPattern);
 
-        LeanTween.value(darkenerMask, initialHeight, scaleDown, rate)
-                 .setOnUpdate((float value) =>
-                 {
-                     var sizeDelta = darkenerMaskRect.sizeDelta;
-                     sizeDelta.y   = value;
-         
-                     darkenerMaskRect.sizeDelta = sizeDelta;
-         
-                     // Adjust the anchored position to maintain the bottom position
-                     darkenerMaskRect.anchoredPosition = new Vector2
-                     (
-                         darkenerMaskRect.anchoredPosition.x, 
-                         initialY - (initialHeight - value) / 2.0F
-                     );
-         
-                 })
-                 .setEase(LeanTweenType.easeInOutQuad)
-                 .setOnComplete(() => {
-                    darkenerMask.SetActive(false);
-                    patternConcealed = false;
+        var tween = LeanTween.value(darkMaskRect.gameObject, initialHeight, scaleDown, rate)
+            .setOnUpdate((float value) =>
+            {
+                var sizeDelta   = darkMaskRect.sizeDelta;
+                sizeDelta.y     = value;
 
-                    // Darken the pattern again
-                    StartCoroutine(IEDarkenPattern(seconds));
-                 });
+                darkMaskRect.sizeDelta = sizeDelta;
+
+                // Adjust the anchored position to maintain the bottom position
+                darkMaskRect.anchoredPosition = new Vector2(
+                    darkMaskRect.anchoredPosition.x,
+                    initialY - (initialHeight - value) * 0.5F // Using 0.5 to move half the distance
+                );
+
+            })
+            .setEase(LeanTweenType.easeInOutQuad)
+            .setOnComplete(() => {
+                
+                // Only if powerup was applied
+                if (!permanent)
+                    StartCoroutine(IERedarkenPattern(seconds));
+            });
     }
 
-    private IEnumerator IEDarkenPattern(int seconds)
+    /// <summary>
+    /// Bring the pattern preview back to dark
+    /// </summary>
+    private IEnumerator IERedarkenPattern(int seconds)
     {
-        isPatternReveal = true;
-        patternRevealTimeRemaining = seconds;
+        yield return new WaitForSeconds(seconds);
+        Debug.Log($"isPermanentReveal at IERedarken -> {isPermanentReveal}");
 
-        // Countdown the reveal effect, respecting the game's time scale
-        while (patternRevealTimeRemaining > 0.0F)
-        {
-            // We only apply the cooldown when the game isnt paused
-            if (Time.timeScale > 0.0F)
-            {
-                patternRevealTimeRemaining -= Time.deltaTime;
-            }
-            yield return null;
-        }
-        
-        ConcealPattern();
-        isPatternReveal = false; // Resume the main timer once the freeze ends
+        if (isPermanentReveal)
+            yield break;
+
+        var from = Constants.ColorSwatches.TRANSPARENT;
+        var to   = darkPreview.color;
+
+        ResetDarkMask(false);
+
+        LeanTween.value(darkPreview.gameObject, CallbackDarkPreview, from, to, 0.25F)
+                 .setOnComplete(() => isPatternReveal = false);
     }
 
     #endregion POWERUP_EFFECTS_REVEAL_PATTERN

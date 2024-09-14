@@ -33,8 +33,10 @@ public class VisorMaskFx : MonoBehaviour
 
         sfx.PlayOnce(sfxVisorOn);
 
+        var scanDuration = Constants.PowerupEffectValues.VISOR_SCAN_DURATION;
+
         // Start the tween for the slider and the moving object
-        LeanTween.value(gameObject, UpdateTween, 0f, 1f, 2.5f).setOnComplete(OnScanComplete);
+        LeanTween.value(gameObject, UpdateTween, 0f, 1f, scanDuration).setOnComplete(OnScanComplete);
     }
 
     // This method will be called by LeanTween to update the slider value and move the object

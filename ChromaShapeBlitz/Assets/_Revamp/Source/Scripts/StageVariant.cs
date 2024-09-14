@@ -49,9 +49,6 @@ public partial class StageVariant : MonoBehaviour
     {
         if (stageCamera.AttachedCamera != null)
             StickToBottom();
-
-        if (Input.GetKeyUp(KeyCode.F1))
-            StartCoroutine(IERevealGuideBlocks());
     }
     //
     //==========================================

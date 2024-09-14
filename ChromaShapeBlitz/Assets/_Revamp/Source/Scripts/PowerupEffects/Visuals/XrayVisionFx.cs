@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class XrayVisionFx : MonoBehaviour
 {
+    [SerializeField] private Canvas canvas;
     [SerializeField] private RectTransform maskBackground;
     [SerializeField] private RectTransform parentMaskStencil;
     [SerializeField] private RectTransform ringScanner;
@@ -44,7 +45,7 @@ public class XrayVisionFx : MonoBehaviour
         RepositionBackground();
         
         if (!isScanning)
-            StartCoroutine( BeginScanAtRandomPoints() );
+            StartCoroutine( BeginScanRandomPoints() );
     }
 
     // void Update()
@@ -86,7 +87,7 @@ public class XrayVisionFx : MonoBehaviour
         );
     }
 
-    private IEnumerator BeginScanAtRandomPoints()
+    private IEnumerator BeginScanRandomPoints()
     {
         isScanning = true;
 
@@ -122,7 +123,7 @@ public class XrayVisionFx : MonoBehaviour
             }
             else
             {
-                var randomScanPoint = GetRandomPoint();
+                var randomScanPoint = GetRandomPointAtBottomHalfScreen(); //GetRandomPoint();
                 // Upwards Right must rotate the ring clockwise
                 // Downwards Left must rotate the ring counterclockwise
                 var spin = (randomScanPoint.x > 0.0F && randomScanPoint.y > 0.0F) 
@@ -189,5 +190,36 @@ public class XrayVisionFx : MonoBehaviour
         point.y = Mathf.RoundToInt(point.y);
 
         return point;
+    }
+
+    private Vector2 GetRandomPointAtBottomHalfScreen()
+    {
+        // Get the screen width and height in canvas units
+        float canvasWidth = canvas.GetComponent<RectTransform>().rect.width;
+        float canvasHeight = canvas.GetComponent<RectTransform>().rect.height;
+
+        // Calculate the center point for the radius
+        float centerX = canvasWidth / 2;
+        float centerY = canvasHeight / 4; // Center of the bottom half
+
+        // Generate a random angle
+        float angle = Random.Range(0f, Mathf.PI * 2);
+
+        // Generate a random distance within the radius
+        float distance = Random.Range(0f, scanRadius);
+
+        // Calculate the random position within the radius
+        float randomX = centerX + distance * Mathf.Cos(angle);
+        float randomY = centerY + distance * Mathf.Sin(angle);
+
+        // Ensure the position is within the canvas bounds
+        randomX = Mathf.Clamp(randomX, 0, canvasWidth);
+        randomY = Mathf.Clamp(randomY, 0, canvasHeight / 2);
+
+        // Set the new position for the UI Image
+        // uiImage.anchoredPosition = new Vector2(randomX, randomY);
+
+        // Set the new position for the UI Image
+        return new Vector2(randomX, randomY);
     }
 }
