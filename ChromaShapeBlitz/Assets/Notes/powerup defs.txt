@@ -43,22 +43,22 @@ POWERUP ITEMS:
 107 -> Grand Master  - Solves the entire sequence for you
 
 [Time Effects, Temporary, Cant be used when seconds = 0]
-108 -> Adrenaline 	- pause the time for 3secs							> Partially Working
-109 -> Flux 		- pause the time for 5secs							> Partially Working
+108 -> Adrenaline 	- pause the time for 3secs							> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+109 -> Flux 		- pause the time for 5secs							> Partially Working			|> Bound to PowerupEffectAppliedNotifier
 
-110 -> Continuity	- add +2 extra seconds to timer						> Partially Working
-111 -> Stretch		- add +3 extra seconds to timer						> Partially Working
-112 -> Endurance	- add +5 extra seconds to timer						> Partially Working
+110 -> Continuity	- add +2 extra seconds to timer						> Partially Working 		|> Bound to PowerupEffectAppliedNotifier
+111 -> Stretch		- add +3 extra seconds to timer						> Partially Working 		|> Bound to PowerupEffectAppliedNotifier
+112 -> Endurance	- add +5 extra seconds to timer						> Partially Working 		|> Bound to PowerupEffectAppliedNotifier
 
 [Pattern Effects, Temporary]
 <Only applies to Hard Mode>
 
-113 -> Glance		- reveal the darkened pattern frame for 2secs		> Partially Working
-114 -> Peek 		- reveal the darkened pattern frame for 3secs		> Partially Working
-115 -> Recon		- reveal the darkened pattern frame for 5secs		> Partially Working
+113 -> Glance		- reveal the darkened pattern frame for 2secs		> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+114 -> Peek 		- reveal the darkened pattern frame for 3secs		> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+115 -> Recon		- reveal the darkened pattern frame for 5secs		> Partially Working			|> Bound to PowerupEffectAppliedNotifier
 
-116 -> Visor		- reveal the guide blocks													> Partially Working
-117 -> XRay 		- reveal both the guide blocks and pattern frame (must be expensive)		> Partially Working
+116 -> Visor		- reveal the guide blocks													> Partially Working		|> Bound to PowerupEffectAppliedNotifier
+117 -> XRay 		- reveal both the guide blocks and pattern frame (must be expensive)		> Partially Working		(x) Bound to PowerupEffectAppliedNotifier
 
 [Currency Effects, Permanent, Immediate]
 118 -> Looter 		- Double the gold coin reward

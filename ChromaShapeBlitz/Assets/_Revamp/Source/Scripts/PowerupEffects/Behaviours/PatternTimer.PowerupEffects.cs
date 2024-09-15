@@ -74,6 +74,8 @@ public partial class PatternTimer : MonoBehaviour
                 StartCoroutine( IEFreezeTimer(freezeDuration) );
                 sender.BeginLockSlot(freezeDuration + 1);
 
+                PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
+
                 break;
 
             case PowerupCategories.TimerIncrease:
@@ -81,6 +83,8 @@ public partial class PatternTimer : MonoBehaviour
                 var increase = effectData.EffectValue;
 
                 AddTime(increase);
+                
+                PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
 
                 // Immediately apply the text without waiting for the Update() to handle it
                 timerText.text = Mathf.CeilToInt(remainingTime + increase).ToString();
@@ -97,27 +101,13 @@ public partial class PatternTimer : MonoBehaviour
 
             case PowerupCategories.PatternReveal:
 
-                // if (isPatternReveal) return;
-                    
-                // isPatternReveal = true;
-                //if (isPatternReveal || !patternConcealed) return;
+                if (isPatternReveal || isPermanentReveal) return;
+                    isPatternReveal = true;
 
-                // if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_XRAY)
-                // {
-                //     RevealPatternImmediate();
-                // }
-
-                // Show the pattern with scanner line effect.
-                // else
-                // {
-                //     var seconds = effectData.EffectValue;
-
-                //     RevealPatternForSeconds(seconds);
-                //     sender.BeginLockSlot(seconds);
-                // }
                 var seconds = effectData.EffectValue;
 
                 RevealPatternForSeconds(seconds);
+                PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
 
                 if (sender != null)
                     sender.BeginLockSlot(seconds);
@@ -128,12 +118,17 @@ public partial class PatternTimer : MonoBehaviour
 
                 if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_XRAY)
                 {
+                    if (isPatternReveal)
+                        return;
+                        
                     isPatternReveal = true;
-                    isPermanentReveal = true;
                     RevealPatternImmediate();
+                    
+                    PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
                 }
                 // if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_VISOR)
-
+                // # Handled in StageVariant.PowerupEffector
+                
                 break;
         }
     }
@@ -259,7 +254,10 @@ public partial class PatternTimer : MonoBehaviour
     /// </summary>
     private void RevealPatternImmediate()
     {
-        Debug.Log($"isPermanentReveal at Immediate -> {isPermanentReveal}");
+        if (isPermanentReveal)
+            return;
+
+        isPermanentReveal = true;
 
         // Interrup the tween
         LeanTween.cancel(tweenID_blackenPattern);
@@ -274,9 +272,6 @@ public partial class PatternTimer : MonoBehaviour
     /// </summary>
     private void RevealPatternForSeconds(int seconds, bool permanent = false)
     {
-        if (isPatternReveal || isPermanentReveal) return;            
-        isPatternReveal = true;
-
         patternLaser.SetActive(true);
 
         var initialHeight   = darkMaskRect.sizeDelta.y;

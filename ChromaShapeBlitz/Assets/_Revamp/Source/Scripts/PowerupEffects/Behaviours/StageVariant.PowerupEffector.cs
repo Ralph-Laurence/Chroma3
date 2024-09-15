@@ -41,6 +41,7 @@ public partial class StageVariant : MonoBehaviour
                 var visor = Constants.PowerupEffectValues.POWERUP_EFFECT_VISOR;
                 SpecialVisionPowerupNotifier.NotifyObserver(visor);
                 StartCoroutine(IERevealGuideBlocks(totalBlocksPerSequence));
+                PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
 
                 break;
 
@@ -49,6 +50,7 @@ public partial class StageVariant : MonoBehaviour
                 var xray = Constants.PowerupEffectValues.POWERUP_EFFECT_XRAY;
                 SpecialVisionPowerupNotifier.NotifyObserver(xray);
                 StartCoroutine(IERevealAll(totalBlocksPerSequence));
+                // Notifier must be handled in PatternTimer.PowerupEffects
                 
                 break;
         }

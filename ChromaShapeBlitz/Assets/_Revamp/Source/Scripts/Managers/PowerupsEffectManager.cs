@@ -77,6 +77,7 @@ public class PowerupsEffectManager : MonoBehaviour
             powerupsIO.LoadCountIndicatorSubSpritesAsync((sprites) =>
             {
                 countIndicatorSubSprites = sprites;
+                hotbar.SetCountIndicatorsSource(countIndicatorSubSprites);
 
                 Debug.LogWarning($"Sprites loaded with count : {countIndicatorSubSprites.Length}"); 
             })
@@ -162,6 +163,8 @@ public class PowerupsEffectManager : MonoBehaviour
         }
     }
 
+    #region EVENT_OBSERVERS
+
     private void ObserveGameManagerActionEvents(GameManagerActionEvents action)
     {
         if (action == GameManagerActionEvents.Retry)
@@ -176,26 +179,81 @@ public class PowerupsEffectManager : MonoBehaviour
         LeanTween.moveX(hotbarRect, hotbarPosX, hotbarSlideInDuration);
     }
 
+    private void ObserveHotbarSlotSelected(int slotIndex)
+    {
+        var powerupID  = hotbar.GetItemIDAtSlot(slotIndex);
+        var effectData = powerupEffectMap[powerupID];
+        var effectSlot = hotbar.GetSlot(slotIndex);
+
+        // Apply | Execute the powerup's effect
+        HotbarPowerupEffectNotifier.NotifyObserver(effectSlot, effectData);
+    }
+
     void OnEnable()
     {
         GameManagerEventNotifier.BindEvent(ObserveGameManagerActionEvents);
         OnStageCreated.BindEvent(ObserveStageCreated);
         HotbarSlotSelectedNotifier.BindObserver(ObserveHotbarSlotSelected);
+        PowerupEffectAppliedNotifier.BindObserver(ObservePowerupApplied);
     }
     void OnDisable()
     {
         GameManagerEventNotifier.UnbindEvent(ObserveGameManagerActionEvents);
         OnStageCreated.BindEvent(ObserveStageCreated);
         HotbarSlotSelectedNotifier.UnbindObserver(ObserveHotbarSlotSelected);
+        PowerupEffectAppliedNotifier.UnbindObserver(ObservePowerupApplied);
+    }
+    #endregion EVENT_OBSERVERS
+
+    private IEnumerator DecreaseQuantity(int slotIndex, PowerupEffectData powerupEffectData)
+    {
+        var userData = gsm.UserSessionData;
+        var owned    = userData.Inventory.OwnedPowerups;
+        var equip    = userData.Inventory.EquippedPowerupIds;
+        
+        // Note: When you modify a struct in C#, you're working with a COPY of the original data.
+        // Modifying an item property will not affect the original struct in the list.
+        // To apply the modifications, we need to assign the modified struct back to the list.
+
+        for (var i = 0; i < owned.Count; i++)
+        {
+            var item = owned[i];
+
+            // if the desired item was found, do the processing then leave the loop
+            if (item.PowerupID == powerupEffectData.PowerupId)
+            {
+                item.CurrentAmount--;
+
+                if (item.CurrentAmount > 0)
+                {
+                    owned[i] = item;
+                    hotbar.UpdateSlotCount(slotIndex, item.CurrentAmount);
+                }
+
+                // The item has ran out of quantity, dequeue it.
+                else if (item.CurrentAmount <= 0)
+                {
+                    owned.RemoveAt(i);
+
+                    if (equip.Contains(item.PowerupID))
+                        equip.Remove(item.PowerupID);
+                        // equip.RemoveAll(i => i == item.PowerupID)
+
+                    hotbar.DequeueItem(slotIndex);
+                }
+                break;
+            }
+
+            yield return null;
+        }
+        
+        // Write the changes to file
+        yield return StartCoroutine(UserDataHelper.Instance.SaveUserData(userData, null));
     }
 
-    private void ObserveHotbarSlotSelected(int slotIndex)
+    private void ObservePowerupApplied(HotBarSlot sender, PowerupEffectData powerupEffectData)
     {
-        var itemID = hotbar.GetItemIDAtSlot(slotIndex);
-        var effect = powerupEffectMap[itemID];
-
-        var effectSlot = hotbar.GetSlot(slotIndex);
-
-        HotbarPowerupEffectNotifier.NotifyObserver(effectSlot, effect);
+        // Decrease quantity from the inventory
+        StartCoroutine(DecreaseQuantity(sender.SlotIndex, powerupEffectData));
     }
 }

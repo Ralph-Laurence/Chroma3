@@ -87,26 +87,10 @@ public class HotBarSlot : MonoBehaviour
     public int GetItemID() => itemId;
 
     /// <summary>
-    /// Make the slot NOT interactable
+    /// Set the count of the current item that this slot is holding,
+    /// which is shown on the indicator.
     /// </summary>
-    // public void Lock()
-    // {
-    //     if (m_button == null)
-    //         return;
-
-    //     m_button.interactable = false;
-    // }
-
-    /// <summary>
-    /// Make the slot interactable
-    /// </summary>
-    // public void Unlock()
-    // {
-    //     if (m_button == null)
-    //         return;
-
-    //     m_button.interactable = true;
-    // }
+    public void SetCountIndicator(Sprite countIndex) => countIndicator.sprite = countIndex;
 
     /// <summary>
     /// Make the slot NOT interactable for a given duration,
