@@ -69,8 +69,6 @@ public partial class StageVariant : MonoBehaviour
         stageCamera = cam;
 
         // Only used when snapped rotation
-        // stageCamera.ViewTargetLeft  = ViewAngleLeft;
-        // stageCamera.ViewTargetRight = ViewAngleRight;
         stageCamera.MinOrthoSize    = MinCameraOrthoSize;
         stageCamera.MaxOrthoSize    = MaxCameraOrthoSize;
     }

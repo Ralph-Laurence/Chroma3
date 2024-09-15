@@ -225,4 +225,31 @@ public class XrayFx : MonoBehaviour
 
         return uiBounds; // These are the boundary limits (e.g., X: ±260, Y: ±460 in your case)
     }
+
+    /*
+    private Vector2 GetUIBounds()
+{
+    // Get the RectTransform of the Canvas (or root element that defines the whole screen area)
+    RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+
+    // Get the CanvasScaler component
+    CanvasScaler canvasScaler = canvas.GetComponent<CanvasScaler>();
+
+    // Get the screen size
+    Vector2 screenSize = new Vector2(Screen.width, Screen.height);
+
+    // Calculate the reference resolution and the current resolution scale factor
+    Vector2 referenceResolution = canvasScaler.referenceResolution;
+    float scaleFactor = Mathf.Max(screenSize.x / referenceResolution.x, screenSize.y / referenceResolution.y);
+
+    // Calculate the canvas size in pixels
+    Vector2 canvasSize = canvasRect.rect.size * scaleFactor;
+
+    // Divide by 2 to get the range from center to the edge (since the canvas is centered)
+    Vector2 uiBounds = canvasSize / 2f;
+
+    return uiBounds; // These are the boundary limits
+}
+
+    */
 }

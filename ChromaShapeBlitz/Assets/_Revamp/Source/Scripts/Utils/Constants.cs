@@ -65,8 +65,11 @@ public class Constants
 
     public readonly struct PowerupEffectValues
     {
-        public const int POWERUP_EFFECT_VISOR = 100;
-        public const int POWERUP_EFFECT_XRAY = 101;
+        public const int POWERUP_EFFECT_VISOR   = 100;
+        public const int POWERUP_EFFECT_XRAY    = 101;
+        public const int POWERUP_EFFECT_WIZARD  = 102;
+        public const int POWERUP_EFFECT_GRANDMASTER = 103;
+        public const int POWERUP_EFFECT_IDEA    = 104;
 
         public const float VISOR_SCAN_DURATION = 2.5F;
     }

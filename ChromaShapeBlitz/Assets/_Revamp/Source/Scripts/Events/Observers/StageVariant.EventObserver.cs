@@ -4,26 +4,31 @@ using UnityEngine;
 
 public partial class StageVariant : MonoBehaviour
 {
+    // Flag to track how many sequences have been filled
+    private int sequenceFilled = 0;
+
     void OnEnable()
     {
-        OnBlockSequenceFillCompleted.BindEvent(Subscribe);
+        OnBlockSequenceFillCompleted.BindEvent(ObserveSequenceFilled);
         HotbarPowerupEffectNotifier.BindObserver(ObservePowerupReceived);
     }
     void OnDisable()
     {
-        OnBlockSequenceFillCompleted.UnbindEvent(Subscribe);
+        OnBlockSequenceFillCompleted.UnbindEvent(ObserveSequenceFilled);
     }
 
-    // Flag to track how many sequences have been completed
-    private int sequenceCompleted = 0;
+    /// <summary>
+    /// Check if one or more of the sequences have been filled.
+    /// </summary>
+    public bool SequenceFillBegan => sequenceFilled > 0;
 
     // Listen to an event when a block sequence controller has completed filling.
-    public void Subscribe()
+    public void ObserveSequenceFilled()
     {
-        sequenceCompleted++;
+        sequenceFilled++;
 
         // When all sequences have been completed, notify the game manager
-        if (sequenceCompleted == SequenceSet.Count)
+        if (sequenceFilled == SequenceSet.Count)
             ValidateSequenceSet();
     }
 
