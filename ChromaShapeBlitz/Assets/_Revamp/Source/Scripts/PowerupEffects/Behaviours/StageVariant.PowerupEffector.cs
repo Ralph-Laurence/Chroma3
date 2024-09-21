@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public partial class StageVariant : MonoBehaviour
 {
+    [SerializeField] private HintMarker hintMarker;
+
     private Material LIGHT_BLOCK_DEFAULT_MAT;
     private Material DARK_BLOCK_DEFAULT_MAT;
 
@@ -133,23 +137,17 @@ public partial class StageVariant : MonoBehaviour
 
             // Show which tiles to tap
             case Constants.PowerupEffectValues.POWERUP_EFFECT_IDEA:
-                Debug.Log("Show which tiles to tap");
+                
+                // We can only show hints when we haven't touched the tiles yet (for now)
+                if (sequenceFilled > 0)
+                    return;
 
-                if (sequenceFilled <= 0)
-                {
-                    StartCoroutine(IEShowHints());
-                }
+                HintMarkerNotifier.NotifyObserver(this);
+                
                 break;
         }
     }
 
-    /// <summary>
-    /// We can only show hints when the user havent touched any of the tiles yet
-    /// </summary>
-    private IEnumerator IEShowHints()
-    {
-        yield return null;
-    }
     /*
     private Vector2 WorldPosToCanvasCoords(Transform target)
     {

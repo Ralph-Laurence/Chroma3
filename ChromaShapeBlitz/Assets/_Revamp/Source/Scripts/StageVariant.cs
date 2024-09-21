@@ -28,6 +28,10 @@ public partial class StageVariant : MonoBehaviour
     public RewardTypes RewardType;
     public int TotalReward;
 
+    private bool shouldStickToBottom = true;
+    public void SetStickToBottom(bool stick) => shouldStickToBottom = stick;
+
+
     [Space(10)] 
     public List<BlockSequenceController> SequenceSet = new();
 
@@ -47,8 +51,19 @@ public partial class StageVariant : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (stageCamera.AttachedCamera != null)
+        if (stageCamera.AttachedCamera != null && shouldStickToBottom)
             StickToBottom();
+
+        // if (Input.GetKeyUp(KeyCode.F2))
+        // {
+        //     shouldStickToBottom = false;
+        //     stageCamera.ViewFromAbove(followStageYRotation: transform.localEulerAngles.y);
+        // }
+        // else if (Input.GetKeyUp(KeyCode.F4))
+        // {
+        //     shouldStickToBottom = false;
+        //     stageCamera.UnviewFromAbove();
+        // }
     }
     //
     //==========================================

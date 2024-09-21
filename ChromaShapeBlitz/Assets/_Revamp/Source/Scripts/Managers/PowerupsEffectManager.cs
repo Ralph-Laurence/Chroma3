@@ -16,6 +16,10 @@ public class PowerupsEffectManager : MonoBehaviour
     [SerializeField] private float hotbarPosX = 12.0F;
     [SerializeField] private float hotbarSlideInDuration = 0.25F;
     [SerializeField] private PowerupsIO   powerupsIO;
+
+    [SerializeField] private HintMarker hintMarker;
+    [SerializeField] private StageCamera stageCamera;
+
     private RectTransform hotbarRect;
     private Sprite[] countIndicatorSubSprites;
     private GameSessionManager gsm;
@@ -195,6 +199,7 @@ public class PowerupsEffectManager : MonoBehaviour
         OnStageCreated.BindEvent(ObserveStageCreated);
         HotbarSlotSelectedNotifier.BindObserver(ObserveHotbarSlotSelected);
         PowerupEffectAppliedNotifier.BindObserver(ObservePowerupApplied);
+        HintMarkerNotifier.BindObserver(ObserveHintMarker);
     }
     void OnDisable()
     {
@@ -202,6 +207,7 @@ public class PowerupsEffectManager : MonoBehaviour
         OnStageCreated.BindEvent(ObserveStageCreated);
         HotbarSlotSelectedNotifier.UnbindObserver(ObserveHotbarSlotSelected);
         PowerupEffectAppliedNotifier.UnbindObserver(ObservePowerupApplied);
+        HintMarkerNotifier.UnbindObserver(ObserveHintMarker);
     }
     #endregion EVENT_OBSERVERS
 
@@ -255,5 +261,73 @@ public class PowerupsEffectManager : MonoBehaviour
     {
         // Decrease quantity from the inventory
         StartCoroutine(DecreaseQuantity(sender.SlotIndex, powerupEffectData));
+    }
+
+    /// <summary>
+    /// We can only show hints when the user havent touched any of the tiles yet
+    /// </summary>
+    // private IEnumerator IEBeginShowHints()
+    // {
+    //     // Prevent any interactions while the transition plays
+    //     InteractionBlockerNotifier.NotifyObserver();
+
+    //     shouldStickToBottom = false;
+
+    //     stageCamera.ViewFromAbove
+    //     (
+    //         followStageYRotation: transform.localEulerAngles.y,
+    //         onDone: () => StartCoroutine(IEAnimateShowHints())
+    //     );
+
+    //     yield return null;
+    // }
+
+    private void ObserveHintMarker(StageVariant stageVariant) => StartCoroutine(IEBeginShowHint(stageVariant));
+
+    private IEnumerator IEBeginShowHint(StageVariant stageVariant)
+    {
+        // Prevent any interactions while the transition plays
+        InteractionBlockerNotifier.NotifyObserver(true);
+
+        // Prevent the stage variant from being shown at the bottom screen 
+        stageVariant.SetStickToBottom(false);
+
+        var stageRotationY = stageVariant.transform.eulerAngles.y;
+
+        // Rotate and move the camera at top-down position
+        yield return StartCoroutine(stageCamera.IEViewFromAbove
+        (
+            followStageYRotation: stageRotationY
+        ));
+
+        Debug.LogWarning($"Stage Rot Y => {stageRotationY}");
+
+        // Make the hint marker visible
+        hintMarker.gameObject.SetActive(true);
+
+        // Rotate the pointer hand to be the same rotation as the stage variant
+        hintMarker.transform.localEulerAngles = new Vector3(90.0F, stageRotationY);
+
+        // Assign the targets for hint
+        var targets = new List<GameObject>();
+
+        for (var i = 0; i < stageVariant.SequenceSet.Count; i++)
+        {
+            targets.Add(stageVariant.SequenceSet[i].gameObject);
+        }
+
+        hintMarker.SetTargets(targets);
+
+        yield return hintMarker.ShowHints();
+        yield return new WaitForSeconds(0.5F);
+
+        // Bring back to initial view angle before hints were shown.
+        yield return StartCoroutine(stageCamera.IEUnviewFromAbove());
+        
+        hintMarker.gameObject.SetActive(false);
+        stageVariant.SetStickToBottom(true);
+
+        // Allow interactions after the transition plays
+        InteractionBlockerNotifier.NotifyObserver(false);
     }
 }

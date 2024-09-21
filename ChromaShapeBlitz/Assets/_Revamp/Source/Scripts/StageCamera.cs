@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class StageCamera : MonoBehaviour
@@ -18,6 +19,7 @@ public class StageCamera : MonoBehaviour
     public void UnFreeze() => freeze = false;
 
     public Camera AttachedCamera { get; private set; }
+
     //
     //=============================================
     // MONOBEHAVIOUR METHODS 
@@ -40,7 +42,8 @@ public class StageCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        UpdateOrthoSize();
+        if (!isViewingFromAbove)
+            UpdateOrthoSize();
 
         if (Input.touchCount > 0)
             HandleDrag();
@@ -140,4 +143,142 @@ public class StageCamera : MonoBehaviour
         if (unfreeze)
             UnFreeze();
     }
+
+    private bool isViewingFromAbove;
+    private float initialOrtho;
+    private Vector3 rotationBeforeViewAbove;
+
+    /// <summary>
+    /// Invoked from a powerup hint, rotates the stage camera above the stage at 90 degrees X.
+    /// This should follow the stage variant's current rotation so that the camera appears center-zeroed.
+    /// After that, it reverts back to its default rotation.
+    /// </summary>
+    /// <param name="followStageRotation">When set, the stage camera rotates its Y rotation the same as stage variant's Y</param>
+    /// <param name="transitionRate">How fast the rotation from above go.</param>
+    /// <param name="addViewHeight">Move the camera a little bit above</param>
+    /// <param name="onDone">Callback when transition was done</param>
+    public IEnumerator IEViewFromAbove
+    (
+        float followStageYRotation = 0.0F,
+        float transitionRate       = 0.25F,
+        float addViewHeight        = 1.45F
+        // Action onDone              = null
+    )
+    {
+        if (isViewingFromAbove)
+            yield break;
+
+        isViewingFromAbove = true;
+
+        // Cache original parameters before viewing from above
+        initialOrtho = AttachedCamera.orthographicSize;
+        rotationBeforeViewAbove = transform.localEulerAngles;
+        
+        // Move Above (by adding more Ortho)
+        var moveUpTo = AttachedCamera.orthographicSize + addViewHeight;
+
+        // Increase the ortho size
+        LeanTween.value
+        (
+            gameObject,
+            OnUpdateTweenOrthoSize,
+            initialOrtho,
+            moveUpTo,
+            transitionRate
+        );
+
+        var topdownRotTarget = new Vector3(90.0F, followStageYRotation, 0.0F);
+        
+        // Rotate top-down
+        LeanTween.rotate(gameObject, topdownRotTarget, transitionRate);
+                 //.setOnComplete(() => onDone?.Invoke());
+
+        while (LeanTween.isTweening(gameObject))
+        {
+            yield return null;
+        }
+    }
+    // public void ViewFromAbove
+    // (
+    //     float followStageYRotation = 0.0F,
+    //     float transitionRate       = 0.25F,
+    //     float addViewHeight        = 1.45F,
+    //     Action onDone              = null
+    // )
+    // {
+    //     if (isViewingFromAbove)
+    //         return;
+
+    //     isViewingFromAbove = true;
+
+    //     // Cache original parameters before viewing from above
+    //     initialOrtho = AttachedCamera.orthographicSize;
+    //     rotationBeforeViewAbove = transform.localEulerAngles;
+        
+    //     // Move Above (by adding more Ortho)
+    //     var moveUpTo = AttachedCamera.orthographicSize + addViewHeight;
+
+    //     // Increase the ortho size
+    //     LeanTween.value
+    //     (
+    //         gameObject,
+    //         OnUpdateTweenOrthoSize,
+    //         initialOrtho,
+    //         moveUpTo,
+    //         transitionRate
+    //     );
+
+    //     var topdownRotTarget = new Vector3(90.0F, followStageYRotation, 0.0F);
+        
+    //     // Rotate top-down
+    //     LeanTween.rotate(gameObject, topdownRotTarget, transitionRate)
+    //              .setOnComplete(() => onDone?.Invoke());
+    // }
+
+    // public void UnviewFromAbove(float transitionRate = 0.25F, Action onDone = null)
+    // {
+    //     // Reset the ortho size
+    //     LeanTween.value
+    //     (
+    //         gameObject,
+    //         OnUpdateTweenOrthoSize,
+    //         AttachedCamera.orthographicSize,
+    //         initialOrtho,
+    //         transitionRate
+    //     );
+
+    //     // Rotate top-down
+    //     LeanTween.rotate(gameObject, rotationBeforeViewAbove, transitionRate)
+    //              .setOnComplete(() =>
+    //              {
+    //                 isViewingFromAbove = false;
+    //                 onDone?.Invoke();
+    //              });
+    // }
+
+    public IEnumerator IEUnviewFromAbove(float transitionRate = 0.25F)
+    {
+        // Reset the ortho size
+        LeanTween.value
+        (
+            gameObject,
+            OnUpdateTweenOrthoSize,
+            AttachedCamera.orthographicSize,
+            initialOrtho,
+            transitionRate
+        );
+
+        // Rotate top-down
+        LeanTween.rotate(gameObject, rotationBeforeViewAbove, transitionRate);
+
+        while (LeanTween.isTweening(gameObject))
+        {
+            yield return null;
+        }
+
+        isViewingFromAbove = false;
+    }
+
+    // Callback on ortho tween update
+    private void OnUpdateTweenOrthoSize(float value) => AttachedCamera.orthographicSize = value;
 }
