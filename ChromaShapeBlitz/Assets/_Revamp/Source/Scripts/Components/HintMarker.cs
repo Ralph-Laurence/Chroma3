@@ -21,7 +21,9 @@ public class HintMarker : MonoBehaviour
     [SerializeField] private bool autoFindCamera;
 
     [SerializeField] private List<GameObject> targets;
-    [SerializeField] private float hintStep = 0.25F;
+    [SerializeField] private float hintDurationEasy = 0.25F;
+    [SerializeField] private float hintDurationNormal = 0.1F;
+    [SerializeField] private float hintDurationHard = 0.01F;
 
     private SoundEffects sfx;
     private bool animationBegan;
@@ -78,24 +80,42 @@ public class HintMarker : MonoBehaviour
         animationBegan = false;
     }
 
-    public IEnumerator ShowHints(Action onAnimationBegan = null)
+    public void MatchStageRotation(Vector3 eulerAngles) => pointer.transform.eulerAngles = eulerAngles;
+
+    public IEnumerator ShowHints(LevelDifficulties difficulty)
     {
         if (animationBegan)
             yield break;
-
-		onAnimationBegan?.Invoke();
 		
-        var step = new WaitForSeconds(hintStep);
+        // Stages under easy level have slower hint duration
+        // while hard stages have faster hint duration.
+        var hintDuration = difficulty switch
+        {
+            LevelDifficulties.Easy   => hintDurationEasy,
+            LevelDifficulties.Normal => hintDurationNormal,
+            LevelDifficulties.Hard   => hintDurationHard,
+            _ => 0.3F
+        };
+
+        var individualDuration = hintDuration / targets.Count;
+        var step = new WaitForSeconds(individualDuration);
+
+        // Initially position the pointer into the first target
+        pointer.transform.position = targets[0].transform.position;
+
+        gameObject.SetActive(true);
 
         for (var i = 0; i < targets.Count; i++)
         {
-            var target = targets[i];
-
-            transform.position = target.transform.position;
-            yield return StartCoroutine(IEAnimateClick());
-
             // Wait for step duration before moving to next target
             yield return step;
+
+            var target = targets[i];
+
+            // transform.position = target.transform.position;
+            pointer.transform.position = target.transform.position;
+
+            yield return StartCoroutine(IEAnimateClick());
         }
     }
 }

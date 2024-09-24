@@ -129,15 +129,6 @@ public class PowerupsEffectManager : MonoBehaviour
         // Slide in the hotbar
         LeanTween.moveX(hotbarRect, hotbarPosX, hotbarSlideInDuration);
         yield return null;
-
-        // Debug.Log("Item Queue: ");
-        
-        // foreach (var item in hotbar.GetItemQueue())
-        // {
-        //     Debug.LogWarning(item);
-        // }
-
-        // yield return null;
     }
 
     private IEnumerator IELoadPowerupsMap()
@@ -263,25 +254,6 @@ public class PowerupsEffectManager : MonoBehaviour
         StartCoroutine(DecreaseQuantity(sender.SlotIndex, powerupEffectData));
     }
 
-    /// <summary>
-    /// We can only show hints when the user havent touched any of the tiles yet
-    /// </summary>
-    // private IEnumerator IEBeginShowHints()
-    // {
-    //     // Prevent any interactions while the transition plays
-    //     InteractionBlockerNotifier.NotifyObserver();
-
-    //     shouldStickToBottom = false;
-
-    //     stageCamera.ViewFromAbove
-    //     (
-    //         followStageYRotation: transform.localEulerAngles.y,
-    //         onDone: () => StartCoroutine(IEAnimateShowHints())
-    //     );
-
-    //     yield return null;
-    // }
-
     private void ObserveHintMarker(StageVariant stageVariant) => StartCoroutine(IEBeginShowHint(stageVariant));
 
     private IEnumerator IEBeginShowHint(StageVariant stageVariant)
@@ -300,13 +272,9 @@ public class PowerupsEffectManager : MonoBehaviour
             followStageYRotation: stageRotationY
         ));
 
-        Debug.LogWarning($"Stage Rot Y => {stageRotationY}");
-
-        // Make the hint marker visible
-        hintMarker.gameObject.SetActive(true);
-
         // Rotate the pointer hand to be the same rotation as the stage variant
-        hintMarker.transform.localEulerAngles = new Vector3(90.0F, stageRotationY);
+        // hintMarker.transform.localEulerAngles = new Vector3(90.0F, stageRotationY);
+        hintMarker.MatchStageRotation(new Vector3(90.0F, stageRotationY));
 
         // Assign the targets for hint
         var targets = new List<GameObject>();
@@ -315,10 +283,10 @@ public class PowerupsEffectManager : MonoBehaviour
         {
             targets.Add(stageVariant.SequenceSet[i].gameObject);
         }
-
+        
         hintMarker.SetTargets(targets);
 
-        yield return hintMarker.ShowHints();
+        yield return hintMarker.ShowHints(stageVariant.VariantDifficulty);
         yield return new WaitForSeconds(0.5F);
 
         // Bring back to initial view angle before hints were shown.

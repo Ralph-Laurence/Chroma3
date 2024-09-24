@@ -143,7 +143,7 @@ public partial class StageVariant : MonoBehaviour
                     return;
 
                 HintMarkerNotifier.NotifyObserver(this);
-                
+                // PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
                 break;
         }
     }
