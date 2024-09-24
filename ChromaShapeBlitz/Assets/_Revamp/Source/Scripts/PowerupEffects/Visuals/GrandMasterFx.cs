@@ -216,10 +216,14 @@ public class GrandMasterFx : MonoBehaviour
         for (int i = 0; i < minions.Length; i++)
         {
             var minion = minions[i];
-            LeanTween.moveLocal(minion, Vector3.zero, 0.5F);
-
+            var tween = LeanTween.moveLocal(minion, Vector3.zero, 0.5F);
+            
+            if (i == minions.Length - 1)
+                tween.setOnComplete(() => effectMinions.SetActive(false));
+                
             yield return null;
         }
+        
         //
         // Spin the grand master fast (3x) then vanish
         //
