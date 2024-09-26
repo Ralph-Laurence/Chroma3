@@ -45,7 +45,6 @@ public partial class PatternTimer : MonoBehaviour
     private readonly float TimerTextMaxPulseScale = 1.5F;
     private readonly float TimerTextPulseDuration = 0.5F;
     
-    private bool patternConcealed;
     private float lastTickPlayedSecond;
 
     private LTDescr tweenBlackenPattern;
@@ -66,13 +65,6 @@ public partial class PatternTimer : MonoBehaviour
 
     void Update()
     {
-        
-        // if (Input.GetKeyUp(KeyCode.F2))
-        // {
-        //     isTimeFreeze = !isTimeFreeze;
-        //     Debug.Log( isTimeFreeze ? "Time Paused" : "Resume Timer" );
-        // }
-
         if (isStopped || isTimeFreeze)
             return;
 

@@ -123,17 +123,24 @@ public partial class StageVariant : MonoBehaviour
     
     private void HandleStageSolverEffects(HotBarSlot sender, PowerupEffectData effectData)
     {
-        switch(effectData.EffectValue)
+        var effectValue = effectData.EffectValue;
+
+        switch(effectValue)
         {
             // Solve the first 3 patterns
             case Constants.PowerupEffectValues.POWERUP_EFFECT_WIZARD:
-                Debug.Log("Solve the first 3 patterns");
+                //break;
+
+            // Solve entire pattern
+            case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
+                StageSolverMageNotifier.NotifyObserver(effectValue, this);
+
                 break;
 
             // Solve the entire pattern
-            case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
-                Debug.Log("Solve the entire pattern");
-                break;
+            // case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
+            //     Debug.Log("Solve the entire pattern");
+            //     break;
 
             // Show which tiles to tap
             case Constants.PowerupEffectValues.POWERUP_EFFECT_IDEA:
@@ -148,24 +155,27 @@ public partial class StageVariant : MonoBehaviour
         }
     }
 
-    /*
-    private Vector2 WorldPosToCanvasCoords(Transform target)
+    private IEnumerator IEExecuteGrandMasterEffect(Action onFinished)
     {
-        // Get the world position of the gameobject
-        Vector3 cubeWorldPosition = target.position;
+        var endOfSequence = SequenceSet.Count - 1;
 
-        // Convert the cube's world position to screen space
-        Vector3 screenPosition = Camera.main.WorldToScreenPoint(cubeWorldPosition);
+        // Wait before triggering the next fill
+        var delay = new WaitForSeconds(0.25F);
 
-        // Convert screen position to canvas coordinates
-        RectTransform canvasRectTransform = uiImage.canvas.GetComponent<RectTransform>();
-        Vector2 uiPosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPosition, Camera.main, out uiPosition);
+        for (var i = 0; i < SequenceSet.Count; i++)
+        {
+            yield return StartCoroutine(SequenceSet[i].CompleteSequence( () => {
+                if (i == endOfSequence)
+                    onFinished.Invoke();
+            }));
 
-        // Set the UI Image position in the canvas
-        RectTransform uiImageRectTransform = uiImage.GetComponent<RectTransform>();
-        uiImageRectTransform.anchoredPosition = uiPosition;
+            yield return delay;
+        }
+
+        yield return null;
     }
-    */
+
+    public void ExecuteGrandMasterEffect(Action onFinished) => StartCoroutine(IEExecuteGrandMasterEffect(onFinished));
+
     #endregion STAGE_SOLVER_EFFECTS
 }

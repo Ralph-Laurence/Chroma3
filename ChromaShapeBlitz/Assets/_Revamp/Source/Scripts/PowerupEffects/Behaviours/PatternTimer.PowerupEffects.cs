@@ -136,6 +136,10 @@ public partial class PatternTimer : MonoBehaviour
     
     #region POWERUP_EFFECTS_FREEZE_TIMER
 
+    /// <summary>
+    /// Just sets the boolean flag to "freeze"; No other behaviours are applied
+    /// </summary>
+    public void SetFlagFreezeTimer(bool freeze) => isTimeFreeze = freeze;
     private IEnumerator IEFreezeTimer(int seconds)
     {
         isTimeFreeze = true;

@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Revamp;
+using System;
 
 public class BlockSequenceController : MonoBehaviour
 {
@@ -129,8 +130,12 @@ public class BlockSequenceController : MonoBehaviour
     /// Fill the colors of each blocks in the sequence.
     /// The visible color is assigned by ApplyColor().
     /// The color value is assigned with SetColor().
+    /// 
+    /// By default, (normal gameplay) this notifies the game manager that 
+    /// the entire sequence has finished filling, thus notifyGameManager = true.
+    /// When we use a powerup [i.e. GrandMaster] that solves the stage, we set the notifyGameManager to false
     /// </summary>
-    private IEnumerator ColorizeSequence()
+    private IEnumerator ColorizeSequence(bool notifyGameManager = true)
     {
         isFillingColor    = true;
         isActivatorFading = true;
@@ -156,7 +161,7 @@ public class BlockSequenceController : MonoBehaviour
 
             // Some blocks may have intersecting (crossing) destinations.
             // We must only check and notify for our target destination.
-            if (block.IsDestinationBlock && block == Destination)
+            if (notifyGameManager && block.IsDestinationBlock && block == Destination)
                 //OnDestinationReachedNotifier.Publish();
                 OnBlockSequenceFillCompleted.NotifyObserver();
 
@@ -170,10 +175,22 @@ public class BlockSequenceController : MonoBehaviour
     /// </summary>
     public void FillSequence()
     {
-        if (isFillingColor || isGameOver)//(gameManager != null && gameManager.GetState() == GameManagerStates.Stopped))
+        if (isFillingColor || isGameOver)
             return;
 
         StartCoroutine(ColorizeSequence());
+    }
+
+    /// <summary>
+    /// This is used by Grandmaster powerup
+    /// </summary>
+    public IEnumerator CompleteSequence(Action sequenceFilled)
+    {
+        if (isFillingColor || isGameOver)
+            yield break;
+
+        yield return StartCoroutine(ColorizeSequence(false));
+        sequenceFilled.Invoke();
     }
 
     /// <summary>

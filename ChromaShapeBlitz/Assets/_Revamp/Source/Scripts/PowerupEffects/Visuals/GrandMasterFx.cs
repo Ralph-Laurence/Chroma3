@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Revamp;
 using UnityEngine;
 
 public class GrandMasterFx : MonoBehaviour
@@ -30,6 +31,8 @@ public class GrandMasterFx : MonoBehaviour
     [SerializeField] private AudioClip sfxLaugh;
     [SerializeField] private AudioClip sfxExiting;
 
+    [HideInInspector] public StageVariant stageVariant_EffectReciever;
+
     private Animator animator;
     private SoundEffects sfx;
 
@@ -44,16 +47,6 @@ public class GrandMasterFx : MonoBehaviour
 
     void Update()
     {
-        // if (Input.GetKeyUp(KeyCode.F1))
-        // {
-        //     StartCoroutine(SpawnTheGrandMaster());
-        // }
-        // else if (Input.GetKeyUp(KeyCode.F2))
-        // {
-        //     magicFloating = false;
-        //     StartCoroutine(IEExitGrandMaster());
-        // }
-
         if (!magicFloating && !magicFloatCancelled)
         {
             LeanTween.cancel(character);
@@ -61,6 +54,16 @@ public class GrandMasterFx : MonoBehaviour
         }
 
         effectMinions.transform.Rotate(90.0F * Time.deltaTime * Vector3.up);
+    }
+
+    public void BeginEffect()
+    {
+        // Poisition the mage just above the stage variant
+        var posAboveStage = stageVariant_EffectReciever.transform.position;
+        posAboveStage.y += 0.5F;
+
+        transform.position = posAboveStage;
+        StartCoroutine(SpawnTheGrandMaster());
     }
 
     private IEnumerator SpawnTheGrandMaster()
@@ -153,7 +156,7 @@ public class GrandMasterFx : MonoBehaviour
         // (-2)     - West
         int[] spacingDirections = { 1, -1, 2, -2};
         var spacing = 0.85F;
-        var spaceOutSpeed = 1.65F;
+        var spaceOutSpeed = 1.20F;
 
         for (int i = 0; i < minions.Length; i++)
         {
@@ -175,6 +178,13 @@ public class GrandMasterFx : MonoBehaviour
                     var spaceOutX = Vector3.right * (spacing * direction);
                     LeanTween.moveLocal(minion, spaceOutX, spaceOutSpeed);
                     break;
+            }
+
+            if (i == minions.Length - 1)
+            {
+                var onFinishFill = new Action(() => StartCoroutine(IEExitGrandMaster()));
+
+                stageVariant_EffectReciever.ExecuteGrandMasterEffect(onFinishFill);
             }
 
             yield return null;
@@ -234,6 +244,9 @@ public class GrandMasterFx : MonoBehaviour
                     animator.SetTrigger("ResetToIdle");
                     StartCoroutine(IEToggleGlowFx(false));
                     flashOnExit.SetActive(true);
+
+                    // End the stage with result of "Passed"
+                    OnStageCompleted.NotifyObserver(StageCompletionType.Success);
                  });
 
         // Scale down the halo

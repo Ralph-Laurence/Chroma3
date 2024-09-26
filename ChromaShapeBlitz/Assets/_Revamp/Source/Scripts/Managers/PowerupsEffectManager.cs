@@ -17,8 +17,16 @@ public class PowerupsEffectManager : MonoBehaviour
     [SerializeField] private float hotbarSlideInDuration = 0.25F;
     [SerializeField] private PowerupsIO   powerupsIO;
 
+    [Space(10)] [Header("Mage Effects")]
+    [SerializeField] private WizardFx wizardFx;
+    [SerializeField] private GrandMasterFx grandMasterFx;
+
+    [Space(10)] [Header("Hint Effects")]
     [SerializeField] private HintMarker hintMarker;
     [SerializeField] private StageCamera stageCamera;
+
+    [Space(10)] [Header("Behavioural Effects")]
+    [SerializeField] private PatternTimer patternTimer;
 
     private RectTransform hotbarRect;
     private Sprite[] countIndicatorSubSprites;
@@ -69,6 +77,16 @@ public class PowerupsEffectManager : MonoBehaviour
             // This is different from running them concurrently (in parallel) as it waits for each to finish.
             yield return StartCoroutine(coroutine());
         }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.F8))
+            HotbarPowerupEffectNotifier.NotifyObserver(null, new PowerupEffectData
+            {
+                Category = PowerupCategories.StageSolver,
+                EffectValue = Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER
+            });
     }
 
     /// <summary>
@@ -191,6 +209,7 @@ public class PowerupsEffectManager : MonoBehaviour
         HotbarSlotSelectedNotifier.BindObserver(ObserveHotbarSlotSelected);
         PowerupEffectAppliedNotifier.BindObserver(ObservePowerupApplied);
         HintMarkerNotifier.BindObserver(ObserveHintMarker);
+        StageSolverMageNotifier.BindObserver(ObserveStageSolverMage);
     }
     void OnDisable()
     {
@@ -199,6 +218,7 @@ public class PowerupsEffectManager : MonoBehaviour
         HotbarSlotSelectedNotifier.UnbindObserver(ObserveHotbarSlotSelected);
         PowerupEffectAppliedNotifier.UnbindObserver(ObservePowerupApplied);
         HintMarkerNotifier.UnbindObserver(ObserveHintMarker);
+        StageSolverMageNotifier.UnbindObserver(ObserveStageSolverMage);
     }
     #endregion EVENT_OBSERVERS
 
@@ -297,5 +317,29 @@ public class PowerupsEffectManager : MonoBehaviour
 
         // Allow interactions after the transition plays
         InteractionBlockerNotifier.NotifyObserver(false);
+    }
+
+    private void ObserveStageSolverMage(int mageType, StageVariant stageVariant)
+    {
+        switch (mageType)
+        {
+            // Solve the first 3 patterns
+            case Constants.PowerupEffectValues.POWERUP_EFFECT_WIZARD:
+                wizardFx.gameObject.SetActive(true);
+                wizardFx.powerupEffectReciever = stageVariant;
+                wizardFx.BeginEffect();
+                break;
+
+            // Solve the entire pattern
+            case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
+                
+                // Completely pause the timer
+                patternTimer.SetFlagFreezeTimer(true);
+
+                grandMasterFx.gameObject.SetActive(true);
+                grandMasterFx.stageVariant_EffectReciever = stageVariant;
+                grandMasterFx.BeginEffect();
+                break;
+        }
     }
 }

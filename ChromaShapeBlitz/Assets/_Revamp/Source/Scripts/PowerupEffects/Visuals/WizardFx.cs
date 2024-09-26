@@ -14,6 +14,8 @@ public class WizardFx : MonoBehaviour
     [SerializeField] private AudioClip sfxExit;
     [SerializeField] private AudioClip[] wizardLaughs;
 
+    [HideInInspector] public StageVariant powerupEffectReciever;
+
     private Animator animator;
     private SoundEffects sfx;
 
@@ -23,22 +25,24 @@ public class WizardFx : MonoBehaviour
         TryGetComponent(out animator);
     }
 
-    void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.F1))
-        {
-            if (onSpawnSmoke.isPlaying)
-                return;
+    // void Update()
+    // {
+    //     if (Input.GetKeyUp(KeyCode.F1))
+    //     {
+    //         if (onSpawnSmoke.isPlaying)
+    //             return;
 
-            StartCoroutine(SpawnTheWizard());
-        }
-        else if (Input.GetKeyUp(KeyCode.F2))
-        {
-            character.SetActive(false);
-            onSpawnSmoke.Stop();
-            onSpawnSmoke.gameObject.SetActive(false);
-        }
-    }
+    //         StartCoroutine(SpawnTheWizard());
+    //     }
+    //     else if (Input.GetKeyUp(KeyCode.F2))
+    //     {
+    //         character.SetActive(false);
+    //         onSpawnSmoke.Stop();
+    //         onSpawnSmoke.gameObject.SetActive(false);
+    //     }
+    // }
+
+    public void BeginEffect() => StartCoroutine(SpawnTheWizard());
 
     private IEnumerator SpawnTheWizard()
     {
