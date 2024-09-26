@@ -44,22 +44,15 @@ public class GrandMasterFx : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.F1))
-        {
-            // if (onSpawnSmoke.isPlaying)
-            //     return;
-
-            StartCoroutine(SpawnTheGrandMaster());
-        }
-        else if (Input.GetKeyUp(KeyCode.F2))
-        {
-            magicFloating = false;
-
-            StartCoroutine(IEExitGrandMaster());
-            //character.SetActive(false);
-            // onSpawnSmoke.Stop();
-            // onSpawnSmoke.gameObject.SetActive(false);
-        }
+        // if (Input.GetKeyUp(KeyCode.F1))
+        // {
+        //     StartCoroutine(SpawnTheGrandMaster());
+        // }
+        // else if (Input.GetKeyUp(KeyCode.F2))
+        // {
+        //     magicFloating = false;
+        //     StartCoroutine(IEExitGrandMaster());
+        // }
 
         if (!magicFloating && !magicFloatCancelled)
         {
