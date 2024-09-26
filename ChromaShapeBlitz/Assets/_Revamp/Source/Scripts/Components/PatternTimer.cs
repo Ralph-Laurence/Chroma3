@@ -318,4 +318,6 @@ public partial class PatternTimer : MonoBehaviour
         if (bgm != null)
             bgm.ResetVolume();
     }
+
+    public int GetRemainingSecs() => Mathf.CeilToInt(remainingTime);
 }

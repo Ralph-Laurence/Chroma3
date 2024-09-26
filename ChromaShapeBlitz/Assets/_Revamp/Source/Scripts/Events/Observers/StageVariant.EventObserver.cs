@@ -11,10 +11,12 @@ public partial class StageVariant : MonoBehaviour
     {
         OnBlockSequenceFillCompleted.BindEvent(ObserveSequenceFilled);
         HotbarPowerupEffectNotifier.BindObserver(ObservePowerupReceived);
+        OnBlockSequenceFillCompleted.BindEvent(ObserveSequencesFilled);
     }
     void OnDisable()
     {
         OnBlockSequenceFillCompleted.UnbindEvent(ObserveSequenceFilled);
+        OnBlockSequenceFillCompleted.UnbindEvent(ObserveSequencesFilled);
     }
 
     /// <summary>
@@ -56,4 +58,12 @@ public partial class StageVariant : MonoBehaviour
 
         OnStageCompleted.NotifyObserver(StageCompletionType.Success);
     }
+
+    private void ObserveSequencesFilled()
+    {
+        StageFillBegan = true;
+        OnBlockSequenceFillCompleted.UnbindEvent(ObserveSequencesFilled);
+    }
+
+    public bool StageFillBegan {get; private set;}
 }

@@ -128,4 +128,7 @@ public class HotBarSlot : MonoBehaviour
         slotLocked = false;
         m_button.interactable = true;
     }
+
+    public void SetInteractable() => m_button.interactable = true;
+    public void DisableInteraction() => m_button.interactable = false;
 }

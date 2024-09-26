@@ -31,7 +31,6 @@ public partial class StageVariant : MonoBehaviour
     private bool shouldStickToBottom = true;
     public void SetStickToBottom(bool stick) => shouldStickToBottom = stick;
 
-
     [Space(10)] 
     public List<BlockSequenceController> SequenceSet = new();
 

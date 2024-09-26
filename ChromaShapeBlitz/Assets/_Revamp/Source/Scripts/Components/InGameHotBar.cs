@@ -1,13 +1,31 @@
-using System;
+using System.Collections;
 using UnityEngine;
 
 public class InGameHotBar : CommonHotbar
 {
     private Sprite[] countIndicatorSubSprites;
 
-    protected override void OnAwake()
+    protected override void OnAwake() {}
+
+    void OnEnable() => InGameHotbarInteractionStateNotifier.BindObserver(HandleObserver);
+    void OnDisable() => InGameHotbarInteractionStateNotifier.UnbindObserver(HandleObserver);
+
+    private void HandleObserver(bool blockInteraction)
     {
-     
+        StartCoroutine(ToggleSlots(blockInteraction));
+    }
+
+    private IEnumerator ToggleSlots(bool blockInteraction)
+    {
+        for (var i = 0; i < dynamicSlots.Length; i++)
+        {
+            if (blockInteraction)
+                dynamicSlots[i].DisableInteraction();
+            else
+                dynamicSlots[i].SetInteractable();
+                
+            yield return null;
+        }
     }
 
     public void UpdateSlotCount(int slotIndex, int count)

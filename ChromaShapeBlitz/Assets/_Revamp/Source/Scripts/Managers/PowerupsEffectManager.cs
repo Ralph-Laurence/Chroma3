@@ -87,6 +87,12 @@ public class PowerupsEffectManager : MonoBehaviour
                 Category = PowerupCategories.StageSolver,
                 EffectValue = Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER
             });
+        else if (Input.GetKeyUp(KeyCode.F9))
+            HotbarPowerupEffectNotifier.NotifyObserver(null, new PowerupEffectData
+            {
+                Category = PowerupCategories.StageSolver,
+                EffectValue = Constants.PowerupEffectValues.POWERUP_EFFECT_WIZARD
+            });
     }
 
     /// <summary>
@@ -319,27 +325,51 @@ public class PowerupsEffectManager : MonoBehaviour
         InteractionBlockerNotifier.NotifyObserver(false);
     }
 
-    private void ObserveStageSolverMage(int mageType, StageVariant stageVariant)
+    private void ObserveStageSolverMage
+    (
+        int mageType,
+        StageVariant stageVariant,
+        HotBarSlot sender,
+        PowerupEffectData effectData
+    )
     {
+        if (patternTimer.GetRemainingSecs() < 1)
+            return;
+
         switch (mageType)
         {
             // Solve the first 3 patterns
             case Constants.PowerupEffectValues.POWERUP_EFFECT_WIZARD:
+
+                // We cant use the wizard when we have already moved a sequence
+                if (stageVariant.MageAlreadyApplied || stageVariant.StageFillBegan)
+                    return;
+
+                // Temporarily pause the timer
+                patternTimer.SetFlagFreezeTimer(true);
+
                 wizardFx.gameObject.SetActive(true);
-                wizardFx.powerupEffectReciever = stageVariant;
+                wizardFx.StageVariantEffectTarget = stageVariant;
+
+                // Wizard effect should resume the timer once done
+                wizardFx.OnEffectCompleted += () => patternTimer.SetFlagFreezeTimer(false);
+
                 wizardFx.BeginEffect();
                 break;
 
             // Solve the entire pattern
             case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
-                
+
                 // Completely pause the timer
                 patternTimer.SetFlagFreezeTimer(true);
 
+                // grandmaster need NOT to resume the timer
                 grandMasterFx.gameObject.SetActive(true);
-                grandMasterFx.stageVariant_EffectReciever = stageVariant;
+                grandMasterFx.StageVariantEffectTarget = stageVariant;
                 grandMasterFx.BeginEffect();
                 break;
         }
+
+        PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
     }
 }

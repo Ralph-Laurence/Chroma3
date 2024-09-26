@@ -11,6 +11,7 @@ public partial class StageVariant : MonoBehaviour
     private Material DARK_BLOCK_DEFAULT_MAT;
 
     private bool blocksAlreadyShown;
+    public bool MageAlreadyApplied {get; private set;}
 
     public void CacheDefaultBlockMaterialReferences(Material light, Material dark)
     {
@@ -133,8 +134,9 @@ public partial class StageVariant : MonoBehaviour
 
             // Solve entire pattern
             case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
-                StageSolverMageNotifier.NotifyObserver(effectValue, this);
-
+                StageSolverMageNotifier.NotifyObserver(effectValue, this, sender, effectData);
+                MageAlreadyApplied = true;
+                // PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
                 break;
 
             // Solve the entire pattern
@@ -155,19 +157,22 @@ public partial class StageVariant : MonoBehaviour
         }
     }
 
+    //
+    // GRANDMASTER EFFECT SHOULD SOLVE THE ENTIRE STAGE
+    //
     private IEnumerator IEExecuteGrandMasterEffect(Action onFinished)
     {
         var endOfSequence = SequenceSet.Count - 1;
-
+        
         // Wait before triggering the next fill
         var delay = new WaitForSeconds(0.25F);
 
         for (var i = 0; i < SequenceSet.Count; i++)
         {
-            yield return StartCoroutine(SequenceSet[i].CompleteSequence( () => {
-                if (i == endOfSequence)
-                    onFinished.Invoke();
-            }));
+            yield return StartCoroutine(SequenceSet[i].CompleteSequence( null ));
+
+            if (i == endOfSequence)
+                onFinished.Invoke();
 
             yield return delay;
         }
@@ -176,6 +181,34 @@ public partial class StageVariant : MonoBehaviour
     }
 
     public void ExecuteGrandMasterEffect(Action onFinished) => StartCoroutine(IEExecuteGrandMasterEffect(onFinished));
+    //
+    // WIZARD EFFECT SHOULD SOLVE THE FIRST 3 SEQUENCES
+    //
+    private IEnumerator IEExecuteWizardEffect(Action onFinished)
+    {
+        // The minimum pattern sequences is of count "3".
+        var endOfSequence = 2;
+
+        // Wait before triggering the next fill
+        var delay = new WaitForSeconds(0.25F);
+
+        for (var i = 0; i < SequenceSet.Count; i++)
+        {
+            yield return StartCoroutine(SequenceSet[i].FillFirstThreeSequence());
+
+            if (i == endOfSequence)
+            {
+                onFinished.Invoke();
+                yield break;
+            }
+
+            yield return delay;
+        }
+
+        yield return null;
+    }
+
+    public void ExecuteWizardEffect(Action onFinished) => StartCoroutine(IEExecuteWizardEffect(onFinished));
 
     #endregion STAGE_SOLVER_EFFECTS
 }

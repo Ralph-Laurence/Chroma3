@@ -14,7 +14,8 @@ public class WizardFx : MonoBehaviour
     [SerializeField] private AudioClip sfxExit;
     [SerializeField] private AudioClip[] wizardLaughs;
 
-    [HideInInspector] public StageVariant powerupEffectReciever;
+    [HideInInspector] public StageVariant StageVariantEffectTarget;
+    [HideInInspector] public System.Action OnEffectCompleted;
 
     private Animator animator;
     private SoundEffects sfx;
@@ -42,7 +43,18 @@ public class WizardFx : MonoBehaviour
     //     }
     // }
 
-    public void BeginEffect() => StartCoroutine(SpawnTheWizard());
+    public void BeginEffect()
+    {
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: true);
+
+        // Poisition the mage just above the stage variant
+        var posAboveStage = StageVariantEffectTarget.transform.position;
+        posAboveStage.y += 0.5F;
+
+        transform.position = posAboveStage;
+
+        StartCoroutine(SpawnTheWizard());
+    }
 
     private IEnumerator SpawnTheWizard()
     {
@@ -54,9 +66,6 @@ public class WizardFx : MonoBehaviour
 
         yield return new WaitForSeconds(1.0F);
         animator.SetTrigger("DoMagic");
-
-        yield return new WaitForSeconds(3.0F);
-        animator.SetTrigger("FinishMagic");
     }
 
     public void AnimEvt_OnChargeMagic()
@@ -72,6 +81,9 @@ public class WizardFx : MonoBehaviour
 
         // Turn off the first ignition effect which is the "crown"
         wandIgnitionEffects[0].SetActive(false);
+
+        // Apply the effect
+        StageVariantEffectTarget.ExecuteWizardEffect( () => animator.SetTrigger("FinishMagic"));
     }
 
     public void AnimEvt_OnMagicApplied()
@@ -80,10 +92,7 @@ public class WizardFx : MonoBehaviour
         sfx.PlayOnce(laugh);
     }
 
-    public void AnimEvt_OnExit()
-    {
-        StartCoroutine(ExitMagicEffect());
-    }
+    public void AnimEvt_OnExit() => StartCoroutine(ExitMagicEffect());
 
     private IEnumerator ToggleIgnitionEffects(bool toggle)
     {
@@ -101,5 +110,8 @@ public class WizardFx : MonoBehaviour
         yield return StartCoroutine(ToggleIgnitionEffects(false));
         onMagicExit.gameObject.SetActive(true);
         sfx.PlayOnce(sfxExit);
+
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
+        OnEffectCompleted?.Invoke();
     }
 }

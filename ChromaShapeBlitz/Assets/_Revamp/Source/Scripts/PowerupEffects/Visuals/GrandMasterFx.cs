@@ -30,8 +30,9 @@ public class GrandMasterFx : MonoBehaviour
     [SerializeField] private AudioClip sfxDoMagic;
     [SerializeField] private AudioClip sfxLaugh;
     [SerializeField] private AudioClip sfxExiting;
+    [SerializeField] private AudioClip sfxExitPoof;
 
-    [HideInInspector] public StageVariant stageVariant_EffectReciever;
+    [HideInInspector] public StageVariant StageVariantEffectTarget;
 
     private Animator animator;
     private SoundEffects sfx;
@@ -58,8 +59,10 @@ public class GrandMasterFx : MonoBehaviour
 
     public void BeginEffect()
     {
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: true);
+
         // Poisition the mage just above the stage variant
-        var posAboveStage = stageVariant_EffectReciever.transform.position;
+        var posAboveStage = StageVariantEffectTarget.transform.position;
         posAboveStage.y += 0.5F;
 
         transform.position = posAboveStage;
@@ -182,15 +185,17 @@ public class GrandMasterFx : MonoBehaviour
 
             if (i == minions.Length - 1)
             {
+                sfx.PlayOnce(sfxDoMagic);
+                yield return new WaitForSeconds(2.0F);
+
                 var onFinishFill = new Action(() => StartCoroutine(IEExitGrandMaster()));
 
-                stageVariant_EffectReciever.ExecuteGrandMasterEffect(onFinishFill);
+                StageVariantEffectTarget.ExecuteGrandMasterEffect(onFinishFill);
             }
 
             yield return null;
         }
-        // LeanTween.scale(effectMinions, Vector3.one, 2.0F);
-        sfx.PlayOnce(sfxDoMagic);
+
     }
 
     private IEnumerator IEToggleGlowFx(bool toggle)
@@ -244,12 +249,22 @@ public class GrandMasterFx : MonoBehaviour
                     animator.SetTrigger("ResetToIdle");
                     StartCoroutine(IEToggleGlowFx(false));
                     flashOnExit.SetActive(true);
+                    sfx.PlayOnce(sfxExitPoof);
 
-                    // End the stage with result of "Passed"
-                    OnStageCompleted.NotifyObserver(StageCompletionType.Success);
+                    StartCoroutine(IECompleteStage());                    
                  });
 
         // Scale down the halo
         LeanTween.scale(magicHalo, Vector3.zero, 4.0F);
+    }
+
+    private IEnumerator IECompleteStage()
+    {
+        yield return new WaitForSeconds(1.0F);
+
+        // End the stage with result of "Passed"
+        OnStageCompleted.NotifyObserver(StageCompletionType.Success);
+
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
     }
 }

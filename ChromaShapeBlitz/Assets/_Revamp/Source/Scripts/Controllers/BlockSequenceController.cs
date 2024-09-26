@@ -17,6 +17,7 @@ public class BlockSequenceController : MonoBehaviour
 
     private bool isActivatorFading;
     private bool isFillingColor;
+    private bool isFillComplete;
 
     [Header("Main Behaviour")]
     public bool IsEditMode = true;
@@ -143,7 +144,6 @@ public class BlockSequenceController : MonoBehaviour
         foreach (var block in BlockSequence)
         {
             // Do not colorize (fill) the blocks when the game is over
-            //  if (gameManager != null && gameManager.GetState() == GameManagerStates.Stopped)
             if (isGameOver)
                 yield break;
 
@@ -168,6 +168,8 @@ public class BlockSequenceController : MonoBehaviour
             // Delay before the next fill
             yield return waitFillRate;
         }
+
+        isFillComplete = true;
     }
 
     /// <summary>
@@ -186,11 +188,44 @@ public class BlockSequenceController : MonoBehaviour
     /// </summary>
     public IEnumerator CompleteSequence(Action sequenceFilled)
     {
+        if (isGameOver)
+            yield break;
+
+        isActivatorFading = true;
+
+        foreach (var block in BlockSequence)
+        {
+            // Do not colorize (fill) the blocks when the game is over
+            if (isGameOver)
+                yield break;
+
+            //  Use the materials equipped by player
+            if (blockMaterialMap != null)
+                FillMaterial = blockMaterialMap[FillColorValue];
+
+            // Colorize the blocks then set its value
+            block.SetColor(FillColorValue);
+            block.ApplyMaterial(FillMaterial, FillColorValue);
+            
+            if (sfx != null)
+                sfx.PlayBlockFill();
+
+            // Delay before the next fill
+            yield return waitFillRate;
+        }
+
+        sequenceFilled?.Invoke();
+    }
+
+    /// <summary>
+    /// This is used by Wizard powerup
+    /// </summary>
+    public IEnumerator FillFirstThreeSequence()
+    {
         if (isFillingColor || isGameOver)
             yield break;
 
-        yield return StartCoroutine(ColorizeSequence(false));
-        sequenceFilled.Invoke();
+        yield return StartCoroutine(ColorizeSequence());
     }
 
     /// <summary>
@@ -236,6 +271,4 @@ public class BlockSequenceController : MonoBehaviour
                 FabricatorTriggerClickedNotifier.Publish(this);
         }
     }
-
-    
 }
