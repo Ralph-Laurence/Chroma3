@@ -1,4 +1,5 @@
 using System.Collections;
+using Revamp;
 using UnityEngine;
 
 public class WizardFx : MonoBehaviour
@@ -26,6 +27,26 @@ public class WizardFx : MonoBehaviour
         TryGetComponent(out animator);
     }
 
+    #region EVENT_OBSERVER
+    void OnEnable()
+    {
+        GameManagerEventNotifier.BindEvent(HandleGameManagerActionChanged);
+    }
+
+    void OnDisable()
+    {
+        GameManagerEventNotifier.UnbindEvent(HandleGameManagerActionChanged);
+    }
+
+    private void HandleGameManagerActionChanged(GameManagerActionEvents actionEvent)
+    {
+        // Detect changes to game manager action.
+        // We will only subscribe to the "Retry" state
+        if (actionEvent == GameManagerActionEvents.Retry)
+            ForceStopEffect();
+    }
+    #endregion EVENT_OBSERVER
+
     // void Update()
     // {
     //     if (Input.GetKeyUp(KeyCode.F1))
@@ -43,6 +64,7 @@ public class WizardFx : MonoBehaviour
     //     }
     // }
 
+    #region STATE_CONTROL
     public void BeginEffect()
     {
         InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: true);
@@ -56,6 +78,28 @@ public class WizardFx : MonoBehaviour
         StartCoroutine(SpawnTheWizard());
     }
 
+    // Immediate stop without animation and sound effects.
+    // Used when the powerup is applied but the player initiates a retry
+    private void ForceStopEffect()
+    {
+        animator.StopPlayback();
+        StageVariantEffectTarget = null;
+
+        for (var i = 0; i < wandIgnitionEffects.Length; i++)
+        {
+            wandIgnitionEffects[i].SetActive(false);
+        }
+
+        character.SetActive(false);
+        onSpawnSmoke.gameObject.SetActive(false);
+        onMagicApplied.gameObject.SetActive(false);
+        onMagicExit.gameObject.SetActive(false);
+
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
+        gameObject.SetActive(false);
+    }
+    #endregion STATE_CONTROL
+
     private IEnumerator SpawnTheWizard()
     {
         onSpawnSmoke.gameObject.SetActive(true);
@@ -68,9 +112,32 @@ public class WizardFx : MonoBehaviour
         animator.SetTrigger("DoMagic");
     }
 
+    private IEnumerator ToggleExtraEffects(bool toggle)
+    {
+        for (var i = 0; i < wandIgnitionEffects.Length; i++)
+        {
+            wandIgnitionEffects[i].SetActive(toggle);
+            yield return null;
+        }
+    }
+
+    private IEnumerator ExitMagicEffect()
+    {
+        character.SetActive(false);
+           
+        yield return StartCoroutine(ToggleExtraEffects(false));
+        onMagicExit.gameObject.SetActive(true);
+        sfx.PlayOnce(sfxExit);
+
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
+        OnEffectCompleted?.Invoke();
+    }
+
+    
+    #region ANIMATION_EVENTS
     public void AnimEvt_OnChargeMagic()
     {
-        StartCoroutine(ToggleIgnitionEffects(true));
+        StartCoroutine(ToggleExtraEffects(true));
         sfx.PlayOnce(sfxIgniteWand);
     }
 
@@ -93,25 +160,5 @@ public class WizardFx : MonoBehaviour
     }
 
     public void AnimEvt_OnExit() => StartCoroutine(ExitMagicEffect());
-
-    private IEnumerator ToggleIgnitionEffects(bool toggle)
-    {
-        for (var i = 0; i < wandIgnitionEffects.Length; i++)
-        {
-            wandIgnitionEffects[i].SetActive(toggle);
-            yield return null;
-        }
-    }
-
-    private IEnumerator ExitMagicEffect()
-    {
-        character.SetActive(false);
-           
-        yield return StartCoroutine(ToggleIgnitionEffects(false));
-        onMagicExit.gameObject.SetActive(true);
-        sfx.PlayOnce(sfxExit);
-
-        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
-        OnEffectCompleted?.Invoke();
-    }
+    #endregion ANIMATION_EVENTS
 }

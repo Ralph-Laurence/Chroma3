@@ -57,17 +57,78 @@ public class GrandMasterFx : MonoBehaviour
         effectMinions.transform.Rotate(90.0F * Time.deltaTime * Vector3.up);
     }
 
+    #region EVENT_OBSERVER
+    void OnEnable()
+    {
+        GameManagerEventNotifier.BindEvent(HandleGameManagerActionChanged);
+    }
+
+    void OnDisable()
+    {
+        GameManagerEventNotifier.UnbindEvent(HandleGameManagerActionChanged);
+    }
+
+    private void HandleGameManagerActionChanged(GameManagerActionEvents actionEvent)
+    {
+        // Detect changes to game manager action.
+        // We will only subscribe to the "Retry" state
+        if (actionEvent == GameManagerActionEvents.Retry)
+            ForceStopEffect();
+    }
+    #endregion EVENT_OBSERVER
+
+    #region STATE_CONTROL
     public void BeginEffect()
     {
         InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: true);
 
-        // Poisition the mage just above the stage variant
+        // Position the grandmaster just above the stage variant
         var posAboveStage = StageVariantEffectTarget.transform.position;
         posAboveStage.y += 0.5F;
 
         transform.position = posAboveStage;
         StartCoroutine(SpawnTheGrandMaster());
     }
+
+    // Immediate stop without animation and sound effects.
+    // Used when the powerup is applied but the player initiates a retry
+    private void ForceStopEffect()
+    {
+        animator.StopPlayback();
+        StageVariantEffectTarget = null;
+
+        sunLight.color = sunLightColor;
+        sunLight.intensity = sunLightIntensity;
+
+        mageStaff.SetActive(true);
+
+        DisableGameObject(minions);
+        DisableGameObject(magicGlowFx);
+        DisableGameObject(new GameObject[]
+        {
+            effectMinions,
+            character,
+            lightningFx,
+            sparksAuraFx,
+            sparksAuraEndFx,
+            flashOnExit,
+            smokeOnDisappear
+        });
+
+        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
+        gameObject.SetActive(false);
+    }
+
+    // Disable gameobjects synchronous to frame updates
+    private void DisableGameObject(GameObject[] gameObjects)
+    {
+        for (var i = 0; i < gameObjects.Length; i++)
+        {
+            gameObjects[i].SetActive(false);
+        }
+    }
+
+    #endregion STATE_CONTROL
 
     private IEnumerator SpawnTheGrandMaster()
     {
@@ -86,6 +147,7 @@ public class GrandMasterFx : MonoBehaviour
         // Make the character visible as well has his aura sparks
         yield return new WaitForSeconds(0.25F);
         character.SetActive(true);
+        character.transform.localEulerAngles = Vector3.up * 180.0F;
         sparksAuraFx.SetActive(true);
         sfx.PlayOnce(sfxSparks);
 
