@@ -195,3 +195,10 @@ public enum PowerupItemCardColor
     Orange,
     Purple
 }
+
+public enum InventoryItemType
+{
+    Unset,
+    ReadOnly,
+    Consumable
+}

@@ -45,12 +45,6 @@ public class InventoryController : NavContentPageMenuController
         HandleInventoryClosing();
     }
 
-    void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.F1))
-            gsm.SetInventoryPageNeedsReload(true);
-    }
-
     /// <summary>
     /// Everytime the inventory page shows up ...
     /// </summary>
@@ -73,6 +67,26 @@ public class InventoryController : NavContentPageMenuController
         if (data.Equals(default(InventoryItemData)))
         {
             return;
+        }
+
+        // We can only equip one item of the same type
+        foreach (var kvp in hotbar.GetItemQueue())
+        {
+            var item = kvp.Value;
+
+            if (item.ItemCategory == data.ItemCategory)
+            {
+                // Debug.Log($"Check item ID:   {kvp.Key}");
+                // Debug.Log($"Check item Name: {item.Name}");
+                // Debug.Log($"Check item Type: {item.ItemType}");
+                // Debug.Log($"Check item Catg: {item.ItemCategory}");
+
+                // Debug.LogWarning($"{item.Name} -> {data.Name}");
+                // Debug.LogWarning($"Category -> {item.ItemCategory == data.ItemCategory}");
+
+                Debug.Log("Can't enqueue an item of the same type");
+                return;
+            }
         }
 
         hotbar.EnqueueItem(data);
@@ -203,6 +217,7 @@ public class InventoryController : NavContentPageMenuController
                 ID                  = itemData.ID,
                 Name                = itemData.Name,
                 ItemType            = itemData.ItemType,
+                ItemCategory        = itemData.ItemCategory,
                 Thumbnail           = itemData.Thumbnail,
                 CurrentAmount       = itemData.CurrentAmount,
                 AttachedGameObject  = listItemObj,

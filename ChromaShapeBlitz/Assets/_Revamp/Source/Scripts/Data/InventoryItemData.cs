@@ -1,32 +1,5 @@
 ﻿using UnityEngine;
 
-public enum InventoryItemType
-{
-    Unset,
-    ReadOnly,
-    Consumable
-}
-
-/// <summary>
-/// This is the serializable version of InventoryItemData.
-/// <list type="number">
-///     <item>
-///         <term>ID</term>
-///         <description>This is enough to identify the cache'd item.</description>
-///     </item>
-///     <item>
-///         <term>CurrentAmount</term>
-///         <description>This is necessary to track the item's current amount.</description>
-///     </item>
-/// </list>
-/// </summary>
-[SerializeField]
-public struct CacheableInventoryItemData
-{
-    public int ItemID;
-    public int CurrentAmount;
-}
-
 public struct InventoryItemData
 {
     public int          ID;
@@ -40,6 +13,7 @@ public struct InventoryItemData
     public GameObject   AttachedGameObject;
     
     public InventoryItemType ItemType;
+    public PowerupCategories ItemCategory;
     
     /// <summary>
     /// Show the attached gameobject and its "IsVisible" property
@@ -81,6 +55,7 @@ public struct InventoryItemData
         IsVisible           = default;
         Thumbnail           = default;
         ItemType            = InventoryItemType.Unset;
+        ItemCategory        = default;
         AmountIcon          = default;
 
         if (AttachedGameObject == null)

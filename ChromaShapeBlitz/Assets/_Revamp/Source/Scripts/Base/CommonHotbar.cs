@@ -63,9 +63,9 @@ public abstract class CommonHotbar : MonoBehaviour
 
                 slot.FillItem(new HotbarSlotDataSource
                 {
-                    ItemId = itemData.ID,
+                    ItemId          = itemData.ID,
                     ItemCountSprite = itemData.AmountIcon,
-                    ItemThumbnail = itemData.Thumbnail,
+                    ItemThumbnail   = itemData.Thumbnail,
                 });
             }
 

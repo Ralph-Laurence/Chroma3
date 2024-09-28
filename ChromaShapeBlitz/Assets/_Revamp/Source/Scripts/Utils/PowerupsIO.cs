@@ -86,6 +86,7 @@ public class PowerupsIO : MonoBehaviour
             ownedPowerupData.Name           = powerup.Name;
             ownedPowerupData.Thumbnail      = powerup.PreviewImage;
             ownedPowerupData.ItemType       = powerup.ItemType.ToInventoryItemType();
+            ownedPowerupData.ItemCategory   = powerup.PowerupCategory;
             ownedPowerupData.MaxAmount      = powerup.MaxCount;
             ownedPowerupData.IsVisible      = true;
 
