@@ -47,6 +47,10 @@ public class PowerupsIO : MonoBehaviour
         var ownedPowerupsInventory      = playerInventory.OwnedPowerups;
         var equippedPowerupsInventory   = playerInventory.EquippedPowerupIds;
 
+        if ( ownedPowerupsInventory == null || 
+             ownedPowerupsInventory?.Count < 1)
+            yield break;
+
         // No owned powerups yet ... skip.
         if (ownedPowerupsInventory == null || ownedPowerupsInventory?.Count == 0)
         {

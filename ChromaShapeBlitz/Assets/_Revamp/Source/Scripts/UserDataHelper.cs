@@ -91,8 +91,8 @@ public class UserDataHelper : MonoBehaviour
             NormalStageUnlocked = true,
             HardStageUnlocked   = true,
 
-            TotalCoins          = 512,
-            TotalGems           = 256,
+            TotalCoins          = 1024,
+            TotalGems           = 512,
 
             OwnedBlockSkinIDs   = new List<int>(defaultBlockSkinIds),
             ActiveBlockSkins    = new() 

@@ -119,7 +119,7 @@ public class PowerupShopController : MonoBehaviour
         var powerupItemData     = sender.GetPowerupItemData(); //GetItemData();
         var userData            = gsm.UserSessionData;
         int playerBalance       = default;
-        var ownedPowerups       = userData.Inventory.OwnedPowerups;
+        var ownedPowerups       = userData.Inventory.OwnedPowerups ??= new();
 
         // TASK: Remember the item as owned.
         //
@@ -234,15 +234,18 @@ public class PowerupShopController : MonoBehaviour
                 MaxCount        = itemData.MaxCount
             };
 
-            for (var i = 0; i < ownedPowerups.Count; i++)
+            if (ownedPowerups != null && ownedPowerups.Count > 0)
             {
-                var p = ownedPowerups[i];
-
-                if (p.PowerupID == powerupData.Id)
+                for (var i = 0; i < ownedPowerups.Count; i++)
                 {
-                    powerupData.CurrentAmount = p.CurrentAmount;
-                    powerupData.IsOwned = true;
-                    break;
+                    var p = ownedPowerups[i];
+
+                    if (p.PowerupID == powerupData.Id)
+                    {
+                        powerupData.CurrentAmount = p.CurrentAmount;
+                        powerupData.IsOwned = true;
+                        break;
+                    }
                 }
             }
 

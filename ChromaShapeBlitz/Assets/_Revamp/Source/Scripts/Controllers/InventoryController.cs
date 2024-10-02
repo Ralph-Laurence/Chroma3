@@ -205,6 +205,9 @@ public class InventoryController : NavContentPageMenuController
     /// </summary>
     private IEnumerator FIllInventoryListView()
     {
+        if (m_ownedPowerups == null ||m_ownedPowerups?.Count < 1)
+            yield break;
+            
         // Fill the listview of powerups
         foreach (var kvp in m_ownedPowerups)
         {

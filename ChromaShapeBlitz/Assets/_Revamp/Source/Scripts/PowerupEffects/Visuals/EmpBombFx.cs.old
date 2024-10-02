@@ -1,0 +1,84 @@
+using UnityEngine;
+
+public class EmpBombFx : MonoBehaviour
+{
+    public GameObject birdPrefab;
+    public float birdHeight = 10f; // Y = 10 for flying height
+    public float birdSpeed = 5f;   // Speed of movement
+    private Camera mainCamera;
+
+    void Start()
+    {
+        mainCamera = Camera.main;
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Space))
+            Spawn();
+    }
+
+    void Spawn()
+    {
+        // Get the world positions of the four corners of the screen
+        Vector3 topLeft = mainCamera.ViewportToWorldPoint(new Vector3(0, 1, birdHeight));
+        Vector3 topRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 1, birdHeight));
+        Vector3 bottomLeft = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, birdHeight));
+        Vector3 bottomRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, birdHeight));
+
+        // Store the corners in an array for random selection
+        Vector3[] corners = { topLeft, topRight, bottomLeft, bottomRight };
+
+        // Randomly select a spawn corner
+        // int spawnIndex = Random.Range(0, corners.Length);
+        // Vector3 spawnPosition = corners[spawnIndex];
+
+        // // Determine the target corner (opposite corner)
+        // Vector3 targetPosition = corners[(spawnIndex + 2) % 4]; // Opposite corner logic
+        
+        int[] diagonalMovements = { -1, -2, 1, 2 };
+        Vector3 spawnPosition;
+        Vector3 targetPosition;
+
+        // Randomly select a spawn corner
+        var spawnIndex = Random.Range(0, diagonalMovements.Length);
+        
+        switch (diagonalMovements[spawnIndex])
+        {
+            // From Bottom-Left to Top-Right
+            case -1:
+                spawnPosition = bottomLeft;
+                targetPosition = topRight;
+                break;
+            // From Bottom-Right to Top-Left
+            case -2:
+                spawnPosition = bottomRight;
+                targetPosition = topLeft;
+                break;
+            // From Top-Left to Bottom-Right
+            case 1:
+                spawnPosition = topLeft;
+                targetPosition = bottomRight;
+                break;
+            // From Top-Right to Bottom-Left
+            case 2:
+                spawnPosition = topRight;
+                targetPosition = bottomLeft;
+                break;
+            default:
+                spawnPosition = default;
+                targetPosition = default;
+                break;
+        }
+
+        // Spawn the bird at the chosen corner
+        GameObject bird = Instantiate(birdPrefab, spawnPosition, Quaternion.identity);
+        bird.SetActive(true);
+
+        // Make the bird look at the target (opposite corner)
+        bird.transform.LookAt(new Vector3(targetPosition.x, birdHeight, targetPosition.z));
+
+        // Move the bird diagonally to the opposite corner
+        LeanTween.move(bird, targetPosition, birdSpeed).setEase(LeanTweenType.linear);
+    }
+}

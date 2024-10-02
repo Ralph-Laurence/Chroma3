@@ -136,7 +136,6 @@ public partial class StageVariant : MonoBehaviour
             case Constants.PowerupEffectValues.POWERUP_EFFECT_GRANDMASTER:
                 StageSolverMageNotifier.NotifyObserver(effectValue, this, sender, effectData);
                 MageAlreadyApplied = true;
-                // PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
                 break;
 
             // Solve the entire pattern
@@ -152,7 +151,6 @@ public partial class StageVariant : MonoBehaviour
                     return;
 
                 HintMarkerNotifier.NotifyObserver(this);
-                // PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
                 break;
         }
     }
