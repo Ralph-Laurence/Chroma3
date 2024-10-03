@@ -65,7 +65,19 @@ public partial class PatternTimer : MonoBehaviour
 
     void Update()
     {
-        if (isStopped || isTimeFreeze)
+        if (Input.GetKeyUp(KeyCode.K))
+        {
+            //isEMPBrownout = !isEMPBrownout;
+            HotbarPowerupEffectNotifier.NotifyObserver(null, new PowerupEffectData
+            {
+                Category    = PowerupCategories.TimerPause,
+                EffectValue = Constants.PowerupEffectValues.POWERUP_EFFECT_EMP
+            });
+            
+            Debug.Log($"Brownout -> {isEMPBrownout}");
+        }
+
+        if (isEMPBrownout || isStopped || isTimeFreeze)
             return;
 
         remainingTime -= Time.deltaTime;
@@ -75,10 +87,10 @@ public partial class PatternTimer : MonoBehaviour
 
         // Update the fill amount of the image smoothly
         timerFill.fillAmount = remainingTime / duration;
-//PositionEffector();
+
         elapsedTime += Time.deltaTime;
 
-         // Check if a full second has passed
+        // Check if a full 1 second has passed
         if (elapsedTime >= 1f)
         {
             // Decrease the whole seconds remaining time by 1
@@ -136,13 +148,11 @@ public partial class PatternTimer : MonoBehaviour
 
         ResetBgmVolume();
         
-        // Reset the pattern color to default
-        // LightenPattern();
-        // RevealPatternImmediate();
-        
         // Blackening the pattern is used in Hard Mode
         if (blackenPattern)
             BlackenPattern();
+
+        Debug.Log($"Brownout Status -> {isEMPBrownout}");
     }
 
     public void Stop() 
@@ -238,7 +248,6 @@ public partial class PatternTimer : MonoBehaviour
         var blinkCount  = 2;
         var from        = Constants.ColorSwatches.TRANSPARENT;
         var to          = Color.black;
-        // var callback    = new Action<Color>((c) => darkPreview.color = c);
 
         var finalColor  = new Action(() => {
             LeanTween.value
@@ -248,13 +257,7 @@ public partial class PatternTimer : MonoBehaviour
                 from, 
                 to, 
                 duration
-            ).setOnComplete(() => {
-                // Set the final color to white
-                //darkenerMask.color = Color.white;
-                
-                // For powerups
-                //HandlePatternDarkened(patternPreviewer.sprite);
-            });
+            );
         });
 
         tweenBlackenPattern?.reset();
@@ -284,11 +287,7 @@ public partial class PatternTimer : MonoBehaviour
             isPermanentReveal = false;
         }
     }
-    /// <summary>
-    /// Bring back the pattern color after it got darkened
-    /// </summary>
-    //public void LightenPattern() => patternPreviewer.color = Color.white;
-
+    public int GetRemainingSecs() => Mathf.CeilToInt(remainingTime);
     private void InvokeTimesUp()
     {
         isStopped = true;
@@ -318,6 +317,4 @@ public partial class PatternTimer : MonoBehaviour
         if (bgm != null)
             bgm.ResetVolume();
     }
-
-    public int GetRemainingSecs() => Mathf.CeilToInt(remainingTime);
 }

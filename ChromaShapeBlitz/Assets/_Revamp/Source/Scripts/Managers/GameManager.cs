@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Revamp
 {
@@ -18,9 +19,21 @@ namespace Revamp
         //
         #region MONOBEHAVIOUR
 
-        void OnEnable() => AttachEventObservers();
+        void OnEnable()
+        {
+            SceneManager.sceneLoaded   += OnCutSceneLoaded;
+            SceneManager.sceneUnloaded += OnCutSceneUnLoaded;
+
+            AttachEventObservers();
+        }
         
-        void OnDisable() => DetachEventObservers();
+        void OnDisable()
+        {
+            SceneManager.sceneLoaded   -= OnCutSceneLoaded;
+            SceneManager.sceneUnloaded -= OnCutSceneUnLoaded;
+
+            DetachEventObservers();
+        }
         
         void Awake()
         {
@@ -44,6 +57,7 @@ namespace Revamp
                 gsm.SelectedStageNumber
             );
         }
+        
         #endregion MONOBEHAVIOUR
 
         //

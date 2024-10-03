@@ -44,11 +44,11 @@ namespace Revamp
     {
         private static readonly StageCreatedEvent _event = new StageCreatedEvent();
         public static void NotifyObserver(StageCreatedEventArgs eventArgs) => _event.Invoke(eventArgs);
-        public static void BindEvent(UnityAction<StageCreatedEventArgs> eventAction)
+        public static void BindObserver(UnityAction<StageCreatedEventArgs> eventAction)
         {
             _event.AddListener(eventAction);
         }
-        public static void UnbindEvent(UnityAction<StageCreatedEventArgs> eventAction)
+        public static void UnbindObserver(UnityAction<StageCreatedEventArgs> eventAction)
         {
             _event.RemoveListener(eventAction);
         }
@@ -72,11 +72,11 @@ namespace Revamp
     {
         public static GameManagerActionEvent _event = new GameManagerActionEvent();
         public static void Notify(GameManagerActionEvents e) => _event.Invoke(e);
-        public static void BindEvent(UnityAction<GameManagerActionEvents> eventAction)
+        public static void BindObserver(UnityAction<GameManagerActionEvents> eventAction)
         {
             _event.AddListener(eventAction);
         }
-        public static void UnbindEvent(UnityAction<GameManagerActionEvents> eventAction)
+        public static void UnbindObserver(UnityAction<GameManagerActionEvents> eventAction)
         {
             _event.RemoveListener(eventAction);
         }

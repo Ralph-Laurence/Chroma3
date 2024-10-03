@@ -60,12 +60,12 @@ public class GrandMasterFx : MonoBehaviour
     #region EVENT_OBSERVER
     void OnEnable()
     {
-        GameManagerEventNotifier.BindEvent(HandleGameManagerActionChanged);
+        GameManagerEventNotifier.BindObserver(HandleGameManagerActionChanged);
     }
 
     void OnDisable()
     {
-        GameManagerEventNotifier.UnbindEvent(HandleGameManagerActionChanged);
+        GameManagerEventNotifier.UnbindObserver(HandleGameManagerActionChanged);
     }
 
     private void HandleGameManagerActionChanged(GameManagerActionEvents actionEvent)

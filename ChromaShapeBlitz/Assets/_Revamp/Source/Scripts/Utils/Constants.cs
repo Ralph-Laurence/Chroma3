@@ -12,6 +12,7 @@ public class Constants
     public readonly struct Scenes
     {
         public static readonly string MainMenu = "MainMenu";
+        public static readonly string CutSceneEMPAttack = "CS_EmpAttack";
     }
 
     public readonly struct Tags
@@ -70,6 +71,7 @@ public class Constants
         public const int POWERUP_EFFECT_WIZARD  = 102;
         public const int POWERUP_EFFECT_GRANDMASTER = 103;
         public const int POWERUP_EFFECT_IDEA    = 104;
+        public const int POWERUP_EFFECT_EMP     = 105;
 
         public const float VISOR_SCAN_DURATION = 2.5F;
     }

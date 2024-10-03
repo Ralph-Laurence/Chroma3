@@ -110,7 +110,9 @@ public class UserDataHelper : MonoBehaviour
 
             SequenceFillRate = 1,
             CoinMultiplier   = 1,
-            GemMultiplier    = 1
+            GemMultiplier    = 1,
+
+            RemainingEMPUsage = 0
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

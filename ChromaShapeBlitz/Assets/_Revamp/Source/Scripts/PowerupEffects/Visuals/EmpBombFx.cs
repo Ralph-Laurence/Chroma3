@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EmpBombFx : MonoBehaviour
@@ -68,13 +69,12 @@ public class EmpBombFx : MonoBehaviour
                 satOneVoice_attack = SelectRandomClip(maleAttackCommands);
                 break;
         }
+
+        BeginEffect();
     }
 
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
-            BeginEffect();
-
         if (!empDetonated && beginFollowEmp)
         {
             // Begin the cruising of EMP missile
@@ -152,7 +152,7 @@ public class EmpBombFx : MonoBehaviour
         empMoveSpeed = 0.125F;
 
         LeanTween.rotateAroundLocal(empBombInnerMesh, Vector3.forward, 260.0F, 3.0F)
-                 .setOnComplete(() => empMoveSpeed = empCruiseSpeed);
+                 .setOnComplete(() => empMoveSpeed = empCruiseSpeed + 2.5F);
 
         yield return new WaitForSeconds(3.0F);
     }
@@ -181,7 +181,8 @@ public class EmpBombFx : MonoBehaviour
         // Fade out the screen
         var fromAlpha = fadingOverlay.color.a;
 
-        LeanTween.value(fadingOverlay.gameObject, FadeCallback, fromAlpha, 1.0F, fadingSpeed / 2.0F);
+        LeanTween.value(fadingOverlay.gameObject, FadeCallback, fromAlpha, 1.0F, fadingSpeed / 2.0F)
+                 .setOnComplete(() => StartCoroutine(CloseCutscene()));
     }
 
     private void FadeCallback(float value)
@@ -206,5 +207,13 @@ public class EmpBombFx : MonoBehaviour
         var rotation = Quaternion.LookRotation(lookDirection);
 
         return rotation;
+    }
+
+    private IEnumerator CloseCutscene()
+    {
+        yield return new WaitForSeconds(0.2F);
+
+        var sceneName = gameObject.scene.name;
+        SceneManager.UnloadSceneAsync(sceneName);
     }
 }

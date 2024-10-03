@@ -210,8 +210,8 @@ public class PowerupsEffectManager : MonoBehaviour
 
     void OnEnable()
     {
-        GameManagerEventNotifier.BindEvent(ObserveGameManagerActionEvents);
-        OnStageCreated.BindEvent(ObserveStageCreated);
+        GameManagerEventNotifier.BindObserver(ObserveGameManagerActionEvents);
+        OnStageCreated.BindObserver(ObserveStageCreated);
         HotbarSlotSelectedNotifier.BindObserver(ObserveHotbarSlotSelected);
         PowerupEffectAppliedNotifier.BindObserver(ObservePowerupApplied);
         HintMarkerNotifier.BindObserver(ObserveHintMarker);
@@ -219,8 +219,8 @@ public class PowerupsEffectManager : MonoBehaviour
     }
     void OnDisable()
     {
-        GameManagerEventNotifier.UnbindEvent(ObserveGameManagerActionEvents);
-        OnStageCreated.BindEvent(ObserveStageCreated);
+        GameManagerEventNotifier.UnbindObserver(ObserveGameManagerActionEvents);
+        OnStageCreated.BindObserver(ObserveStageCreated);
         HotbarSlotSelectedNotifier.UnbindObserver(ObserveHotbarSlotSelected);
         PowerupEffectAppliedNotifier.UnbindObserver(ObservePowerupApplied);
         HintMarkerNotifier.UnbindObserver(ObserveHintMarker);
@@ -276,6 +276,12 @@ public class PowerupsEffectManager : MonoBehaviour
 
     private void ObservePowerupApplied(HotBarSlot sender, PowerupEffectData powerupEffectData)
     {
+        if (sender == null)
+        {
+            Debug.LogWarning("There is no Hotbar Slot sender!");
+            return;
+        }
+
         // Decrease quantity from the inventory
         StartCoroutine(DecreaseQuantity(sender.SlotIndex, powerupEffectData));
     }

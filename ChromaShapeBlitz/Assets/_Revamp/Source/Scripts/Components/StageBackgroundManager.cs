@@ -21,8 +21,8 @@ public class StageBackgroundManager : MonoBehaviour
         mainCamera.TryGetComponent(out camAttachedSkybox);
     }
     
-    void OnEnable() => OnStageCreated.BindEvent(ObserveStageCreated);
-    void OnDisable() => OnStageCreated.UnbindEvent(ObserveStageCreated);
+    void OnEnable() => OnStageCreated.BindObserver(ObserveStageCreated);
+    void OnDisable() => OnStageCreated.UnbindObserver(ObserveStageCreated);
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() => ApplyBackground();

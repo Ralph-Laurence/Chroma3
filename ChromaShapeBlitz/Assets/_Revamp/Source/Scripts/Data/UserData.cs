@@ -81,4 +81,6 @@ public class UserData
     public int SequenceFillRate;
     public int CoinMultiplier;
     public int GemMultiplier;
+
+    public int RemainingEMPUsage;
 }

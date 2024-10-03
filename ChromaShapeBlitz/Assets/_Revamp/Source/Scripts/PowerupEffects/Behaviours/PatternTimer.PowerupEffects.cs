@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public partial class PatternTimer : MonoBehaviour
@@ -12,9 +13,14 @@ public partial class PatternTimer : MonoBehaviour
     [SerializeField] private AudioClip  sfxThreeSecs;
     [SerializeField] private AudioClip  sfxFiveSecs;
     [SerializeField] private AudioClip  sfxUnfreeze;
-    [SerializeField] private float      freezeEffectSpeed = 4.0F;
+    [SerializeField] private float      freezeEffectSpeed    = 4.0F;
     [SerializeField] private Color      frozenTimeBadgeColor = new(0.58F, 0.83F, 0.97F, 1.0F);
     [SerializeField] private Color      frozenTimerFillColor = new(0.04F, 0.32F, 0.99F, 1.0F);
+
+    [SerializeField] private GameObject empTimerBadge;
+    [SerializeField] private Color      empTimerFillColor    = new(0.47F, 0.25F, 1.00F, 1.0F);
+
+    private readonly int EmpMissileMasUsages = 5;
 
     [Space(10)]
     [Header("Pattern Reveal Effect")]
@@ -28,9 +34,9 @@ public partial class PatternTimer : MonoBehaviour
     private Image frozenTimeBadge;
     private bool isTimeFreeze;
     private float freezeTimeRemaining;
-    private bool shouldRedarken;    // flag by xray
     private bool isPatternReveal;
     private bool isPermanentReveal;
+    private bool isEMPBrownout;
 
     private LTDescr freezeTimeTween;
 
@@ -68,13 +74,31 @@ public partial class PatternTimer : MonoBehaviour
 
                 // Initiate the time freeze
                 if (isTimeFreeze) return;
-                
-                var freezeDuration = effectData.EffectValue;
-
-                StartCoroutine( IEFreezeTimer(freezeDuration) );
-                sender.BeginLockSlot(freezeDuration + 1);
 
                 PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
+
+                // With cutscene effect
+                if (effectData.EffectValue == Constants.PowerupEffectValues.POWERUP_EFFECT_EMP)
+                {
+                    SetBrownOut(true);
+
+                    // While the cutscene plays, we update the user save data
+                    var userData = GameSessionManager.Instance.UserSessionData;
+
+                    userData.RemainingEMPUsage = EmpMissileMasUsages;
+                    // Write the changes to file
+                    StartCoroutine(UserDataHelper.Instance.SaveUserData(userData, null));
+
+                    SceneManager.LoadSceneAsync(Constants.Scenes.CutSceneEMPAttack, LoadSceneMode.Additive);
+
+                    return;
+                }
+
+                // Without cutscenes (in-game effects)
+                var freezeDuration = effectData.EffectValue;
+
+                StartCoroutine(IEFreezeTimer(freezeDuration));
+                sender.BeginLockSlot(freezeDuration + 1);
 
                 break;
 
@@ -164,6 +188,24 @@ public partial class PatternTimer : MonoBehaviour
         isTimeFreeze = false; // Resume the main timer once the freeze ends
     }
 
+    /// <summary>
+    /// Set the current status to brownout. The countdown wont execute when true.
+    /// </summary>
+    public void SetBrownOut(bool brownout)
+    {
+        isEMPBrownout = brownout;
+
+        if (!isEMPBrownout)
+        {
+            empTimerBadge.SetActive(false);
+            timerFill.color = normalTimerFillColor;
+            return;
+        }
+
+        empTimerBadge.SetActive(true);
+        timerFill.color = empTimerFillColor;
+    }
+
     private void ShowFreezeEffect(int freezeSeconds)
     {
         var sound = sfxThreeSecs;
@@ -174,7 +216,7 @@ public partial class PatternTimer : MonoBehaviour
         freezeOverlay.enabled = true;
         sfx.PlayOnce(sound);
 
-        var effectSpeed = freezeSeconds / this.freezeEffectSpeed;
+        var effectSpeed = freezeSeconds / freezeEffectSpeed;
         var targetColor = Constants.ColorSwatches.WHITE;
         
         SetFreezeOverlayColor(TRANSPARENT);

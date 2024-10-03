@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Revamp
 {
@@ -13,9 +14,9 @@ namespace Revamp
         //--------------------------------------
         private void AttachEventObservers()
         {
-            OnStageCreated.BindEvent(ObserveStageCreated);
+            OnStageCreated.BindObserver(ObserveStageCreated);
             OnStageCompleted.BindEvent(ObserveStageComplete);
-            GameManagerEventNotifier.BindEvent(ObserveGameManagerActionEvents);
+            GameManagerEventNotifier.BindObserver(ObserveGameManagerActionEvents);
             GameManagerStateNotifier.BindEvent(ObserveGameManagerState);
         }
         //--------------------------------------
@@ -23,9 +24,9 @@ namespace Revamp
         //--------------------------------------
         private void DetachEventObservers()
         {
-            OnStageCreated.UnbindEvent(ObserveStageCreated);
+            OnStageCreated.UnbindObserver(ObserveStageCreated);
             OnStageCompleted.UnbindEvent(ObserveStageComplete);
-            GameManagerEventNotifier.UnbindEvent(ObserveGameManagerActionEvents);
+            GameManagerEventNotifier.UnbindObserver(ObserveGameManagerActionEvents);
             GameManagerStateNotifier.UnbindEvent(ObserveGameManagerState);
         }
         //--------------------------------------
@@ -44,17 +45,12 @@ namespace Revamp
             var shouldFadeOutPattern = e.StageLevel == LevelDifficulties.Hard;
 
             stageTimer.Prepare(e.TotalStageTime, e.StagePattern);
-            // stageTimer.Begin(shouldFadeOutPattern);
 
             gsm.SelectedStageMinTime = e.MinStageTime;
             gsm.SelectedStageMaxTime = e.MaxStageTime;
-
-            // gsm.SelectedDifficulty  = e.StageLevel;
-            // gsm.SelectedStageNumber = e.StageNumber;
             
             var stageTitle  = $"{e.StageLevel} - {e.StageNumber:D2}";
-            //var rewardStyle = e.RewardType.Equals(RewardTypes.Gems) ? "Gem" : "Coin";
-            var rewardText  = e.TotalReward.ToRewardText(e.RewardType); //$"<style=\"{rewardStyle}\">\u00d7{e.TotalReward}";
+            var rewardText  = e.TotalReward.ToRewardText(e.RewardType);
             var minTimeText = $"Finish under <color=#81FF21>{e.MinStageTime} secs";
             var maxTimeText = $"Finish under <color=#FF9533>{e.MaxStageTime} secs";
 
@@ -62,6 +58,23 @@ namespace Revamp
             rewardsText.SetTextMultiple(rewardText);
             objectiveTextsMinTime.SetTextMultiple(minTimeText);
             objectiveTextsMaxTime.SetTextMultiple(maxTimeText);
+
+            if (gsm.UserSessionData.RemainingEMPUsage > 0)
+            {
+                stageTimer.SetBrownOut(true);
+                
+                // Decrease the remaining EMP usages
+                gsm.UserSessionData.RemainingEMPUsage--;
+
+                // Write the changes to file
+                StartCoroutine(UserDataHelper.Instance.SaveUserData(gsm.UserSessionData, null));
+
+                Debug.Log($"EMP Count : {gsm.UserSessionData.RemainingEMPUsage}");
+            }
+            else
+            {
+                stageTimer.SetBrownOut(false);
+            }
 
             stageTimer.Begin(shouldFadeOutPattern);
         }
