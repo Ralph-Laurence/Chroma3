@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HintMarker : MonoBehaviour
 {
@@ -15,7 +13,6 @@ public class HintMarker : MonoBehaviour
     [SerializeField] private SpriteRenderer pointer;
     [SerializeField] private float pointerScale = 0.1F;
     [SerializeField] private float clickDuration = 0.25F;
-    [SerializeField] private float yOffset = 0.5F;
 
     [SerializeField] private Camera orthoCam;
     [SerializeField] private bool autoFindCamera;
@@ -112,7 +109,6 @@ public class HintMarker : MonoBehaviour
 
             var target = targets[i];
 
-            // transform.position = target.transform.position;
             pointer.transform.position = target.transform.position;
 
             yield return StartCoroutine(IEAnimateClick());

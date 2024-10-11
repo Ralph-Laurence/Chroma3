@@ -78,7 +78,7 @@ public class Constants
 
     private static readonly Dictionary<int, float> fillRatesLookup = new()
     {
-        { 1,  0.24F },      // default speed
+        {  1, 0.24F },      // default speed
         { 25, 0.20F },      // 25% speed
         { 50, 0.18F },      // 50% speed
         { 75, 0.14F },      // 75% speed
@@ -86,4 +86,13 @@ public class Constants
     };
     
     public static Dictionary<int, float> BlockFillRates => fillRatesLookup;
+
+    public readonly struct TutorialSteps
+    {
+        public const int STEP1_LEVEL_NAVIGATION  = 1;
+        public const int STEP2_BLOCK_SKINS       = 2;
+        public const int STEP3_WORLD_BACKGROUNDS = 3;
+        public const int STEP4_POWERUP_USAGE     = 4;
+        public const int TUTORIALS_COMPLETE      = 0;
+    }
 }

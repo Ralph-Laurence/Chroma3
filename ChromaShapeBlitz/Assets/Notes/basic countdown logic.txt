@@ -1,0 +1,33 @@
+private IEnumerator StartCountdown()
+    {
+        float remainingTime = duration;     // This is for computation i.e. duration = 30 (secs)
+
+        while (remainingTime > 0 && !isStopped)
+        {
+            if (isPaused)
+                continue;
+
+            // Update the slider's value
+            timerProgress.fillAmount = remainingTime / duration;
+
+            // Upon reaching less than 1, immediately stop
+            if (remainingTime < 0.5F)
+            {
+                remainingTime    = 0;
+                timerText.text = "0";
+                break;
+            }
+
+            // Update the display
+            var remainingSecs = Mathf.RoundToInt(remainingTime);
+            timerText.text = remainingSecs.ToString();
+
+            ElapsedSeconds = duration - remainingSecs;
+
+            // Wait for the next frame
+            yield return null;
+
+            // Decrease the remaining time
+            remainingTime -= Time.deltaTime;
+        }
+    }

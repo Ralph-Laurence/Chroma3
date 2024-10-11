@@ -17,7 +17,7 @@ public class BlockSequenceController : MonoBehaviour
 
     private bool isActivatorFading;
     private bool isFillingColor;
-    private bool isFillComplete;
+    //private bool isFillComplete;
 
     [Header("Main Behaviour")]
     public bool IsEditMode = true;
@@ -169,7 +169,7 @@ public class BlockSequenceController : MonoBehaviour
             yield return waitFillRate;
         }
 
-        isFillComplete = true;
+        // isFillComplete = true;
     }
 
     /// <summary>

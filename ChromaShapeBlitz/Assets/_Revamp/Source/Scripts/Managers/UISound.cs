@@ -29,4 +29,5 @@ public class UISound : BaseAudioManager
 
     public void PlayUxPositiveClick() => Audio.PlayOneShot(uxClickPositive);
     public void PlayUxNegativeClick() => Audio.PlayOneShot(uxClickNegative);
+    public void PlayUISfx(AudioClip clip) => Audio.PlayOneShot(clip);
 }

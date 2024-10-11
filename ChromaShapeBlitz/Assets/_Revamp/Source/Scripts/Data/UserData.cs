@@ -44,6 +44,12 @@ public class UserData
     public int TotalGems;
 
     //===========================
+    // TUTORIAL
+    //===========================
+    public int IsTutorialCompleted;
+    public int TutorialStep;
+
+    //===========================
     // HIGHEST UNLOCKED STAGES
     //===========================
     public int HighestEasyStage;
