@@ -1,17 +1,65 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class FancySceneLoader : MonoBehaviour
 {
-    //[SerializeField] private Slider progressBar;
+    private List<Func<IEnumerator>> tasks = new();
+
     private string targetScene;
 
-    public void LoadScene(string sceneName)
+    /// <summary>
+    /// <b>Load a scene by name.</b>
+    /// <para>
+    /// By default, this executes all tasks first then loads the target scene.<br/>
+    /// When <paramref name="immediate"/> is TRUE, it immediately loads the scene
+    /// without executing any tasks.
+    ///
+    /// </para>
+    /// </summary>
+    public void LoadScene(string sceneName, bool immediate = true)
+    {
+        targetScene = sceneName;
+
+        if (immediate)
+        {
+            LoadSceneImmediate(targetScene);
+            return;
+        }
+
+        var loadScene = new Action(() => StartCoroutine(LoadSceneAsync()));
+
+        if (tasks == null || tasks.Count <= 0)
+        {
+            loadScene.Invoke();
+            return;
+        }
+
+        StartCoroutine(ProcessTasks(whenDone: loadScene));
+    }
+
+    public void AddTask(Func<IEnumerator> task) => tasks.Add(task);
+
+    /// <summary>
+    /// Just load the scene
+    /// </summary>
+    private void LoadSceneImmediate(string sceneName)
     {
         targetScene = sceneName;
         StartCoroutine(LoadSceneAsync());
+    }
+
+    private IEnumerator ProcessTasks(Action whenDone = null)
+    {
+        for (var i = 0; i < tasks.Count; i++)
+        {
+            var coroutine = tasks[i];
+            yield return StartCoroutine(coroutine());
+        }
+
+        whenDone?.Invoke();
     }
 
     private IEnumerator LoadSceneAsync()

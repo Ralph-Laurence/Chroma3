@@ -46,8 +46,8 @@ public class UserData
     //===========================
     // TUTORIAL
     //===========================
-    public int IsTutorialCompleted;
-    public int TutorialStep;
+    public bool IsTutorialCompleted;
+    public int CurrentTutorialStep;
 
     //===========================
     // HIGHEST UNLOCKED STAGES

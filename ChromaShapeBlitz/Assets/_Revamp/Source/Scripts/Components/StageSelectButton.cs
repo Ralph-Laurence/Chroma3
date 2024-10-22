@@ -41,7 +41,7 @@ public class StageSelectButton : MonoBehaviour
         var eventArgs = new StageSelectedEventArgs
         {
             StageNumber = StageNumber,
-            Difficulty = DifficultyLevel
+            Difficulty  = DifficultyLevel
         };
         
         Debug.Log($"Select Args -> {eventArgs.Difficulty} -- {eventArgs.StageNumber}");

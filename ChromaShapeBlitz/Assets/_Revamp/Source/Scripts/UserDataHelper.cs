@@ -79,6 +79,9 @@ public class UserDataHelper : MonoBehaviour
 
         var userData = new UserData
         {
+            CurrentTutorialStep = Constants.TutorialSteps.STEP1_BASICS,
+            IsTutorialCompleted = false,
+
             HighestEasyStage    = 1,
             HighestNormalStage  = 1,
             HighestHardStage    = 1,
@@ -91,8 +94,8 @@ public class UserDataHelper : MonoBehaviour
             NormalStageUnlocked = true,
             HardStageUnlocked   = true,
 
-            TotalCoins          = 1024,
-            TotalGems           = 512,
+            TotalCoins          = 0,
+            TotalGems           = 0,
 
             OwnedBlockSkinIDs   = new List<int>(defaultBlockSkinIds),
             ActiveBlockSkins    = new() 

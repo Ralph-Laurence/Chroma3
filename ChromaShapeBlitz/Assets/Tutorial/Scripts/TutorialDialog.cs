@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,198 +16,258 @@ public enum DialogArrowDirections
 
 public enum DialogDirections
 {
-    CenterOfScreen,
-    ToLeftOfTarget,
-    ToRightOfTarget,
+    AutoCalculate,
     BelowTarget,
-    AboveTarget
+    AboveTarget,
+    TopOfScreen,
+    CenterOfScreen
 }
 
 public class TutorialDialog : MonoBehaviour
 {
-    [Header("Dialog Behaviour")]
-    //[SerializeField] private RectTransform canvasRectTransform;
-    [SerializeField] private RectTransform calloutTextWrapper;
-    [SerializeField] private TextMeshProUGUI calloutText;
-    [SerializeField] private AudioClip calloutShownSfx;
-    
-    [Space(5)]
-    [SerializeField] private DialogDirections dialogDirection;
-    // [SerializeField] private RectTransform avatar;
-    //[SerializeField] private Button targetButtonCloner;
-    //[SerializeField] private float distanceToTarget = 10.0F;
+    [SerializeField] private RectTransform canvasRectTransform;
 
+    [Header("Dialog Base Traits")]
+    [SerializeField] private float              overlayAlpha = 0.3215F;
+    [SerializeField] private RectTransform      callout;
+    [SerializeField] private TextMeshProUGUI    calloutText;
+    [SerializeField] private Image              calloutBackground;
+    [SerializeField] private AudioClip          sfxDialogShown;
 
-    [Space(5)] [Header("Callout Arrows")]
-
-    [SerializeField] private TutorialDialogArrow arrowLeft;
-    [SerializeField] private TutorialDialogArrow arrowRight;
-    [SerializeField] private TutorialDialogArrow arrowAbove;
-
-    private List<TutorialDialogArrow> dialogArrows;
-
-    [SerializeField] private Button continueButton;
-
-    private RectTransform m_rect;
-    private RectTransform continueButtonRect;
-    private UISound uisfx;
-
-    private float selfHeight;
-    // private RectTransform cloner;
-    // private Image clonerImg;
+    private Image overlay;
+    private UISound         uiSfx;
+    private Vector2         m_ScreenBounds;
+    private TutorialContent m_CurrentContent;
+    private RectTransform   m_CurrentTarget;
 
     void Awake()
     {
-        uisfx = UISound.Instance;
-
-        TryGetComponent(out m_rect);
-        continueButton.TryGetComponent(out continueButtonRect);
-        // targetButtonCloner.TryGetComponent(out cloner);
-        // targetButtonCloner.TryGetComponent(out clonerImg);
-
-        selfHeight = m_rect.sizeDelta.y;
-
-        dialogArrows = new List<TutorialDialogArrow>
-        {
-            arrowLeft,
-            arrowRight,
-            arrowAbove
-        };
+        TryGetComponent(out overlay);
+        uiSfx = UISound.Instance;
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        // Calculate the Canvas size as Screen Bounds
+        m_ScreenBounds = GetUIBounds(true);
+    }
+
     void Update()
     {
-        UpdateDialogArrow();
-        // UpdateDialogPosition();
-        UpdateContinueButtonPosition();
+        // Position this dialog into the target element
+        if (m_CurrentTarget != null)
+            MoveToTargetPosition();
+    }
+    //###################################################
+    //==========   LOGIC VISIBLE TO ANY CLASS  ==========
+    //###################################################
+
+    #region FRONT_LOGIC
+
+    public void Clear(Action afterClear = null)
+    {
+        Hide(onHidden: () =>
+        {
+            m_CurrentContent = null;
+            calloutText.text = string.Empty;
+            m_CurrentTarget  = null;
+
+            // Position the dialog
+            callout.anchoredPosition = Vector2.zero;
+
+            afterClear?.Invoke();
+        });
     }
 
-    private void UpdateDialogArrow()
+    public void SetContent(TutorialContent content)
     {
-        if (arrowLeft.IsActive)
-            arrowLeft.SetPositionToLeftOf(calloutTextWrapper);
+        m_CurrentContent = content;
+        calloutText.text = m_CurrentContent.Description;
 
-        if (arrowRight.IsActive)   
-            arrowRight.SetPositionToRightOf(calloutTextWrapper);
+        //var description = m_CurrentContent.Description;
 
-        if (arrowAbove.IsActive)
-            arrowAbove.SetPositionAbove(calloutTextWrapper);
+        //if (content.ReplaceArgs != null)
+        //    description = ReplaceInContent(description, content.ReplaceArgs);
+
+        //calloutText.text = description;
+    }
+
+    public void SetTarget(RectTransform target) => m_CurrentTarget = target;
+
+    public void Show(Action onShown = null, bool noOverlay = false)
+    {
+        var onCompleteCallback = new Action(() => {
+            
+            MakeTransparent(new List<Graphic> { calloutBackground, calloutText }, false);
+            
+            if (uiSfx != null)
+                uiSfx.PlayUISfx(sfxDialogShown);
+
+            onShown?.Invoke();
+        });
+
+        // Dont show the overlay because interacting with 3D world doesnt need UI
+        if (noOverlay)
+        {
+            // Display the dialog modal
+            LeanTween.scale(callout, Vector3.one, 0.2F)
+                     .setOnComplete(onCompleteCallback);
+        }
+        // Fade in to show the UI overlay
+        else
+        {
+            // Tween callback to change alpha
+            var onOverlayAlpha = new Action<float>( alpha => {
+                var color = overlay.color;
+                color.a = alpha;
+
+                overlay.color = color;
+            });
+
+            LeanTween.value(overlay.gameObject, onOverlayAlpha, overlay.color.a, overlayAlpha, 0.25F)
+           .setOnComplete(() =>
+           {
+               MakeTransparent(new List<Graphic> { calloutBackground, calloutText }, false);
+
+               // Display the dialog modal
+               LeanTween.scale(callout, Vector3.one, 0.2F)
+                        .setOnComplete(onCompleteCallback);
+           });
+        }
+    }
+
+    public void Hide(Action onHiding = null, Action onHidden = null)
+    {
+        m_CurrentTarget = null;
+
+        onHiding?.Invoke();
+        
+        StartCoroutine(IEHide(onHidden));
+    }
+
+    public Image GetOverlay()
+    {
+        if (overlay == null)
+            TryGetComponent(out overlay);
+
+        return overlay;
     }
 
     /// <summary>
-    /// The continue button should always be positioned below the dialog box
+    /// Should the dialog overlay allow or block interactions?
     /// </summary>
-    private void UpdateContinueButtonPosition()
+    public void AllowOverlayPassThrough(bool allow)
     {
-        var calloutHalfHeight = calloutTextWrapper.sizeDelta.y / 2.0F;
-        var buttonHalfHeight  = continueButtonRect.sizeDelta.y / 2.0F;
+        var overlay = GetOverlay();
 
-        var posY = (calloutHalfHeight * -1.0F) - buttonHalfHeight;
-
-        continueButtonRect.anchoredPosition = new Vector2(0.0F, posY);
+        if (overlay != null)
+            overlay.raycastTarget = allow;
     }
 
-    public void Show(Action onShown = null)
-    {
-        uisfx.PlayUISfx(calloutShownSfx);
+    #endregion FRONT_LOGIC
+    
+    //###################################################
+    //==========        INTERNAL LOGIC         ==========
+    //###################################################
 
-        LeanTween.scale(gameObject, Vector3.one, 0.2F)
-                 .setOnComplete(() => onShown?.Invoke());
+    #region BACK_LOGIC
+    
+    //private string ReplaceInContent(string contentText, List<TutorialContentReplaceArgs> replaceArgs)
+    //{
+    //    foreach (var arg in replaceArgs)
+    //    {
+    //        contentText.Replace(arg.Find, arg.Replace);
+    //    }
+
+    //    return contentText;
+    //}
+
+    private IEnumerator IEHide(Action onHidden = null)
+    {
+        LeanTween.scale(callout, Vector3.zero, 0.2F)
+            .setOnUpdate((float transitionTime) =>
+            {
+
+                // During the middle of transition, hide the avatar
+                // if (transitionTime >= 0.5F)
+                //     tutorAvatar.gameObject.SetActive(false);
+            })
+            .setOnComplete(() => {
+                MakeTransparent(new List<Graphic> { overlay, calloutBackground, calloutText });
+            });
+
+        yield return new WaitForSeconds(0.4F);
+        onHidden?.Invoke();
     }
 
-    public void Hide(Action onHidden = null)
+    private void MoveToTargetPosition()
     {
-        LeanTween.scale(gameObject, Vector3.forward * 1.0F, 0.2F)
-                 .setOnComplete(() => onHidden?.Invoke());
-    }
+        var targetPos        = m_CurrentTarget.anchoredPosition;
+        var targetHalfHeight = m_CurrentTarget.sizeDelta.y / 2.0F;
+        var dialogHalfHeight = callout.sizeDelta.y / 2.0F;
+        var targetYDistance  = 20.0F + m_CurrentContent.DialogYOffset; // Move the dialog away from target
 
-    private void UpdateDialogPosition()
-    {
-        // if (target == null)
-        //     return;
-            
-        // if (Input.GetKeyUp(KeyCode.C))
-        //     RenderCloner();
+        Vector2 finalDialogPos = default;
 
-        // switch (dialogPosition)
-        // {
-        //     case DialogPositions.AboveTarget:
-        //         PositionAboveTarget(target);
-        //         break;
-        // }
-    }
-
-    public void UpdateContent(string content, DialogDirections dialogDirection)
-    {
-        calloutText.text     = content;
-        //this.dialogDirection = dialogDirection;
-        
-        TutorialDialogArrow targetArrow = default;
-
-        for (var i = 0; i < dialogArrows.Count; i++)
+        // if the Target is Above the screen half height, Or the target position
+        // is explicitly set, position the dialog BELOW the target
+        if ((m_CurrentContent.DialogDirection == DialogDirections.AutoCalculate && m_ScreenBounds.y > 0) || 
+            (m_CurrentContent.DialogDirection == DialogDirections.BelowTarget))
         {
-            var arrow = dialogArrows[i];
-            arrow.gameObject.SetActive(false);
-
-            if (arrow.Direction == DialogArrowDirections.Left && 
-               (dialogDirection == DialogDirections.ToLeftOfTarget ||
-                dialogDirection == DialogDirections.CenterOfScreen)
-            )
-                targetArrow = arrow;
-            
-            else if (arrow.Direction == DialogArrowDirections.Right && dialogDirection == DialogDirections.ToRightOfTarget)
-                targetArrow = arrow;
-            
-            else if (arrow.Direction == DialogArrowDirections.Above && dialogDirection == DialogDirections.AboveTarget)
-                targetArrow = arrow;
+            finalDialogPos.y = targetPos.y - targetHalfHeight - dialogHalfHeight - targetYDistance;
         }
 
-        if (targetArrow != null)
-            targetArrow.gameObject.SetActive(true);
+        else if (m_CurrentContent.DialogDirection == DialogDirections.TopOfScreen)
+        {
+            finalDialogPos.y = m_ScreenBounds.y - dialogHalfHeight - m_CurrentContent.DialogYOffset;
+        }
+
+        // Position the dialog
+        callout.anchoredPosition = finalDialogPos;
     }
 
-    // private void PositionAboveTarget(RectTransform targetElement)
-    // {
-    //     var elementHalfHeight = targetElement.sizeDelta.y / 2.0F;
-    //     var selfHalfHeight    = calloutTextWrapper.sizeDelta.y / 2.0F;
-
-    //     var posY = elementHalfHeight + selfHalfHeight - distanceToTarget;
-
-    //     m_rect.anchoredPosition = new Vector2(0.0F, posY);
-    // }
-
-    /*
-    private void RenderCloner()
+    /// <summary>
+    /// Make a UI Graphic Element transparent but don't disable it.
+    /// </summary>
+    /// <param name="graphics">UI Elements</param>
+    /// <param name="makeTransparent">Should the graphic elements be made transparent?</param>
+    private void MakeTransparent(List<Graphic> graphics, bool makeTransparent = true)
     {
-        //..........................................................//
-        // # Position the cloner exactly at the target's position # //
-        //..........................................................//
-        
-        // Step 1: Get the target's world position
-        var worldPosition = target.TransformPoint(Vector3.zero);
+        if (graphics == null || graphics?.Count <= 0)
+            return;
 
-        // Step 2: Calculate the center position offset of the target in local space
-        var targetCenterOffset = new Vector2
-        (
-            (0.5F - target.pivot.x) * target.rect.width,
-            (0.5F - target.pivot.y) * target.rect.height
-        );
+        graphics.ForEach(g =>
+        {
+            var gColor = g.color;
+            gColor.a   = makeTransparent ? 0.0F : 1.0F;
 
-        // Step 3: Convert the target's center to world space
-        var targetCenterWorldPosition = worldPosition + target.TransformVector(targetCenterOffset);
-
-        // Step 4: Convert the world position of the center to the canvas local space
-        RectTransformUtility.ScreenPointToLocalPointInRectangle
-        (
-            canvasRectTransform,
-            RectTransformUtility.WorldToScreenPoint(null, targetCenterWorldPosition),
-            null,
-            out Vector2 localPoint
-        );
-
-        // Step 5: Assign this position to the cursor's anchored position
-        cloner.anchoredPosition = localPoint;
+            g.color = gColor;
+        });
     }
-    */
+
+    /// <summary>
+    /// Gets the screen size which is already scaled by the canvas.
+    /// This is NOT the physical screen size, but the canvas dimensions
+    /// acting as "Screen Size".
+    /// </summary>
+    /// <returns>Canvas Scaled Screen Size</returns>
+    private Vector2 GetUIBounds(bool whole = false)
+    {
+        // Get the scaled size of the canvas (this is the actual size in UI coordinates)
+        Vector2 canvasSize = canvasRectTransform.rect.size;
+
+        // Divide by 2 to get the range from center to the edge (since the canvas is centered)
+        Vector2 uiBounds = canvasSize / 2f;
+
+        // These are the boundary limits (e.g., X: ±260, Y: ±460 in your case)
+        if (!whole)
+            return uiBounds;
+
+        // Make the values whole number
+        uiBounds.x = Convert.ToInt32(uiBounds.x);
+        uiBounds.y = Convert.ToInt32(uiBounds.y);
+
+        return uiBounds;
+    }
+    #endregion BACK_LOGIC
 }

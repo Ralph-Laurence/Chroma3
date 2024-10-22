@@ -89,10 +89,10 @@ public class Constants
 
     public readonly struct TutorialSteps
     {
-        public const int STEP1_LEVEL_NAVIGATION  = 1;
+        public const int STEP1_BASICS            = 1;
         public const int STEP2_BLOCK_SKINS       = 2;
         public const int STEP3_WORLD_BACKGROUNDS = 3;
         public const int STEP4_POWERUP_USAGE     = 4;
-        public const int TUTORIALS_COMPLETE      = 0;
+        public const int TUTORIALS_COMPLETE      = 100;
     }
 }
