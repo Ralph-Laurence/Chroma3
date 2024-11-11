@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TutorialCoordinator : MonoBehaviour
 {
     [SerializeField] private List<GameObject> tutorialDrivers;
     [SerializeField] private int inventoryTutorialIndexContinuation;
+
+    // Will be invoked when all tutorials are completed just before we delete this gameobject
+    [SerializeField] private UnityEvent OnAllTutorialsComplete;
 
     private TutorialDriver tutorialDriver;
     private GameSessionManager gsm;
@@ -71,6 +75,7 @@ public class TutorialCoordinator : MonoBehaviour
 
         tutorialDrivers?.Clear();
 
+        OnAllTutorialsComplete?.Invoke();
         Destroy(gameObject);
     }
 }
