@@ -1,0 +1,74 @@
+.form-control .ui-selectmenu-button.ui-button {
+    width: fit-content;
+}
+
+.form-control {
+    display: grid;
+    grid-template-columns: minmax(120px, auto) 1fr;
+    gap: 14px;
+    align-items: center;
+}
+
+.form-control label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.form-control input[type="text"] {
+    padding: 4px 8px;
+    width: 100%;
+    border: none;
+    appearance: none;
+    outline: none;
+    background-color: #1E233C;
+    border-bottom: 1px solid #14B87C;
+    color: #14B87C;
+    font-family: 'Poppins', Georgia, 'Times New Roman', Times, serif;
+    font-style: italic;
+}
+
+.form-control input[type="text"]:focus {
+    color: #FFF068;
+    border-bottom: 1px solid #FFF068;
+}
+
+.form-control-slider .slider-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    border-radius: 2rem;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #04AA6D;
+    cursor: pointer;
+    border-radius: 2rem;
+}
+
+.slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #04AA6D;
+    cursor: pointer;
+    border-radius: 2rem;
+}

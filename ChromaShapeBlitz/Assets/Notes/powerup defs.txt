@@ -1,0 +1,65 @@
+Canvas
+> Shop menu
+   (disabled)
+   (scale xy = 0)
+
+
+
+(You cannot equip a powerup of the same type altogether i.e. Adrenaline and Flux)
+
+Powerups are here to give you an edge! Use them wisely to overcome challenges, boost your abilities, and progress faster. 
+Remember, each powerup is designed to help you succeed and make your gameplay experience even more exciting!
+
+“Tip: Use powerups to gain an advantage!”
+“Tip: Use powerups to boost your progress!”
+“Tip: Use powerups to overcome challenges!”
+“Tip: Use powerups to enhance your abilities!”
+
+--save powerup count in userdata as list of common powerups--
+--for every powerup usage, validate if it reached 0 then unlist it--
+--only for those temporary powerups--
+
+** When you buy a powerup, the last purchased is automatically equipped in the hotbar
+replacing the older items in the slot
+
+**The first two slots are reserved for special items /
+**The first two slots are reserved for special items such as those permanent effects
+
+**When you own a permanent powerup, it is blah blah
+POWERUP ITEMS:
+
+[Block Sequence Fill, Permanent]
+[Speedup]
+101 -> Rush		- Speedup block sequence filling 25%					> Partially Working
+102 -> Sprint	- Speedup block sequence filling 50%					> Partially Working
+103 -> Turbo	- Speedup block sequence filling 75%					> Partially Working
+104 -> Blitz	- Speedup block sequence filling 100%                   > Partially Working
+
+[Block Sequence Fill, Temporary]
+105 -> EMP 		 	 - Disable the timer. Effective for 5 uses
+
+100 -> Idea		 	 - Hint the player which tiles to tap				> Partially Working
+106 -> Wizard		 - Solves the first 3 sequence for you				> Partially Working
+107 -> Grand Master  - Solves the entire sequence for you				> Partially Working
+                                                                        > Partially Working
+[Time Effects, Temporary, Cant be used when seconds = 0]
+108 -> Adrenaline 	- pause the time for 3secs							> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+109 -> Flux 		- pause the time for 5secs							> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+
+110 -> Continuity	- add +2 extra seconds to timer						> Partially Working 		|> Bound to PowerupEffectAppliedNotifier
+111 -> Stretch		- add +3 extra seconds to timer						> Partially Working 		|> Bound to PowerupEffectAppliedNotifier
+112 -> Endurance	- add +5 extra seconds to timer						> Partially Working 		|> Bound to PowerupEffectAppliedNotifier
+
+[Pattern Effects, Temporary]
+<Only applies to Hard Mode>
+
+113 -> Glance		- reveal the darkened pattern frame for 2secs		> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+114 -> Peek 		- reveal the darkened pattern frame for 3secs		> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+115 -> Recon		- reveal the darkened pattern frame for 5secs		> Partially Working			|> Bound to PowerupEffectAppliedNotifier
+
+116 -> Visor		- reveal the guide blocks													> Partially Working		|> Bound to PowerupEffectAppliedNotifier
+117 -> XRay 		- reveal both the guide blocks and pattern frame (must be expensive)		> Partially Working		|> Bound to PowerupEffectAppliedNotifier
+
+[Currency Effects, Permanent, Immediate]
+118 -> Looter 		- Double the gold coin reward
+119 -> Buccaneer	- Double the gem coin reward

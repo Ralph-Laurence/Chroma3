@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6580462987216928504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4736401294708996491}
+  - component: {fileID: 4848243098730582406}
+  - component: {fileID: 6714443687110728954}
+  - component: {fileID: 8217489197939491397}
+  - component: {fileID: 197042375988275934}
+  - component: {fileID: 2001438855393929759}
+  - component: {fileID: 1005003094539590535}
+  m_Layer: 0
+  m_Name: Backgrounds ScreenshotCam
+  m_TagString: Screenshot Cam
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4736401294708996491
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.19652738, y: -0.47970605, z: 0.11118987, w: -0.8478773}
+  m_LocalPosition: {x: 0.16, y: 0, z: -0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 26.1, y: -301, z: 0}
+--- !u!20 &4848243098730582406
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 1}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: -50
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 1
+  orthographic size: 5
+  m_Depth: -1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 23
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!81 &6714443687110728954
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  m_Enabled: 1
+--- !u!114 &8217489197939491397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49b4cc203aa6414fae5c798d1d0e7d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
+--- !u!114 &197042375988275934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d3f749976c088a4a8a73772e8a572bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Blur: 0
+  BlurAmount: 0.25
+  BlurMask: {fileID: 2800000, guid: 74ab4394b0e842143bf0f7f14ba8f55e, type: 3}
+  Bloom: 1
+  BloomColor: {r: 0, g: 0.19885597, b: 0.5568628, a: 1}
+  BloomAmount: 0.18
+  BloomDiffuse: 0.75
+  BloomThreshold: 0.2
+  BloomSoftness: 0.5
+  LUT: 1
+  LutAmount: 0.75
+  SourceLut: {fileID: 2800000, guid: 58ad132fb6b09c3439a1d0e53c81729e, type: 3}
+  ImageFiltering: 0
+  Color: {r: 1, g: 1, b: 1, a: 1}
+  Contrast: 0.25
+  Brightness: 0.25
+  Saturation: 0.1
+  Exposure: 0.25
+  Gamma: 0.25
+  Sharpness: 0
+  ChromaticAberration: 0
+  Offset: 0
+  FishEyeDistortion: 0
+  GlitchAmount: 0
+  Distortion: 0
+  LensDistortion: 0
+  Vignette: 1
+  VignetteColor: {r: 0, g: 0, b: 0, a: 1}
+  VignetteAmount: 0.05
+  VignetteSoftness: 0.45
+  material: {fileID: 2100000, guid: 3aeedadbfc1ffb644834cb2b7d57aa77, type: 2}
+--- !u!124 &2001438855393929759
+Behaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  m_Enabled: 1
+--- !u!114 &1005003094539590535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6580462987216928504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d3f749976c088a4a8a73772e8a572bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Blur: 0
+  BlurAmount: 0.25
+  BlurMask: {fileID: 2800000, guid: 74ab4394b0e842143bf0f7f14ba8f55e, type: 3}
+  Bloom: 1
+  BloomColor: {r: 0, g: 0.043137312, b: 1, a: 1}
+  BloomAmount: 0.48
+  BloomDiffuse: 1
+  BloomThreshold: 0
+  BloomSoftness: 0.5
+  LUT: 1
+  LutAmount: 1
+  SourceLut: {fileID: 2800000, guid: 56b99c486fa962e4f8274f1a3dfcdb39, type: 3}
+  ImageFiltering: 0
+  Color: {r: 1, g: 1, b: 1, a: 1}
+  Contrast: 0.25
+  Brightness: 0.25
+  Saturation: 0.1
+  Exposure: 0.25
+  Gamma: 0.25
+  Sharpness: 0
+  ChromaticAberration: 0
+  Offset: 0
+  FishEyeDistortion: 0
+  GlitchAmount: 0
+  Distortion: 0
+  LensDistortion: 0
+  Vignette: 1
+  VignetteColor: {r: 0, g: 0, b: 0, a: 1}
+  VignetteAmount: 0.038
+  VignetteSoftness: 0.422
+  material: {fileID: 2100000, guid: 3aeedadbfc1ffb644834cb2b7d57aa77, type: 2}

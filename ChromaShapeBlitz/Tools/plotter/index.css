@@ -1,0 +1,151 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --swatch-blue: "#037ACC";
+    --swatch-green: "#14B87C";
+    --swatch-magenta: "#FF416D";
+    --swatch-orange: "#FF7400";
+    --swatch-purple: "#902FFF";
+    --swatch-yellow: "#F9CF21";
+}
+
+@font-face {
+    font-family: 'Averta';
+    src: url('assets/AvertaStd-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('assets/Poppins-Regular.ttf');
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #242942;
+    color: white;
+    font-family: 'Averta', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+
+/*
+===========================================================
+###################### EDITOR LAYOUT ######################
+===========================================================
+*/
+.workspace {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.titlebar {
+    padding: 12px;
+    border-bottom: 1px solid #373C50;
+    display: flex;
+    flex-direction: row;
+}
+
+.title-text {
+    border-radius: 2rem;
+    background-color: #149471;
+    padding: 8px 16px;
+}
+
+.project-view {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+.inspector {
+    width: 320px;
+    max-width: 320px;
+    border-right: 1px solid #373C50;
+}
+
+.scene {
+    flex-grow: 1;
+    background-color: #10121D;
+    padding-bottom: 10px !important;
+}
+
+.output-pane {
+    width: 320px;
+    max-width: 320px;
+    border-left: 1px solid #373C50;
+}
+
+.editor-pane {
+    overflow: hidden;
+    padding-bottom: 50px;
+}
+
+.editor-pane-title {
+    padding: 12px;
+    background-color: #181B2C;
+    color: #FCB87B;
+}
+
+.editor-pane-content {
+    padding: 12px;
+    display: flex;
+    flex-flow: column;
+    overflow-y: auto;
+    height: 100%;
+    gap: 8px;
+}
+
+.editor-pane-content:not(.no-vscroll) {
+    overflow-y: auto;
+}
+
+.editor-pane .inspector-header {
+    color: #8F90C8;
+    background-color: #2B3049;
+    padding: 4px 8px;
+}
+
+.editor-pane .stage-editor-scene-renderer {
+    background-size: 30px 30px;
+    background-image:
+        linear-gradient(to right, #1C2030 1px, transparent 1px),
+        linear-gradient(to bottom, #1C2030 1px, transparent 1px);
+    width: 100%;
+    height: 100%;
+    padding: 10px 10px 60px 10px;
+}
+
+.editor-pane .stage-editor-scene-renderer .stage-viewport
+{
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid #BD3ABF;
+}
+
+.editor-pane .stage-editor-scene-renderer .stage-viewport::after {
+    text-align: center;
+    content: "(viewport safe area) :: stage object origin must always begin at the bottom.";
+    color: #BD3ABF;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+}
+/*
+===========================================================
+###################### SCENE OBJECTS ######################
+===========================================================
+*/
