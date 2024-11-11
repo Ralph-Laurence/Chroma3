@@ -37,6 +37,9 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] private Image itemFrameResultMiddle;
     [SerializeField] private Image itemFrameResultRight;
 
+    [Space(5)]
+    [SerializeField] private Image[] prizeIconTray;
+
     [Space(10)]
     [SerializeField] private SlotMachineItemSpriteMapping   itemSpriteMapping;
     [SerializeField] private SlotMachineGameController      controller;
@@ -70,6 +73,7 @@ public class SlotMachine : MonoBehaviour
 
     public SlotMachineKnob coinKnob;
     public SlotMachineKnob gemKnob;
+    private int jackpotsCount = 0;
 
     void Awake()
     {
@@ -231,6 +235,12 @@ public class SlotMachine : MonoBehaviour
 
                 ItemName = shuffleResult
             });
+
+            if (jackpotsCount <= prizeIconTray.Length)
+            {
+                prizeIconTray[jackpotsCount].sprite = itemSpriteMapping.Select(prize.ItemName);
+                jackpotsCount++;
+            }
         }
         else
         {

@@ -1,7 +1,6 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -17,9 +16,15 @@ public class MainMenuController : MonoBehaviour
     [Space(5)]
     [SerializeField] private GameObject fancySceneLoader;
 
+    [Header("Side Fabs")]
+    [SerializeField] private MainMenuSideFab slotMachineFab;
+
+    private UserData userData;
+
     void Awake()
     {
         gsm = GameSessionManager.Instance;
+        userData = gsm.UserSessionData;
 
         bgmManager = BackgroundMusic.Instance;
         LeanTween.init();
@@ -36,6 +41,15 @@ public class MainMenuController : MonoBehaviour
         if (bgmManager != null)
             bgmManager.PlayMainBgm();
 
+        // Side fabs
+        var nextSpinTime = DateTime.Parse(gsm.UserSessionData.NextAllowedSpinTime);
+
+        if (userData.SlotMachineSpinsLeft > 0 && (DateTime.Now >= nextSpinTime))
+            slotMachineFab.MakeActive();
+        else
+            slotMachineFab.MakeInactive();
+
+        // Versioning
         versionLabel.text = $"v{Application.version}";
         versionLabel.enabled = true;
     }
