@@ -150,6 +150,7 @@ public partial class StageVariant : MonoBehaviour
                 if (sequenceFilled > 0)
                     return;
 
+                PowerupEffectAppliedNotifier.NotifyObserver(sender, effectData);
                 HintMarkerNotifier.NotifyObserver(this);
                 break;
         }

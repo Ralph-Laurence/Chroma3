@@ -188,6 +188,8 @@ public class PowerupsEffectManager : MonoBehaviour
 
         // Apply | Execute the powerup's effect
         HotbarPowerupEffectNotifier.NotifyObserver(effectSlot, effectData);
+
+        Debug.Log($"Item used! ID = {powerupID}");
     }
 
     void OnEnable()
@@ -272,6 +274,8 @@ public class PowerupsEffectManager : MonoBehaviour
 
     private IEnumerator IEBeginShowHint(StageVariant stageVariant)
     {
+        //PowerupEffectAppliedNotifier.NotifyObserver();
+
         // Prevent any interactions while the transition plays
         InteractionBlockerNotifier.NotifyObserver(true);
 
@@ -300,18 +304,23 @@ public class PowerupsEffectManager : MonoBehaviour
         
         hintMarker.SetTargets(targets);
 
-        yield return hintMarker.ShowHints(stageVariant.VariantDifficulty);
+        yield return StartCoroutine(hintMarker.ShowHints(stageVariant.VariantDifficulty));
         yield return new WaitForSeconds(0.5F);
+
+        // End the hint marker
+        yield return StartCoroutine(hintMarker.TurnOff());
 
         // Bring back to initial view angle before hints were shown.
         yield return StartCoroutine(stageCamera.IEUnviewFromAbove());
-        
-        hintMarker.gameObject.SetActive(false);
+
+        // hintMarker.gameObject.SetActive(false);
         stageVariant.SetStickToBottom(true);
 
         // Allow interactions after the transition plays
         InteractionBlockerNotifier.NotifyObserver(false);
     }
+
+
 
     private void ObserveStageSolverMage
     (
