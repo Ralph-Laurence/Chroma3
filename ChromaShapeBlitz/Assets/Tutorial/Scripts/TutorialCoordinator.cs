@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 public class TutorialCoordinator : MonoBehaviour
 {
+    [SerializeField] private GameObject tutorialConsentDialog;
     [SerializeField] private List<GameObject> tutorialDrivers;
     [SerializeField] private int inventoryTutorialIndexContinuation;
 
@@ -61,6 +62,11 @@ public class TutorialCoordinator : MonoBehaviour
 
         tutorialDrivers?.Clear();
 
+        if (!gsm.UserSessionData.IsTutorialCompleted && data.CurrentTutorialStep == TutorialSteps.STEP1_BASICS)
+        {
+            tutorialConsentDialog.SetActive(true);
+        }
+
         if (tutorialDriver != null)
             tutorialDriver.gameObject.SetActive(true);
     }
@@ -76,6 +82,29 @@ public class TutorialCoordinator : MonoBehaviour
         tutorialDrivers?.Clear();
 
         OnAllTutorialsComplete?.Invoke();
+
+        Destroy(tutorialConsentDialog);
         Destroy(gameObject);
+    }
+
+    public void SkipTutorial()
+    {
+        var userData = gsm.UserSessionData;
+
+        userData.IsTutorialCompleted = true;
+
+        userData.CurrentTutorialStep = TutorialSteps.TUTORIALS_COMPLETE;
+        userData.CurrentTutorialStage = 5;
+
+        StartCoroutine(UserDataHelper.Instance.SaveUserData(userData, (u) =>
+        {
+            gsm.UserSessionData = u;
+            HandleTutorialsCompleted();
+        }));
+    }
+
+    public void OnTutorialConsentGranted()
+    {
+        Destroy(tutorialConsentDialog);
     }
 }

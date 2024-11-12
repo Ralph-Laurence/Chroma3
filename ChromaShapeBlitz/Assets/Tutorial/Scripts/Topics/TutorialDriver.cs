@@ -72,6 +72,14 @@ public class TutorialDriver : MonoBehaviour
     {
         TutorialEventNotifier.UnbindObserver(ObserveTutorialEvent);
     }
+    //
+    // Manually start the tutorial, i.e via script
+    //
+    public void LaunchTutorial()
+    {
+        autoPlay = true;
+        StartCoroutine(BeginTutorial());
+    }
 
     private IEnumerator BeginTutorial()
     {
