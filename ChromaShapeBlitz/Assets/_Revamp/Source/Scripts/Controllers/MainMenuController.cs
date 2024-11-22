@@ -42,9 +42,14 @@ public class MainMenuController : MonoBehaviour
             bgmManager.PlayMainBgm();
 
         // Side fabs
-        var nextSpinTime = DateTime.Parse(gsm.UserSessionData.NextAllowedSpinTime);
+        var nextSpinTime = DateTime.Parse(userData.NextAllowedSpinTime);
 
-        if (userData.SlotMachineSpinsLeft > 0 && (DateTime.Now >= nextSpinTime))
+        var minCoins = SlotMachine.BetCoinAmount;
+        var minGems = SlotMachine.BetGemAmount;
+
+        if (userData.SlotMachineSpinsLeft > 0 && DateTime.Now >= nextSpinTime &&
+           (userData.TotalCoins >= minCoins || userData.TotalGems >= minGems))
+
             slotMachineFab.MakeActive();
         else
             slotMachineFab.MakeInactive();
@@ -56,15 +61,15 @@ public class MainMenuController : MonoBehaviour
 
     #region UI_EVENT_ACTIONS
 
-    public void Ev_Quit()
-    {
-        Application.Quit();
-    }
+    public void Ev_Quit() => Application.Quit();
+    public void Ev_LaunchSlotMachine() => Launch(Constants.Scenes.SlotMachine);
+    public void Ev_LaunchAbout() => Launch(Constants.Scenes.About);
+    public void Ev_LaunchCredits() => Launch(Constants.Scenes.Credits);
 
-    public void Ev_LaunchSlotMachine()
+    private void Launch(string sceneName)
     {
         Instantiate(fancySceneLoader).TryGetComponent(out FancySceneLoader loader);
-        loader.LoadScene(Constants.Scenes.SlotMachine);
+        loader.LoadScene(sceneName);
     }
 
     #endregion

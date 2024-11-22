@@ -11,12 +11,15 @@ public class Constants
 
     public readonly struct Scenes
     {
+        public static readonly string Bootstrapper = "Bootstrapper";
         public static readonly string MainMenu = "MainMenu";
         public static readonly string CutSceneEMPAttack = "CS_EmpAttack";
         public static readonly string TutorialStagePrefix = "TutorialStage_";
         public static readonly string TutorialFinished = "TutorialFinished";
         public static readonly string GamePlay = "GamePlay";
         public static readonly string SlotMachine = "SlotMachine";
+        public static readonly string About = "About";
+        public static readonly string Credits = "Credits";
     }
 
     public readonly struct Tags
