@@ -128,23 +128,51 @@ public class GamePlayTutorialLevel1A : MonoBehaviour
         loader.LoadScene(Constants.Scenes.MainMenu, false);
     }
 
-    private IEnumerator SaveProgress()
+    public void SkipTutorial()
     {
-        var userData = gsm.UserSessionData;
+        Instantiate(fancySceneLoader).TryGetComponent(out FancySceneLoader loader);
 
-        userData.CurrentTutorialStep = TutorialSteps.STEP2_BLOCK_SKIN_PURCHASE;
-        userData.TotalCoins += rewardCoin;
-        userData.TotalGems  += rewardGems;
-        
-        userData.CurrentTutorialStage ++;
+        loader.AddTask(IESkipTutorial);
+        loader.LoadScene(Constants.Scenes.MainMenu, false);
+    }
 
-        var helper = UserDataHelper.Instance;
+    private IEnumerator IESkipTutorial()
+    {
+        var nextStep = TutorialSteps.TUTORIALS_COMPLETE;
+        var userData = BuildSaveData(nextStep);
+        var helper   = UserDataHelper.Instance;
+
+        userData.IsTutorialCompleted = true;
+        userData.CurrentTutorialStage = TutorialDriver.MAX_STAGES;
 
         yield return StartCoroutine(helper.SaveUserData(userData, (updatedData) =>
         {
             gsm.UserSessionData = updatedData;
-
-            Debug.Log(gsm.UserSessionData.TotalCoins);
         }));
+    }
+
+    private IEnumerator SaveProgress()
+    {
+        var nextStep = TutorialSteps.STEP2_BLOCK_SKIN_PURCHASE;
+        var userData = BuildSaveData(nextStep);
+        var helper   = UserDataHelper.Instance;
+
+        yield return StartCoroutine(helper.SaveUserData(userData, (updatedData) =>
+        {
+            gsm.UserSessionData = updatedData;
+        }));
+    }
+
+    private UserData BuildSaveData(TutorialSteps nextStep)
+    {
+        var userData = gsm.UserSessionData;
+
+        userData.CurrentTutorialStep = nextStep;
+        userData.TotalCoins += rewardCoin;
+        userData.TotalGems += rewardGems;
+
+        userData.CurrentTutorialStage++;
+
+        return userData;
     }
 }

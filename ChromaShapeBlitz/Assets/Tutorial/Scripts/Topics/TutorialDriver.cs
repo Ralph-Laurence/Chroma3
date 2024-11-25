@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class TutorialDriver : MonoBehaviour
 {
+    public const int MAX_STAGES = 5;
     public TutorialSteps StepIdentifier;
 
     [SerializeField] private TutorialContent[] contents;
@@ -225,17 +226,6 @@ public class TutorialDriver : MonoBehaviour
             m_clonedTarget = tutorialUtils.CloneTargetElement(content);
             tutorialDialog.SetTarget(m_clonedTarget);
 
-            // Original Code
-            // if (content.ContentType == TutorialContentType.InteractiveUI)
-            // {
-            //     BindClickEventToClone(m_clonedTarget, content);
-            //     HideTapToContinue();
-            // }
-            // else
-            // {
-            //     ShowTapToContinue();
-            // }
-
             // Modded Code
             HideTapToContinue();
 
@@ -278,13 +268,6 @@ public class TutorialDriver : MonoBehaviour
                         ShowTapToContinue();
                         break;
                 }
-
-                // Original
-                // if (content.ContentType == TutorialContentType.InteractiveUI)
-                // {
-                //     pointerHand.SetTarget(m_clonedTarget);
-                //     pointerHand.Show();
-                // }
             });
 
             return;

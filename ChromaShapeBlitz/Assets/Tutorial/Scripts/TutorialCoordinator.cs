@@ -94,7 +94,7 @@ public class TutorialCoordinator : MonoBehaviour
         userData.IsTutorialCompleted = true;
 
         userData.CurrentTutorialStep = TutorialSteps.TUTORIALS_COMPLETE;
-        userData.CurrentTutorialStage = 5;
+        userData.CurrentTutorialStage = TutorialDriver.MAX_STAGES;
 
         StartCoroutine(UserDataHelper.Instance.SaveUserData(userData, (u) =>
         {
