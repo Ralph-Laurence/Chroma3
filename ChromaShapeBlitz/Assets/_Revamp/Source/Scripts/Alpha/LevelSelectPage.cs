@@ -31,14 +31,23 @@ public class LevelSelectPage : MonoBehaviour
     /// By default, the lower bound isnt inclusive.
     /// If "includeLowerBound" is omitted, we include the lower bound.
     /// </summary>
-    public void UpdateLevelProgressMeter(int currentValue, int maxValue, bool includeLowerBound = false)
+    public void UpdateLevelProgressMeter(int currentValue, int maxValue)//, bool includeLowerBound = false)
     {
         levelProgressBar.maxValue = maxValue;
 
-        if (includeLowerBound && currentValue == 1)
+        if (currentValue <= 1)
             levelProgressBar.value = 1;
+
+        else if (currentValue >= maxValue)
+            levelProgressBar.value = maxValue;
+            
         else
-            levelProgressBar.value = currentValue > 1 ? currentValue : 0;
+            levelProgressBar.value = currentValue - 1;
+        //if (includeLowerBound && currentValue == 1)
+        // if (currentValue <= 1)
+        //     levelProgressBar.value = 1;
+        // else
+        //     levelProgressBar.value = currentValue > 1 ? currentValue : 0;
 
         levelProgressText.text = $"{levelProgressBar.value}/{levelProgressBar.maxValue}";
     }

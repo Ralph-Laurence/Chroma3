@@ -131,19 +131,20 @@ public partial class LevelMenu : MonoBehaviour
         ResetDifficultyPagerScrollPosition();
 
         // Update the overall progress of the level into a meterbar
-        var progressEasy = userData.HighestEasyStage;
+        // var progressEasy = userData.HighestEasyStage;
 
-        if (userData.HighestEasyStage <= GameManager.TotalEasyStages-1)
-           progressEasy -= 1;
+        // if (userData.HighestEasyStage <= GameManager.TotalEasyStages-1)
+        //    progressEasy -= 1;
 
-        levelSelectPageEasy.UpdateLevelProgressMeter(progressEasy, GameManager.TotalEasyStages);
+        //levelSelectPageEasy.UpdateLevelProgressMeter(progressEasy, GameManager.TotalEasyStages);
+        levelSelectPageEasy.UpdateLevelProgressMeter(userData.HighestEasyStage, GameManager.TotalEasyStages);
         levelSelectPageNormal.UpdateLevelProgressMeter(userData.HighestNormalStage, GameManager.TotalNormalStages);
         levelSelectPageHard.UpdateLevelProgressMeter(userData.HighestHardStage, GameManager.TotalHardStages);
-        levelSelectPageTutorial.UpdateLevelProgressMeter(userData.CurrentTutorialStage, TutorialSelectionPage.MaxStages, includeLowerBound: true);
+        levelSelectPageTutorial.UpdateLevelProgressMeter(userData.CurrentTutorialStage, TutorialSelectionPage.MaxStages);//, includeLowerBound: true);
         Debug.Log($"Current Tutorial Stage - {userData.CurrentTutorialStage}");
         // Unlock the level selection pages
-        levelSelectPageNormal.SetLocked( userData.HighestEasyStage != GameManager.TotalEasyStages );
-        levelSelectPageHard.SetLocked( userData.HighestNormalStage != GameManager.TotalNormalStages);
+        //levelSelectPageNormal.SetLocked( userData.HighestEasyStage != GameManager.TotalEasyStages );
+        //levelSelectPageHard.SetLocked( userData.HighestNormalStage != GameManager.TotalNormalStages);
 
         // If the select page's stages are already completed, we'll focus on to
         // the next level select page instead, so that the player wont manually
@@ -154,18 +155,24 @@ public partial class LevelMenu : MonoBehaviour
         {
             levelSelectPageTutorial.MarkCompleted();
             selectedIndex = 1; // Set Focus to "Easy"
+
+            levelSelectPageEasy.SetLocked(false);
         }
 
         if (userData.EasyStagesCompleted)
         {
             levelSelectPageEasy.MarkCompleted();
             selectedIndex = 2;  // Set Focus to "Normal"
+
+            levelSelectPageNormal.SetLocked(false);
         }
 
         if (userData.NormalStagesCompleted)
         {
             levelSelectPageNormal.MarkCompleted();
             selectedIndex = 3;  // Set Focus to "Hard"
+
+            levelSelectPageHard.SetLocked(false);
         }
 
         if (userData.HardStagesCompleted)

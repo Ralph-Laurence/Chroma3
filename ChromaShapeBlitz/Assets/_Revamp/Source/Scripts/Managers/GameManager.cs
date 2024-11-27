@@ -86,7 +86,6 @@ namespace Revamp
 
         private void PauseTimeScale() => Time.timeScale = 0.0F;
         private void ResumeTimeScale() => Time.timeScale = 1.0F;
-
         #endregion GAME_MECHANICS
 
         #region GAME_OVER

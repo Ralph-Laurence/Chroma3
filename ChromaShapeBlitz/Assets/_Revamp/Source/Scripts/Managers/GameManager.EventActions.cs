@@ -109,10 +109,15 @@ namespace Revamp
             stageFactory.Clear();
             stageFactory.Create(difficulty, stageNumber);
 
-            gsm.SelectedDifficulty = difficulty;
+            gsm.SelectedDifficulty  = difficulty;
             gsm.SelectedStageNumber = stageNumber;
 
             MainCamera.ResetView();
+        }
+
+        private void ProceedNextStage()
+        {
+
         }
     }
 }

@@ -63,12 +63,12 @@ public class UserData
     public List<StageProgress> StageProgressEasy;
     public List<StageProgress> StageProgressNormal;
     public List<StageProgress> StageProgressHard;
-
-    public bool EasyStagesCompleted;
+    
+    public bool EasyStagesCompleted;        // These are used only to check when we will award trophies
     public bool NormalStagesCompleted;
     public bool HardStagesCompleted;
 
-    public bool EasyStageUnlocked;
+    public bool EasyStageUnlocked;          // These will be used to lock or unlock difficulty selections
     public bool NormalStageUnlocked;
     public bool HardStageUnlocked;
 
