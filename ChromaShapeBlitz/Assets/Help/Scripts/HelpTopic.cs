@@ -15,4 +15,6 @@ public struct HelpTopicItem
 public class HelpTopic : ScriptableObject
 {
     public List<HelpTopicItem> TopicItems;
+
+    public int TotalTopics => TopicItems.Count;
 }

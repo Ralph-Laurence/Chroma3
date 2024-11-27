@@ -199,7 +199,7 @@ public class BackgroundShopController : MonoBehaviour, IShopController
             m_activeItemCard = sender;
             
             ProgressLoaderNotifier.NotifyFourSegment(false);
-            buyResultDialog.ShowSuccessResult(data.PreviewImage, $"{data.Name} has been automatically set as the background for all levels.");
+            buyResultDialog.ShowSuccessResult(data.PreviewImage, $"{data.Name} has been automatically set as the background.");
         }));
     }
 
