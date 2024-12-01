@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Drawing;
 using TMPro;
 using UnityEngine;
@@ -7,13 +8,16 @@ public class SlotMachineGameController : MonoBehaviour
 {
     [Space(10)]
     [Header("Player Banks")]
-    [SerializeField] private TextMeshProUGUI coinText;
-    [SerializeField] private TextMeshProUGUI gemText;
+    [SerializeField] private PlayerBankIndicator coinText;
+    [SerializeField] private PlayerBankIndicator gemText;
 
     [Space(10)]
+    [Header("Behaviour")]
     [SerializeField] private SlotMachine slotMachine;
     [SerializeField] private AudioClip   bgmSlotMachine;
     [SerializeField] private GameObject  fancySceneLoader;
+    [SerializeField] private GameObject outOfOrderBlocker;
+    [SerializeField] private TextMeshProUGUI outOfOrderTimer;
 
     private BackgroundMusic bgm;
     private GameSessionManager gsm;
@@ -44,8 +48,13 @@ public class SlotMachineGameController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        coinText.text = gsm.UserSessionData.TotalCoins.ToString();
-        gemText.text = gsm.UserSessionData.TotalGems.ToString();
+        //coinText.text = gsm.UserSessionData.TotalCoins.ToString();
+        //gemText.text = gsm.UserSessionData.TotalGems.ToString();
+
+        coinText.RenderValue(gsm.UserSessionData.TotalCoins);
+        gemText.RenderValue(gsm.UserSessionData.TotalGems);
+
+        StartCoroutine(IECheckIfAllowedToSpinOnLoad(gsm.UserSessionData));
     }
  
     public void Ev_ExitToMenu()
@@ -231,4 +240,44 @@ public class SlotMachineGameController : MonoBehaviour
 
     public int GetCurrentCoinsInBank() => currentPlayerCoins;
     public int GetCurrentGemsInBank() => currentPlayerGems;
+
+    private IEnumerator IECheckIfAllowedToSpinOnLoad(UserData userData)
+    {
+        var nextAllowedTime = DateTime.Parse(userData.NextAllowedSpinTime);
+        var countdownTick   = new WaitForSeconds(1.0F);
+
+        // Yes, we are allowed
+        if (DateTime.Now > nextAllowedTime)
+        {
+            outOfOrderBlocker.SetActive(false);
+            yield break;
+        }
+
+        // No, we arent.
+        outOfOrderBlocker.SetActive(true);
+
+        while (true)
+        {
+            TimeSpan timeRemaining = nextAllowedTime - DateTime.Now;
+
+            if (timeRemaining <= TimeSpan.Zero)
+            {
+                // Hide the "out of order" overlay
+                outOfOrderBlocker.SetActive(false);
+
+                yield break; // Exit the coroutine
+            }
+
+            // Update the UI
+            outOfOrderTimer.text = FormatTime(timeRemaining);
+            
+            // Wait for a second before updating again
+            yield return countdownTick;
+        }
+    }
+
+    private string FormatTime(TimeSpan time)
+    {
+        return string.Format("{0:D2}:{1:D2}:{2:D2}", time.Hours, time.Minutes, time.Seconds);
+    }
 }

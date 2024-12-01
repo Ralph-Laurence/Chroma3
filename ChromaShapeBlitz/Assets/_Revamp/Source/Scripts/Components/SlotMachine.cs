@@ -104,12 +104,12 @@ public class SlotMachine : MonoBehaviour
         readyForNextSpin = true;
 
         // Show the "come again tomorrow" dialog
-        if (!controller.CanMakeSpins())
-        {
-            prizesResultOverlay.SetActive(true);
-            LeanTween.scale(prizesResultOverlay, Vector3.one, 0.25F);
-            return;
-        }
+        // if (!controller.CanMakeSpins())
+        // {
+        //     prizesResultOverlay.SetActive(true);
+        //     LeanTween.scale(prizesResultOverlay, Vector3.one, 0.25F);
+        //     return;
+        // }
     }
 
     public void BetWithCoin()

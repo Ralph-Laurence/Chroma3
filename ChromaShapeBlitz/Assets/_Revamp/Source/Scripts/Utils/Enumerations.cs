@@ -222,3 +222,11 @@ public enum TutorialSteps
     STEP9_GAMEPLAY_MECHANICS    = 9,
     TUTORIALS_COMPLETE          = 100
 }
+
+public enum DailyGiftTypes
+{
+    Coin,
+    Gem,
+    RandomPowerup,
+    MegaPack
+}

@@ -40,6 +40,8 @@ public class UserDataHelper : MonoBehaviour
                 StatusCodes.BEGIN_WRITE_USER_DATA,
                 StatusCodes.DONE_WRITE_USER_DATA
             ));
+            
+            File.WriteAllText(Application.persistentDataPath + "/user.sav.json", JsonUtility.ToJson(deserializedUserData));
         }
         else
         {
@@ -75,6 +77,7 @@ public class UserDataHelper : MonoBehaviour
     private UserData SeedDefault()
     {
         int[] defaultBlockSkinIds = { 1,2,3,4,5,6 };
+        var initialDate = DateTime.MinValue.ToString("o");
 
         var userData = new UserData
         {
@@ -116,7 +119,12 @@ public class UserDataHelper : MonoBehaviour
 
             RemainingEMPUsage    = 0,
             SlotMachineSpinsLeft = 3,
-            NextAllowedSpinTime  = DateTime.MinValue.ToString("o")
+            NextAllowedSpinTime  = initialDate, //DateTime.MinValue.ToString("o"),
+
+            NextDailyGiftTime     = initialDate, //DateTime.Now.AddHours(24).ToString("o"),//initialDate,
+            DailyGiftClaimed      = default,
+            DailyGiftDayNumber    = 1,
+            DailyGiftClaimHistory = new()
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

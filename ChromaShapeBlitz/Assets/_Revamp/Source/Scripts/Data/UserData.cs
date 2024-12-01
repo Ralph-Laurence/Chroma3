@@ -6,7 +6,7 @@ public struct StageProgress
 {
     public int StageNumber;
     public int StarsAttained;
-    public bool FullRewardEarned;
+    //public bool FullRewardEarned;
 }
 
 [Serializable]
@@ -95,4 +95,12 @@ public class UserData
     //===========================
     public int SlotMachineSpinsLeft;
     public string NextAllowedSpinTime;
+
+    //===========================
+    // DAILY GIFTS
+    //===========================
+    public string NextDailyGiftTime;
+    public bool DailyGiftClaimed;
+    public int DailyGiftDayNumber;
+    public List<int> DailyGiftClaimHistory;
 }

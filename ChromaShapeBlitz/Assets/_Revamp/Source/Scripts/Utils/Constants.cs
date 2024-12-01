@@ -20,6 +20,7 @@ public class Constants
         public static readonly string SlotMachine = "SlotMachine";
         public static readonly string About = "About";
         public static readonly string Credits = "Credits";
+        public static readonly string DailyGifts = "DailyGift";
     }
 
     public readonly struct Tags

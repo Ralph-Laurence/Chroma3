@@ -18,6 +18,7 @@ public class MainMenuController : MonoBehaviour
 
     [Header("Side Fabs")]
     [SerializeField] private MainMenuSideFab slotMachineFab;
+    [SerializeField] private MainMenuSideFab dailyGiftFab;
 
     private UserData userData;
 
@@ -42,6 +43,17 @@ public class MainMenuController : MonoBehaviour
             bgmManager.PlayMainBgm();
 
         // Side fabs
+        CheckSlotMachineAvailable(userData);
+        CheckDailyGiftAvailable(userData);
+
+        // Versioning
+        versionLabel.text = $"v{Application.version}";
+        versionLabel.enabled = true;
+    }
+
+    #region SIDE_FABs
+    private void CheckSlotMachineAvailable(UserData userData)
+    {
         var nextSpinTime = DateTime.Parse(userData.NextAllowedSpinTime);
 
         var minCoins = SlotMachine.BetCoinAmount;
@@ -53,11 +65,18 @@ public class MainMenuController : MonoBehaviour
             slotMachineFab.MakeActive();
         else
             slotMachineFab.MakeInactive();
-
-        // Versioning
-        versionLabel.text = $"v{Application.version}";
-        versionLabel.enabled = true;
     }
+
+    private void CheckDailyGiftAvailable(UserData userData)
+    {
+        var nextGiftTime = DateTime.Parse(userData.NextDailyGiftTime);
+
+        if (DateTime.Now >= nextGiftTime)
+            dailyGiftFab.MakeActive();
+        else
+            dailyGiftFab.MakeInactive();
+    }
+    #endregion SIDE_FABs
 
     #region UI_EVENT_ACTIONS
 
@@ -65,7 +84,8 @@ public class MainMenuController : MonoBehaviour
     public void Ev_LaunchSlotMachine() => Launch(Constants.Scenes.SlotMachine);
     public void Ev_LaunchAbout() => Launch(Constants.Scenes.About);
     public void Ev_LaunchCredits() => Launch(Constants.Scenes.Credits);
-
+    public void Ev_LaunchDailyGift() => Launch(Constants.Scenes.DailyGifts);
+    
     private void Launch(string sceneName)
     {
         Instantiate(fancySceneLoader).TryGetComponent(out FancySceneLoader loader);
