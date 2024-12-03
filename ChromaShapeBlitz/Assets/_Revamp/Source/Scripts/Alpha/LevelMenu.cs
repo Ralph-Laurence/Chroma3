@@ -137,11 +137,11 @@ public partial class LevelMenu : MonoBehaviour
         //    progressEasy -= 1;
 
         //levelSelectPageEasy.UpdateLevelProgressMeter(progressEasy, GameManager.TotalEasyStages);
-        levelSelectPageEasy.UpdateLevelProgressMeter(userData.HighestEasyStage, GameManager.TotalEasyStages);
-        levelSelectPageNormal.UpdateLevelProgressMeter(userData.HighestNormalStage, GameManager.TotalNormalStages);
-        levelSelectPageHard.UpdateLevelProgressMeter(userData.HighestHardStage, GameManager.TotalHardStages);
-        levelSelectPageTutorial.UpdateLevelProgressMeter(userData.CurrentTutorialStage, TutorialSelectionPage.MaxStages);//, includeLowerBound: true);
-        Debug.Log($"Current Tutorial Stage - {userData.CurrentTutorialStage}");
+        levelSelectPageEasy.UpdateLevelProgressMeter(userData.HighestEasyStage, GameManager.TotalEasyStages);//, false);
+        levelSelectPageNormal.UpdateLevelProgressMeter(userData.HighestNormalStage, GameManager.TotalNormalStages);//, false);
+        levelSelectPageHard.UpdateLevelProgressMeter(userData.HighestHardStage, GameManager.TotalHardStages);//, false);
+        levelSelectPageTutorial.UpdateLevelProgressMeter(userData.CurrentTutorialStage, TutorialSelectionPage.MaxStages, useExact: true);
+        //Debug.Log($"Current Tutorial Stage - {userData.CurrentTutorialStage}");
         // Unlock the level selection pages
         //levelSelectPageNormal.SetLocked( userData.HighestEasyStage != GameManager.TotalEasyStages );
         //levelSelectPageHard.SetLocked( userData.HighestNormalStage != GameManager.TotalNormalStages);
@@ -393,6 +393,10 @@ public partial class LevelMenu : MonoBehaviour
         // Each difficulty has a specific number of stages.
         // We can use this to show the total number of visible buttons.
         var visibleButtons = GameManager.GetTotalStages(difficulty);
+        Debug.Log($"Highest unlocked -> {highestUnlockedLevel}");
+
+        if (highestUnlockedLevel <= 0)
+            highestUnlockedLevel = 1;
 
         for (var i = 0; i < stageSelectButtons.Count; i++)
         {

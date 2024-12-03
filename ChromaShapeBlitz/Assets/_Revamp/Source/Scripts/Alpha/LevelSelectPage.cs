@@ -29,20 +29,33 @@ public class LevelSelectPage : MonoBehaviour
     /// <summary>
     /// Set the value of the progress meter according to the value of "currentValue".
     /// By default, the lower bound isnt inclusive.
-    /// If "includeLowerBound" is omitted, we include the lower bound.
+    /// If "useExact" is omitted, we set the current value into the actual value without subtracting 1
     /// </summary>
-    public void UpdateLevelProgressMeter(int currentValue, int maxValue)//, bool includeLowerBound = false)
+    public void UpdateLevelProgressMeter(int currentValue, int maxValue, bool useExact = false)
     {
         levelProgressBar.maxValue = maxValue;
 
-        if (currentValue <= 1)
-            levelProgressBar.value = 1;
+        if (currentValue >= maxValue)
+            levelProgressBar.value = maxValue;
 
-        else if (currentValue >= maxValue)
+        else
+            levelProgressBar.value = useExact ? currentValue : currentValue - 1;
+
+        levelProgressText.text = $"{levelProgressBar.value}/{levelProgressBar.maxValue}";
+    }
+    public void UpdateLevelProgressMeter_old(int currentValue, int maxValue)
+    {
+        levelProgressBar.maxValue = maxValue;
+
+        // if (currentValue <= 1)
+        //     levelProgressBar.value = currentValue;
+        
+        //else if
+        if (currentValue >= maxValue)
             levelProgressBar.value = maxValue;
             
         else
-            levelProgressBar.value = currentValue - 1;
+            levelProgressBar.value = currentValue;
         //if (includeLowerBound && currentValue == 1)
         // if (currentValue <= 1)
         //     levelProgressBar.value = 1;

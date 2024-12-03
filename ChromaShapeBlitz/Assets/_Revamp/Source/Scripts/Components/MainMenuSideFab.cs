@@ -11,10 +11,14 @@ public class MainMenuSideFab : MonoBehaviour
     [SerializeField] private float beatTime  = 0.5f; // Time for one beat
 
     private RectTransform exclamationRect;
+    private Image m_image;
+    private RectTransform m_rect;
 
     private void Awake()
     {
         exclamation.TryGetComponent(out exclamationRect);
+        TryGetComponent(out m_image);
+        TryGetComponent(out m_rect);
     }
 
     public void MakeActive()
@@ -31,6 +35,13 @@ public class MainMenuSideFab : MonoBehaviour
 
         LeanTween.cancel(exclamation.gameObject);
         exclamationRect.localScale = Vector3.one;
+    }
+
+    public void ChangeFabIcon(Sprite newIcon) => m_image.sprite = newIcon;
+    
+    public void SetScale(Vector2 scale)
+    {
+        m_rect.localScale = new Vector3(scale.x, scale.y, 1.0F);
     }
 
     void StartBeating()

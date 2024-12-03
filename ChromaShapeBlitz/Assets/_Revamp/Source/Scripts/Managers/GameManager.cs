@@ -174,7 +174,12 @@ namespace Revamp
 
                     if (gsm.SelectedStageNumber >= userData.HighestEasyStage
                        && userData.HighestEasyStage < TotalEasyStages)
+                    {
+                        if (userData.HighestEasyStage == 0)
+                            userData.HighestEasyStage = 1;
+                            
                         userData.HighestEasyStage++;
+                    }
 
                     if (stars > stageProgress.StarsAttained)
                     {
@@ -188,7 +193,12 @@ namespace Revamp
 
                     if (gsm.SelectedStageNumber >= userData.HighestNormalStage
                        && userData.HighestNormalStage < TotalNormalStages)
+                    {
+                        if (userData.HighestNormalStage == 0)
+                            userData.HighestNormalStage = 1;
+
                         userData.HighestNormalStage++;
+                    }
 
                     if (stars > stageProgress.StarsAttained)
                     {
@@ -202,7 +212,12 @@ namespace Revamp
 
                     if (gsm.SelectedStageNumber >= userData.HighestHardStage
                        && userData.HighestHardStage < TotalHardStages)
+                    {
+                        if (userData.HighestHardStage == 0)
+                            userData.HighestHardStage = 1;
+
                         userData.HighestHardStage++;
+                    }
 
                     if (stars > stageProgress.StarsAttained)
                     {

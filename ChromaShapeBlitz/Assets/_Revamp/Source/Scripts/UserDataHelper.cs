@@ -81,12 +81,13 @@ public class UserDataHelper : MonoBehaviour
 
         var userData = new UserData
         {
-            CurrentTutorialStep = TutorialSteps.STEP1_BASICS,
-            IsTutorialCompleted = false,
+            CurrentTutorialStep  = TutorialSteps.STEP1_BASICS,
+            CurrentTutorialStage = 0,
+            IsTutorialCompleted  = false,
 
-            HighestEasyStage    = 1,
-            HighestNormalStage  = 1,
-            HighestHardStage    = 1,
+            HighestEasyStage    = 0,
+            HighestNormalStage  = 0,
+            HighestHardStage    = 0,
 
             StageProgressEasy   = new List<StageProgress>(),
             StageProgressNormal = new List<StageProgress>(),

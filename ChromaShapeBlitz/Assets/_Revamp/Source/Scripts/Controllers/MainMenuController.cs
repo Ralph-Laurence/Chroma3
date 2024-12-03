@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MainMenuController : MonoBehaviour
 {
-    private BackgroundMusic bgmManager;
     private GameSessionManager gsm;
 
     [Header("Used when user visits shop after game over")]
@@ -27,7 +26,6 @@ public class MainMenuController : MonoBehaviour
         gsm = GameSessionManager.Instance;
         userData = gsm.UserSessionData;
 
-        bgmManager = BackgroundMusic.Instance;
         LeanTween.init();
     }
 
@@ -38,9 +36,6 @@ public class MainMenuController : MonoBehaviour
             gsm.IsVisitShopOnGameOver = false;
             shopMenu.SetActive(true);
         }
-
-        if (bgmManager != null)
-            bgmManager.PlayMainBgm();
 
         // Side fabs
         CheckSlotMachineAvailable(userData);
