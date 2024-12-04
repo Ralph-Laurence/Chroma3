@@ -1,8 +1,22 @@
 using UnityEngine;
 
+public enum MainMenuThemeIdentifier
+{
+    // Used in physical assets
+    Stock,
+    Halloween,
+    Christmas,
+
+    // Used internally as state identifier.
+    // Auto applies the relevant theme by season.
+    Auto
+}
+
 [CreateAssetMenu(fileName = "MainMenuThemeAsset", menuName = "Scriptable Objects/MainMenuThemeAsset")]
 public class MainMenuThemeAsset : ScriptableObject
 {
+    public MainMenuThemeIdentifier ThemeIdentifier;
+
     #region ROOT_LAYOUT
     //
     //
@@ -26,6 +40,8 @@ public class MainMenuThemeAsset : ScriptableObject
     public ButtonThemeAsset PlayButtonTheme;
     public ButtonThemeAsset QuitButtonTheme;
     public ButtonThemeAsset ShopButtonTheme;
+    public ToggleThemeAsset SfxToggleTheme;
+    public ToggleThemeAsset BgmToggleTheme;
     //
     //
     #endregion MAIN_CONTROL_BUTTONS
@@ -48,4 +64,10 @@ public class MainMenuThemeAsset : ScriptableObject
     [Space(10)]
     [Header("Random bgm selection")]
     public AudioClip[] BgmThemes;
+    //
+    //
+    //
+    [Space(10)]
+    [Header("Only for Christmas theme")]
+    public Sprite[] ButtonSnowCaps;
 }

@@ -93,8 +93,9 @@ public class TutorialCoordinator : MonoBehaviour
 
         userData.IsTutorialCompleted = true;
 
-        userData.CurrentTutorialStep = TutorialSteps.TUTORIALS_COMPLETE;
+        userData.CurrentTutorialStep  = TutorialSteps.TUTORIALS_COMPLETE;
         userData.CurrentTutorialStage = TutorialDriver.MAX_STAGES;
+        userData.MainMenuTheme        = MainMenuThemeIdentifier.Auto;
 
         StartCoroutine(UserDataHelper.Instance.SaveUserData(userData, (u) =>
         {

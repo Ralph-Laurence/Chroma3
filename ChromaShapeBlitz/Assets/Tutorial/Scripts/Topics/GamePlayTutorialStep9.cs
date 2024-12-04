@@ -109,6 +109,8 @@ public class GamePlayTutorialStep9 : MonoBehaviour
         userData.CurrentTutorialStep = TutorialSteps.TUTORIALS_COMPLETE;
         userData.CurrentTutorialStage++;
 
+        userData.MainMenuTheme = MainMenuThemeIdentifier.Auto;
+
         // Write the changes to file
         yield return StartCoroutine(UserDataHelper.Instance.SaveUserData(userData));
     }

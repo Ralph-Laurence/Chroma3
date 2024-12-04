@@ -45,6 +45,7 @@ public class TutorialSkipper : MonoBehaviour
         userData.IsTutorialCompleted  = true;
         userData.CurrentTutorialStep  = nextStep;
         userData.CurrentTutorialStage = TutorialDriver.MAX_STAGES;
+        userData.MainMenuTheme        = MainMenuThemeIdentifier.Auto;
 
         return userData;
     }

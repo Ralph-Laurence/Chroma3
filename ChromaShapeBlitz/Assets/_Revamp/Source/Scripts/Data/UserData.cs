@@ -103,4 +103,9 @@ public class UserData
     public bool DailyGiftClaimed;
     public int DailyGiftDayNumber;
     public List<int> DailyGiftClaimHistory;
+
+    //===========================
+    // THEMING
+    //===========================
+    public MainMenuThemeIdentifier MainMenuTheme;
 }

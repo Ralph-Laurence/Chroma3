@@ -142,8 +142,9 @@ public class GamePlayTutorialLevel1A : MonoBehaviour
         var userData = BuildSaveData(nextStep);
         var helper   = UserDataHelper.Instance;
 
-        userData.IsTutorialCompleted = true;
-        userData.CurrentTutorialStage = TutorialDriver.MAX_STAGES;
+        userData.IsTutorialCompleted    = true;
+        userData.CurrentTutorialStage   = TutorialDriver.MAX_STAGES;
+        userData.MainMenuTheme          = MainMenuThemeIdentifier.Auto;
 
         yield return StartCoroutine(helper.SaveUserData(userData, (updatedData) =>
         {

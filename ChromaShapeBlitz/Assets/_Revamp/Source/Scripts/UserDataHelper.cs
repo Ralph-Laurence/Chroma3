@@ -125,7 +125,12 @@ public class UserDataHelper : MonoBehaviour
             NextDailyGiftTime     = initialDate, //DateTime.Now.AddHours(24).ToString("o"),//initialDate,
             DailyGiftClaimed      = default,
             DailyGiftDayNumber    = 1,
-            DailyGiftClaimHistory = new()
+            DailyGiftClaimHistory = new(),
+
+            // Use this as the default theme.
+            // We can only use other themes after
+            // completing (or skipping) the tutorials
+            MainMenuTheme = MainMenuThemeIdentifier.Stock
         };
 
         for (var i = 1; i <= Revamp.GameManager.TotalEasyStages; i++)

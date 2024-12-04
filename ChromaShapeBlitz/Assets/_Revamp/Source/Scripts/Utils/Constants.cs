@@ -58,6 +58,8 @@ public class Constants
     {
         public static readonly string PowerupsLUT = "PowerupsLookup";
         public static readonly string CountIndicatorSpriteSheets = "CountIndicatorSpriteSheets";
+        public const string HalloweenTheme = "HalloweenTheme";
+        public const string ChristmasTheme = "ChristmasTheme";
     }
 
     public readonly struct SubspriteIndeces

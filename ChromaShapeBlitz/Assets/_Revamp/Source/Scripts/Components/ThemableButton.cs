@@ -22,7 +22,8 @@ public class ThemableButton : UXButton
         ColorBlock cb = m_button.colors;
         
         // Set the normal color
-        cb.normalColor = normal;
+        cb.normalColor   = normal;
+        cb.selectedColor = normal;
 
         // Set the highlighted color (hover color)
         cb.highlightedColor = hover;
