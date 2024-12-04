@@ -6,9 +6,6 @@ public enum MainMenuThemeIdentifier
     Stock,
     Halloween,
     Christmas,
-
-    // Used internally as state identifier.
-    // Auto applies the relevant theme by season.
     Auto
 }
 

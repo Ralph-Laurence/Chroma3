@@ -24,9 +24,6 @@ public class MainMenuThemeAssetLoader : MonoBehaviour
 
     public IEnumerator IELoadThemeAsset(string address, Action<MainMenuThemeAsset> onResult)
     {
-        // if (string.IsNullOrEmpty(address))
-        //     yield break;
-
         handle = Addressables.LoadAssetAsync<MainMenuThemeAsset>(address);
         yield return handle;
 

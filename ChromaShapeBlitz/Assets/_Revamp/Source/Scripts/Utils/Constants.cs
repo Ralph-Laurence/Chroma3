@@ -21,6 +21,7 @@ public class Constants
         public static readonly string About = "About";
         public static readonly string Credits = "Credits";
         public static readonly string DailyGifts = "DailyGift";
+        public static readonly string Themes = "Themes";
     }
 
     public readonly struct Tags
@@ -60,6 +61,7 @@ public class Constants
         public static readonly string CountIndicatorSpriteSheets = "CountIndicatorSpriteSheets";
         public const string HalloweenTheme = "HalloweenTheme";
         public const string ChristmasTheme = "ChristmasTheme";
+        public const string StockTheme = "StockTheme";
     }
 
     public readonly struct SubspriteIndeces
