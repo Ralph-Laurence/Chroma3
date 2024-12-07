@@ -5147,6 +5147,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   direction: {x: 0, y: 0, z: 1}
+  useMultiplier: 0
+  multiplier: 0
 --- !u!1 &1851282057349564023
 GameObject:
   m_ObjectHideFlags: 0
@@ -10800,6 +10802,7 @@ GameObject:
   - component: {fileID: 8860263438847749649}
   - component: {fileID: 2460529491959385642}
   - component: {fileID: 209811816885442262}
+  - component: {fileID: 4981006114483344528}
   m_Layer: 5
   m_Name: Next Level Button
   m_TagString: Untagged
@@ -10878,7 +10881,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -10909,6 +10912,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4981006114483344528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6909546169837345314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ac74ea0d22a4f04392d194b8c3023fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickType: 0
+  disableOnClicked: 0
 --- !u!1 &7299049143508505777
 GameObject:
   m_ObjectHideFlags: 0

@@ -93,9 +93,9 @@ public class UserDataHelper : MonoBehaviour
             StageProgressNormal = new List<StageProgress>(),
             StageProgressHard   = new List<StageProgress>(),
 
-            EasyStageUnlocked   = true,
-            NormalStageUnlocked = true,
-            HardStageUnlocked   = true,
+            EasyStageUnlocked   = false,
+            NormalStageUnlocked = false,
+            HardStageUnlocked   = false,
 
             TotalCoins          = 0,
             TotalGems           = 0,

@@ -14,7 +14,8 @@ namespace Revamp
         [SerializeField] private RectTransform mainCanvas;
         public StageCamera MainCamera;
         [SerializeField] private PatternTimer stageTimer;
-
+        [SerializeField] private GameObject fancySceneLoader;
+        
         [SerializeField] private StageFactory stageFactory;
         [SerializeField] private TextMeshProUGUI[] stageTitleTexts;
         

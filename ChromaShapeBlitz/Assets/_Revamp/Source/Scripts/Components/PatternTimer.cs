@@ -178,6 +178,11 @@ public partial class PatternTimer : MonoBehaviour
         // The pattern darkener must have the same image as the previewer
         darkPreview.sprite      = patternObjective;
         ResetDarkMask();
+
+        // Always hide the times up overlay.
+        // Sometimes the timesup and success screen show at once
+        // during close-call success
+        timesUpOverlay.SetActive(false);
     }
     
     private IEnumerator PulsateTimerText()

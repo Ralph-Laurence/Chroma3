@@ -71,7 +71,7 @@ namespace Revamp
         public GameManagerStates GetState() => currentState;
         public static int TotalEasyStages   => 30;
         public static int TotalNormalStages => 25;
-        public static int TotalHardStages   => 20;
+        public static int TotalHardStages   => 14; //20;
 
         public static int GetTotalStages(LevelDifficulties difficulty)
         {
@@ -101,16 +101,16 @@ namespace Revamp
             // To get 2 - stars, finish within the given minimum time
             else if (playTime > gsm.SelectedStageMinTime && playTime <= gsm.SelectedStageMaxTime)
                 starsAttained = 2;
-
-            // Evaluate the game results
-            var userData = ComputeRubrics(starsAttained);
             
-            // Should we show the trophy?
-            var shouldGiveTrophy = CheckGiveTrophy(gsm.SelectedDifficulty, userData);
+            // The trophy color is determined by the difficulty level
+            var trophyLevel = gsm.SelectedDifficulty;
+
+            // Evaluate the game results, Should we award the trophy?
+            var userData = EvaluateGameResult(starsAttained, out bool shouldGiveTrophy);
 
             if (shouldGiveTrophy)
             {
-                GiveTrophy(gsm.SelectedDifficulty, userData);
+                GiveTrophy(trophyLevel, userData);
                 StartCoroutine(SaveProgress(userData));
                 return;
             }
@@ -161,35 +161,62 @@ namespace Revamp
             });
         }
 
-        private UserData ComputeRubrics(int stars)
+        private UserData EvaluateGameResult(int stars, out bool shouldGiveTrophy)
         {
-            var userData = gsm.UserSessionData;
-            var stageIndex = gsm.SelectedStageNumber - 1;
+            shouldGiveTrophy = default;
+            var userData     = gsm.UserSessionData;
+            var stageIndex   = gsm.SelectedStageNumber - 1;
 
             StageProgress stageProgress;
+
             switch (gsm.SelectedDifficulty)
             {
                 case LevelDifficulties.Easy:
                     stageProgress = userData.StageProgressEasy[stageIndex];
 
-                    if (gsm.SelectedStageNumber >= userData.HighestEasyStage
-                       && userData.HighestEasyStage < TotalEasyStages)
-                    {
-                        if (userData.HighestEasyStage == 0)
-                            userData.HighestEasyStage = 1;
-                            
-                        userData.HighestEasyStage++;
-                    }
-
+                    // We only update the stars of the finished stage only if it is
+                    // higher than the player's previously attained star
                     if (stars > stageProgress.StarsAttained)
                     {
                         stageProgress.StarsAttained = stars;
                         userData.StageProgressEasy[stageIndex] = stageProgress;
                     }
+
+                    // If the selected stage number is exactly or is higher than Next Stage (Highest Stage),
+                    // but is within the total stages, we increment the Next Stage (Highest Stage).
+                    // This should effectively unlock the next stage.
+                    if (gsm.SelectedStageNumber >= userData.HighestEasyStage
+                       && userData.HighestEasyStage < TotalEasyStages)
+                    {
+                        // Initially, the highest stage is "0".
+                        // We set it to "1" after completing the 1st stage,
+                        // so that it increments to unlock the next (2)
+                        if (userData.HighestEasyStage == 0)
+                            userData.HighestEasyStage = 1;
+                            
+                        userData.HighestEasyStage++;
+                    }
+                    
+                    // If the current selected stage was the ending stage, we unlock the "Normal Level"
+                    else if (gsm.SelectedStageNumber == TotalEasyStages)
+                    {
+                        userData.NormalStageUnlocked = true;
+                        gsm.SelectedDifficulty  = LevelDifficulties.Normal;
+                        gsm.SelectedStageNumber = 0; // reset
+                    }
+
+                    shouldGiveTrophy = CheckGiveTrophy(LevelDifficulties.Easy, userData);
+                    
                     break;
 
                 case LevelDifficulties.Normal:
                     stageProgress = userData.StageProgressNormal[stageIndex];
+
+                    if (stars > stageProgress.StarsAttained)
+                    {
+                        stageProgress.StarsAttained = stars;
+                        userData.StageProgressNormal[stageIndex] = stageProgress;
+                    }
 
                     if (gsm.SelectedStageNumber >= userData.HighestNormalStage
                        && userData.HighestNormalStage < TotalNormalStages)
@@ -198,17 +225,29 @@ namespace Revamp
                             userData.HighestNormalStage = 1;
 
                         userData.HighestNormalStage++;
+                        //Debug.Log("Go NEXT stage");
                     }
 
-                    if (stars > stageProgress.StarsAttained)
+                    else if (gsm.SelectedStageNumber == TotalNormalStages)
                     {
-                        stageProgress.StarsAttained = stars;
-                        userData.StageProgressNormal[stageIndex] = stageProgress;
+                        userData.HardStageUnlocked = true;
+                        gsm.SelectedDifficulty  = LevelDifficulties.Hard;
+                        gsm.SelectedStageNumber = 0; // reset
+                        //Debug.Log($"Go NEXT LEVEL -> {gsm.SelectedDifficulty}-{gsm.SelectedStageNumber}");
                     }
+
+                    shouldGiveTrophy = CheckGiveTrophy(LevelDifficulties.Normal, userData);
+
                     break;
 
                 case LevelDifficulties.Hard:
                     stageProgress = userData.StageProgressHard[stageIndex];
+
+                    if (stars > stageProgress.StarsAttained)
+                    {
+                        stageProgress.StarsAttained = stars;
+                        userData.StageProgressHard[stageIndex] = stageProgress;
+                    }
 
                     if (gsm.SelectedStageNumber >= userData.HighestHardStage
                        && userData.HighestHardStage < TotalHardStages)
@@ -218,34 +257,34 @@ namespace Revamp
 
                         userData.HighestHardStage++;
                     }
+                    
+                    // If the current selected stage was the ending stage, we unlock the "Normal Level"
+                    // else if (gsm.SelectedStageNumber == TotalEasyStages)
+                    // {
+                    //     userData.NormalStageUnlocked = true;
+                    //     gsm.SelectedDifficulty  = LevelDifficulties.Normal;
+                    //     gsm.SelectedStageNumber = 0; // reset
+                    // }
 
-                    if (stars > stageProgress.StarsAttained)
-                    {
-                        stageProgress.StarsAttained = stars;
-                        userData.StageProgressHard[stageIndex] = stageProgress;
-                    }
+                    shouldGiveTrophy = CheckGiveTrophy(LevelDifficulties.Hard, userData);
                     break;
             }
 
             var totalReward = stageFactory.CreatedStage.TotalReward;
             var rewardType  = stageFactory.CreatedStage.RewardType;
-            // var args = new PlayerCurrencyEventArgs { Amount = totalReward };
             
             switch (rewardType)
             {
                 case RewardTypes.Coins: 
                     userData.TotalCoins += totalReward;
-                    // args.Currency = CurrencyType.Coin;
                     break;
 
                 case RewardTypes.Gems:
                     userData.TotalGems  += totalReward;
-                    // args.Currency = CurrencyType.Gem;
                     break;
             }
             
             return userData;
-            // PlayerCurrencyNotifier.NotifyObserver(args);
         }
 
         /// <summary>
@@ -264,6 +303,11 @@ namespace Revamp
                     
                     userData.StageProgressEasy.ForEach(progress => starsAttained += progress.StarsAttained);
                     starsRequired = maxStarsPerStage * TotalEasyStages;
+
+                    Debug.Log($"starsAttained: {starsAttained} >= starsRequired: {starsRequired} = {starsAttained >= starsRequired}");
+                    Debug.Log($"EasyStagesCompleted -> {userData.EasyStagesCompleted}");
+                    Debug.Log($"{starsAttained >= starsRequired && !userData.EasyStagesCompleted}");
+
                     return starsAttained >= starsRequired && !userData.EasyStagesCompleted;
 
                 case LevelDifficulties.Normal:
@@ -282,14 +326,14 @@ namespace Revamp
             return false; //starsAttained >= starsRequired;
         }
 
-        private void GiveTrophy(LevelDifficulties level, UserData userData)
+        private void GiveTrophy(LevelDifficulties trophyLevel, UserData userData)
         {
             GameObject trophy = null;
             var maxLevels     = 0;
             var rewardCoins   = 0;
             var rewardGems    = 0;
 
-            switch(level)
+            switch(trophyLevel)
             {
                 case LevelDifficulties.Easy: 
                     trophy      = bronzeTrophyScreen;
@@ -319,19 +363,32 @@ namespace Revamp
                     break;
             };
 
+            // Show the trophy reward animation screen
             Instantiate(trophy, mainCanvas).TryGetComponent(out TrophyRewardAnimation anim);
             sfx.PlayOnce(trophyScreenSfx);
-
+            
             var continueButtonAction = new Action(() => {
-                
-                MoveNextStage();
-                Destroy(anim.gameObject);
+
+                // If the completed level is the "Final Level", exit to main menu
+                if (gsm.SelectedDifficulty == LevelDifficulties.Hard)
+                {
+                    Instantiate(fancySceneLoader).TryGetComponent(out FancySceneLoader loader);
+
+                    if (loader != null)
+                        loader.LoadScene(Constants.Scenes.MainMenu);
+                }
+                else
+                {
+                    // Move to the next stage, then remove the animation
+                    MoveNextStage();
+                    Destroy(anim.gameObject);
+                }
             });
             
-            anim.SetParams(level, maxLevels, rewardCoins, rewardGems, continueButtonAction);
+            anim.SetParams(trophyLevel, maxLevels, rewardCoins, rewardGems, continueButtonAction);
 
             userData.TotalCoins += rewardCoins;
-            userData.TotalGems += rewardGems;
+            userData.TotalGems  += rewardGems;
         }
 
         #endregion GAME_OVER

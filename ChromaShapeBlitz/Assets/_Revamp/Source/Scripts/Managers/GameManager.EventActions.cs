@@ -69,24 +69,35 @@ namespace Revamp
             loader.LoadScene(Constants.Scenes.MainMenu);
         }
 
+        // Mostly used by "Next" button
         public void MoveNextStage()
         {
-            var stageNumber = gsm.SelectedStageNumber + 1;
-            var difficulty  = gsm.SelectedDifficulty;
+            // Get the next stage properties then Create the next stage
+            // PreComputeNextStage(gsm, out int stageNumber, out LevelDifficulties difficulty);
+            var nextStage  = gsm.SelectedStageNumber + 1;
+            var difficulty = gsm.SelectedDifficulty;
 
             gsm.ClearSession();
-            
-            // Decide which stage to spawn next.
+
+            InstantiateStage(nextStage, difficulty);
+        }
+
+        private void OnTrophyMoveNextStage()
+        {
+            var currentStageNumber = gsm.SelectedStageNumber;
+            var difficulty         = gsm.SelectedDifficulty;
+
+            gsm.ClearSession();
+
             switch (difficulty)
             {
-                // After completing the Easy stages, move on to Normal
                 case LevelDifficulties.Easy:
 
                     // If the current selected stage was the ending stage...
-                    if (stageNumber > TotalEasyStages)
+                    if (currentStageNumber >= TotalEasyStages)
                     {
                         difficulty  = LevelDifficulties.Normal;
-                        stageNumber = 1;
+                        currentStageNumber = 1;
                     }
                     
                     break;
@@ -94,10 +105,10 @@ namespace Revamp
                 case LevelDifficulties.Normal:
                     
                     // After completing the Normal stages, move on to Hard
-                    if (stageNumber > TotalNormalStages)
+                    if (currentStageNumber > TotalNormalStages)
                     {
                         difficulty  = LevelDifficulties.Hard;
-                        stageNumber = 1;
+                        currentStageNumber = 1;
                     }
                     break;
                 
@@ -105,7 +116,12 @@ namespace Revamp
                     // stageNumber = Mathf.Clamp(stageNumber, 1, TotalHardStages);
                     break;
             }
-            // Debug.Log($"Load Next stage : {stageNumber}; Lvl : {difficulty}");
+        }
+        /// <summary>
+        /// Spawn a specific stage by its given stagenumber and difficulty
+        /// </summary>
+        private void InstantiateStage(int stageNumber, LevelDifficulties difficulty)
+        {
             stageFactory.Clear();
             stageFactory.Create(difficulty, stageNumber);
 
@@ -114,10 +130,47 @@ namespace Revamp
 
             MainCamera.ResetView();
         }
+        
+        /// <summary>
+        /// Decide which stage to spawn next. We will increment the current
+        /// stage's number and its difficulty, so that we can determine which
+        /// stage to create next
+        /// </summary>
+        private void PreComputeNextStagex(GameSessionManager gsm, out int currentStageNumber, out LevelDifficulties difficulty)
+        { 
+            currentStageNumber = gsm.SelectedStageNumber + 1;
+            difficulty         = gsm.SelectedDifficulty;
 
-        private void ProceedNextStage()
-        {
+            gsm.ClearSession();
+            
+            switch (difficulty)
+            {
+                // After completing the Easy stages, move on to Normal
+                case LevelDifficulties.Easy:
 
+                    // If the current selected stage was the ending stage...
+                    if (currentStageNumber > TotalEasyStages)
+                    {
+                        difficulty  = LevelDifficulties.Normal;
+                        currentStageNumber = 1;
+                    }
+                    
+                    break;
+
+                case LevelDifficulties.Normal:
+                    
+                    // After completing the Normal stages, move on to Hard
+                    if (currentStageNumber > TotalNormalStages)
+                    {
+                        difficulty  = LevelDifficulties.Hard;
+                        currentStageNumber = 1;
+                    }
+                    break;
+                
+                case LevelDifficulties.Hard:
+                    // stageNumber = Mathf.Clamp(stageNumber, 1, TotalHardStages);
+                    break;
+            }
         }
     }
 }

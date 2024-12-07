@@ -150,7 +150,8 @@ public partial class LevelMenu : MonoBehaviour
         // the next level select page instead, so that the player wont manually
         // navigate to each of them.
 
-        // Mark the level select pages as completed (if they really are)
+        // Mark the level select pages as completed (if they really are).
+        // A level is completed if the "total stars are perfect 3 per stage".
         if (userData.IsTutorialCompleted)
         {
             levelSelectPageTutorial.MarkCompleted();
@@ -160,25 +161,26 @@ public partial class LevelMenu : MonoBehaviour
         }
 
         if (userData.EasyStagesCompleted)
-        {
             levelSelectPageEasy.MarkCompleted();
-            selectedIndex = 2;  // Set Focus to "Normal"
-
-            levelSelectPageNormal.SetLocked(false);
-        }
 
         if (userData.NormalStagesCompleted)
-        {
             levelSelectPageNormal.MarkCompleted();
-            selectedIndex = 3;  // Set Focus to "Hard"
-
-            levelSelectPageHard.SetLocked(false);
+        
+        if (userData.HardStagesCompleted)
+            levelSelectPageHard.MarkCompleted();
+        //
+        // Set focus onto a level select page once unlocked
+        //
+        if (userData.NormalStageUnlocked)
+        {
+            levelSelectPageNormal.SetLocked(false);
+            selectedIndex = 2;  // Set Focus to "Normal"
         }
 
-        if (userData.HardStagesCompleted)
+        if (userData.HardStageUnlocked)
         {
-            levelSelectPageHard.MarkCompleted();
-            selectedIndex = 3;  // Stay Focus to "Hard"
+            levelSelectPageHard.SetLocked(false);
+            selectedIndex = 3;  // Set Focus to "Hard"
         }
 
         // Scroll to the target level select page
