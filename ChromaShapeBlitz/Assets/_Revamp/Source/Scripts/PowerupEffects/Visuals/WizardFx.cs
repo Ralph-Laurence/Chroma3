@@ -67,7 +67,7 @@ public class WizardFx : MonoBehaviour
     #region STATE_CONTROL
     public void BeginEffect()
     {
-        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: true);
+        //InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: true);
 
         // Poisition the mage just above the stage variant
         var posAboveStage = StageVariantEffectTarget.transform.position;
@@ -102,6 +102,8 @@ public class WizardFx : MonoBehaviour
 
     private IEnumerator SpawnTheWizard()
     {
+        InteractionBlockerNotifier.NotifyObserver(show: true);
+
         onSpawnSmoke.gameObject.SetActive(true);
         sfx.PlayOnce(sfxSpawn);
 
@@ -129,7 +131,8 @@ public class WizardFx : MonoBehaviour
         onMagicExit.gameObject.SetActive(true);
         sfx.PlayOnce(sfxExit);
 
-        InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
+        InteractionBlockerNotifier.NotifyObserver(show: false);
+        // InGameHotbarInteractionStateNotifier.NotifyObserver(blockInteraction: false);
         OnEffectCompleted?.Invoke();
     }
 

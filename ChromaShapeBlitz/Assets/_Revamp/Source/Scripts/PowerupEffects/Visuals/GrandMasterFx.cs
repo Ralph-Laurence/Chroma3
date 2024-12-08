@@ -132,6 +132,8 @@ public class GrandMasterFx : MonoBehaviour
 
     private IEnumerator SpawnTheGrandMaster()
     {
+        InteractionBlockerNotifier.NotifyObserver(show: true);
+
         // Create the lightning flash sequence
         LeanTween.value(gameObject, 1.0F, 0.0F, 0.1F)
                  .setOnUpdate((float val) => sunLight.intensity = val)
@@ -312,7 +314,8 @@ public class GrandMasterFx : MonoBehaviour
                     StartCoroutine(IEToggleGlowFx(false));
                     flashOnExit.SetActive(true);
                     sfx.PlayOnce(sfxExitPoof);
-
+                    
+                    InteractionBlockerNotifier.NotifyObserver(show: false);
                     StartCoroutine(IECompleteStage());                    
                  });
 

@@ -44,7 +44,8 @@ public class GameOverScreen : MonoBehaviour
     private RectTransform iconRect;
     private Image iconImage;
     private SoundEffects sfx;
-    
+    private GameOverScreenButton nextButton;
+
     private bool isInitialized;
     private int starAmount;
 
@@ -63,6 +64,16 @@ public class GameOverScreen : MonoBehaviour
             return;
 
         ResetTweens();
+
+        // Should we hide the "Next" button?
+        // This happens only when the final ending stage was reached.
+        if (nextButton != null)
+        {
+            if (eventArgs.DisableNextButton)
+                nextButton.DisableClicks();
+            else
+                nextButton.EnableClicks();
+        }
 
         var textColor = "<color=#FF9533>"; // ORANGE
         
@@ -107,6 +118,11 @@ public class GameOverScreen : MonoBehaviour
 
         foreach (var b in dialogButtons)
         {
+            // We will use this when we want to disable the "Next" button,
+            // usually when we reached the final ending stage.
+            if (b.Action == GameManagerActionEvents.NextStage)
+                nextButton = b;
+
             b.ButtonComponent.onClick.AddListener(() => {
                 Hide(() => GameManagerEventNotifier.Notify(b.Action));
             });

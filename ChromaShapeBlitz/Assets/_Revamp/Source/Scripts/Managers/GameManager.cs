@@ -103,7 +103,9 @@ namespace Revamp
                 starsAttained = 2;
             
             // The trophy color is determined by the difficulty level
-            var trophyLevel = gsm.SelectedDifficulty;
+            var trophyLevel  = gsm.SelectedDifficulty;
+            var isFinalStage = gsm.SelectedDifficulty == LevelDifficulties.Hard &&
+                               gsm.SelectedStageNumber >= TotalHardStages;
 
             // Evaluate the game results, Should we award the trophy?
             var userData = EvaluateGameResult(starsAttained, out bool shouldGiveTrophy);
@@ -117,7 +119,7 @@ namespace Revamp
 
             // Or show the gameover screen instead?
             StartCoroutine(SaveProgress(userData, (outUserData) => {
-                
+
                 gameOverScreenOverlay.SetActive(true);
                 GameOverScreenNotifier.NotifyObserver(new GameOverEventArgs
                 {
@@ -128,7 +130,9 @@ namespace Revamp
                     RewardType      = stageFactory.CreatedStage.RewardType,
 
                     TotalPlayerCoinBalance = outUserData.TotalCoins,
-                    TotalPlayerGemBalance  = outUserData.TotalGems
+                    TotalPlayerGemBalance  = outUserData.TotalGems,
+
+                    DisableNextButton      = isFinalStage
                 });
             }));
         }

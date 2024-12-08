@@ -7,4 +7,6 @@ public class GameOverEventArgs
     public int TotalReward;
     public int TotalPlayerCoinBalance;
     public int TotalPlayerGemBalance;
+
+    public bool DisableNextButton;
 }

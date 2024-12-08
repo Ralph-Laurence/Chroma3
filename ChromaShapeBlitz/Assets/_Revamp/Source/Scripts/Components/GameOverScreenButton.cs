@@ -13,4 +13,14 @@ public class GameOverScreenButton : MonoBehaviour
             return button;
         }
     }
+
+    /// <summary>
+    /// Prevent the button from recieving clicks
+    /// </summary>
+    public void DisableClicks() => ButtonComponent.interactable = false;
+
+    /// <summary>
+    /// Allow the button to recieve clicks
+    /// </summary>
+    public void EnableClicks() => ButtonComponent.interactable = true;
 }
