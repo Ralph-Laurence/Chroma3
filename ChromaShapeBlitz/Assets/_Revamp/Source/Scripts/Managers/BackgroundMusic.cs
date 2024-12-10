@@ -13,11 +13,11 @@ public class BackgroundMusic : BaseAudioManager
         if (Instance == null)
         {
             Instance = this;
-            
+            DontDestroyOnLoad(gameObject);
             // Assume that this component will be attached to a gameobject
             // that is a child of SoundBank gameobject
-            if (transform.parent == null || !transform.parent.name.Equals(SoundBank.Instance.GetName()))
-                DontDestroyOnLoad(gameObject);
+            //if (transform.parent == null || !transform.parent.name.Equals(SoundBank.Instance.GetName()))
+            //    DontDestroyOnLoad(gameObject);
         }
 
         else if (Instance != this)

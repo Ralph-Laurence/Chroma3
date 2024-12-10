@@ -1,39 +1,39 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class Constants
 {
-    public struct FabricatorTags
-    {
-        public static string DestinationMarker => "DestinationMarker";
-    }
+    //public struct FabricatorTags
+    //{
+    //    public static string DestinationMarker => "DestinationMarker";
+    //}
 
     public readonly struct Scenes
     {
-        public static readonly string Bootstrapper = "Bootstrapper";
-        public static readonly string MainMenu = "MainMenu";
-        public static readonly string CutSceneEMPAttack = "CS_EmpAttack";
-        public static readonly string TutorialStagePrefix = "TutorialStage_";
-        public static readonly string TutorialFinished = "TutorialFinished";
-        public static readonly string GamePlay = "GamePlay";
-        public static readonly string SlotMachine = "SlotMachine";
-        public static readonly string About = "About";
-        public static readonly string Credits = "Credits";
-        public static readonly string DailyGifts = "DailyGift";
-        public static readonly string Themes = "Themes";
+        public static readonly string Bootstrapper          = "Bootstrapper";
+        public static readonly string MainMenu              = "MainMenu";
+        public static readonly string CutSceneEMPAttack     = "CS_EmpAttack";
+        public static readonly string TutorialStagePrefix   = "TutorialStage_";
+        public static readonly string TutorialFinished      = "TutorialFinished";
+        public static readonly string GamePlay              = "GamePlay";
+        public static readonly string SlotMachine           = "SlotMachine";
+        public static readonly string About                 = "About";
+        public static readonly string Credits               = "Credits";
+        public static readonly string DailyGifts            = "DailyGift";
+        public static readonly string Themes                = "Themes";
+        public static readonly string Profile               = "Profile";
     }
 
     public readonly struct Tags
     {
-        //public static readonly string GameManager = "Game Manager";
+        public const string DestinationMarker = "DestinationMarker";
         public static readonly string MainCamera  = "MainCamera";
     }
 
     public readonly struct CurrencySprites
     {
         public static readonly string GoldCoin = "<sprite=2>";
-        public static readonly string GemCoin = "<sprite=3>";
+        public static readonly string GemCoin  = "<sprite=3>";
     }
 
     public readonly struct ColorSwatches
@@ -57,11 +57,11 @@ public class Constants
 
     public readonly struct PackedAssetAddresses
     {
-        public static readonly string PowerupsLUT = "PowerupsLookup";
+        public static readonly string PowerupsLUT                = "PowerupsLookup";
         public static readonly string CountIndicatorSpriteSheets = "CountIndicatorSpriteSheets";
-        public const string HalloweenTheme = "HalloweenTheme";
-        public const string ChristmasTheme = "ChristmasTheme";
-        public const string StockTheme = "StockTheme";
+        public const string HalloweenTheme                       = "HalloweenTheme";
+        public const string ChristmasTheme                       = "ChristmasTheme";
+        public const string StockTheme                           = "StockTheme";
     }
 
     public readonly struct SubspriteIndeces
@@ -98,4 +98,16 @@ public class Constants
     };
     
     public static Dictionary<int, float> BlockFillRates => fillRatesLookup;
+
+    public struct Url
+    {
+        public const string Domain = "http://localhost:3000";
+        public static string UsersAPI       => $"{Domain}/users/api";
+        public static string LoginRoute     => $"{UsersAPI}/login";
+        public static string RegisterRoute  => $"{UsersAPI}/register";
+        public static string UploadEndpoint => $"{UsersAPI}/upload";
+        public static string DownloadEndpoint => $"{UsersAPI}/download";
+    }
+
+    public static string SavePath => $"{Application.persistentDataPath}/user.sav";
 }

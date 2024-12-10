@@ -36,9 +36,7 @@ public class UserDataHelper : MonoBehaviour
             deserializedUserData = SeedDefault();
             yield return StartCoroutine(userDataIO.Write
             (
-                deserializedUserData,
-                StatusCodes.BEGIN_WRITE_USER_DATA,
-                StatusCodes.DONE_WRITE_USER_DATA
+                deserializedUserData
             ));
             
             File.WriteAllText(Application.persistentDataPath + "/user.sav.json", JsonUtility.ToJson(deserializedUserData));
@@ -47,9 +45,7 @@ public class UserDataHelper : MonoBehaviour
         {
             yield return StartCoroutine(userDataIO.Read
             (
-                u => deserializedUserData = u,
-                StatusCodes.BEGIN_READ_USER_DATA,
-                StatusCodes.DONE_READ_USER_DATA
+                u => deserializedUserData = u
             ));
         }
 
@@ -74,7 +70,7 @@ public class UserDataHelper : MonoBehaviour
     /// Seed the user data with starting values
     /// </summary>
     /// <returns>Default UserData</returns>
-    private UserData SeedDefault()
+    public UserData SeedDefault()
     {
         int[] defaultBlockSkinIds = { 1,2,3,4,5,6 };
         var initialDate = DateTime.MinValue.ToString("o");

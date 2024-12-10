@@ -23,5 +23,6 @@ public class UserDataIO : BinarySerializer<UserData>
     // End Singleton
     //
     
-    protected override string BinaryPath => $"{Application.persistentDataPath}/user.sav";
+    // protected override string BinaryPath => $"{Application.persistentDataPath}/user.sav";
+
 }

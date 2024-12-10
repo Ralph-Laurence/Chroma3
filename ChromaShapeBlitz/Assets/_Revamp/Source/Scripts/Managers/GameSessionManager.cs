@@ -37,6 +37,7 @@ public class GameSessionManager
     public int SelectedStageMinTime;
 
     public UserData UserSessionData;
+    public PlayerAuthData AuthData;
 
     public bool IsVisitShopOnGameOver { get; set; }
 

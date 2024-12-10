@@ -236,7 +236,8 @@ public class BlockContextMenu : MonoBehaviour
         fabricator.ResetDestinationMarkers();
         GameObject.FindGameObjectsWithTag
         (
-            Constants.FabricatorTags.DestinationMarker
+            //Constants.FabricatorTags.DestinationMarker
+            Constants.Tags.DestinationMarker
         )
         .ToList()
         .ForEach(g => Destroy(g));

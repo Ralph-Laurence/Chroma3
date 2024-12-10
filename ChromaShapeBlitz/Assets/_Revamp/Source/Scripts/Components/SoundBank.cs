@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[Obsolete]
 public class SoundBank : MonoBehaviour
 {
     private static SoundBank instance;

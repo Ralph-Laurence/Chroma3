@@ -81,6 +81,7 @@ public class MainMenuController : MonoBehaviour
     public void Ev_LaunchCredits() => Launch(Constants.Scenes.Credits);
     public void Ev_LaunchDailyGift() => Launch(Constants.Scenes.DailyGifts);
     public void Ev_LaunchDecorThemer() => Launch(Constants.Scenes.Themes);
+    public void Ev_LaunchProfilePage() => Launch(Constants.Scenes.Profile);
     private void Launch(string sceneName)
     {
         Instantiate(fancySceneLoader).TryGetComponent(out FancySceneLoader loader);

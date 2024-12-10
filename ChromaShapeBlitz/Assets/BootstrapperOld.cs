@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Bootstrapper : MonoBehaviour
+public class BootstrapperOld : MonoBehaviour
 {
     private struct ActionStatusEventData
     {
@@ -31,7 +31,7 @@ public class Bootstrapper : MonoBehaviour
 
     private List<Func<IEnumerator>> initializationTasks;
 
-    public void Ev_AnimationEnded() => StartCoroutine( Initialize() );
+    public void Ev_AnimationEnded() => StartCoroutine(Initialize());
     private readonly Dictionary<int, string> actionReportMessages = new()
     {
         { 200,  "Starting..."},
@@ -119,7 +119,7 @@ public class Bootstrapper : MonoBehaviour
         yield return new WaitForSeconds(1.0F);
 
         var statusCode = actionStatusEventQueue.Dequeue();
-        
+
         yield return StartCoroutine
         (
             SetProgress(25, actionReportMessages[statusCode])
@@ -139,7 +139,7 @@ public class Bootstrapper : MonoBehaviour
         //Application.runInBackground = true;
         // Disable screen dimming
         //Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        
+
         loaderView.SetActive(true);
 
         initializationTasks = new List<Func<IEnumerator>>
@@ -151,7 +151,7 @@ public class Bootstrapper : MonoBehaviour
 
         totalTasks = initializationTasks.Count;
 
-        foreach(var task in initializationTasks)
+        foreach (var task in initializationTasks)
         {
             yield return StartCoroutine(task());
         };
@@ -186,7 +186,7 @@ public class Bootstrapper : MonoBehaviour
         var uix = UISound.Instance;
 
         var bgmEnabled = bgm != null && settings.BgmEnabled;
-        var sfxEnabled = sfx != null && settings.SfxEnabled;  
+        var sfxEnabled = sfx != null && settings.SfxEnabled;
         var uixEnabled = uix != null && settings.UISfxEnabled;
 
         bgm.SetMute(!bgmEnabled);
@@ -198,7 +198,7 @@ public class Bootstrapper : MonoBehaviour
 
     private IEnumerator LoadUserData()
     {
-        yield return StartCoroutine(UserDataHelper.Instance.LoadUserData( (userData) => 
+        yield return StartCoroutine(UserDataHelper.Instance.LoadUserData((userData) =>
         {
             gsm.UserSessionData = userData;
             StartCoroutine(CacheAppliedSkins(userData));
