@@ -101,7 +101,13 @@ public class Constants
 
     public struct Url
     {
-        public const string Domain = "http://localhost:3000";
+        public const int DOMAIN_MODE_DEV    = 0;
+        public const int DOMAIN_MODE_PROD   = 1;
+        public const int DOMAIN_MODE = DOMAIN_MODE_PROD;
+
+        public const string Domain = DOMAIN_MODE == DOMAIN_MODE_PROD
+                                    ? "https://chroma3-cloud-sync.glitch.me/" 
+                                    : "http://localhost:3000";
         public static string UsersAPI       => $"{Domain}/users/api";
         public static string LoginRoute     => $"{UsersAPI}/login";
         public static string RegisterRoute  => $"{UsersAPI}/register";
